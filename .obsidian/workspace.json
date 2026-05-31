@@ -1,0 +1,497 @@
+{
+  "main": {
+    "id": "7661be142026a277",
+    "type": "split",
+    "children": [
+      {
+        "id": "2878759d097ed151",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3041885ee3e4bc13",
+            "type": "leaf",
+            "state": {
+              "type": "custom-frames-google-keep",
+              "state": {},
+              "icon": "lucide-files",
+              "title": "Google Keep"
+            }
+          },
+          {
+            "id": "ff97abd2941a0d65",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Spaces/Home/♬ Chord Library/F Chords/F# minor.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "F# minor"
+            }
+          },
+          {
+            "id": "b1b55e83c4bc54f3",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "Spaces/Home/🎸 Song Library/Editing Portal.canvas",
+                "viewState": {
+                  "x": 1550,
+                  "y": -510,
+                  "zoom": -0.7453743317811344
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "Editing Portal"
+            }
+          },
+          {
+            "id": "768e5ba570fb0730",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "Spaces/Home/🎸 Song Library/Editing Portal.canvas",
+                "viewState": {
+                  "x": -230,
+                  "y": -510,
+                  "zoom": -0.24537433178113444
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "Editing Portal"
+            }
+          },
+          {
+            "id": "79957c5ffa0d2c2a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Spaces/Home/🎸 Song Library/more than words GZTH.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "more than words GZTH"
+            }
+          },
+          {
+            "id": "47b94dbfc8eb457d",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "Spaces/Home/Recipes/Rice/rice cooker instruction booklet .pdf"
+              },
+              "icon": "lucide-file-text",
+              "title": "rice cooker instruction booklet"
+            }
+          },
+          {
+            "id": "a2b6f3e468fa6a04",
+            "type": "leaf",
+            "state": {
+              "type": "recipe-view",
+              "state": {
+                "file": "Spaces/Home/Recipes/Italian Food/Hot Italian Sausage.md"
+              },
+              "icon": "chef-hat",
+              "title": "Hot Italian Sausage"
+            }
+          },
+          {
+            "id": "36f6073a592ca3f2",
+            "type": "leaf",
+            "state": {
+              "type": "mk-space",
+              "state": {
+                "path": "Spaces/Home/🎸 Song Library"
+              },
+              "icon": "lucide-file",
+              "title": "🎸 Song Library"
+            }
+          },
+          {
+            "id": "a3f5a918ee3a4412",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Untitled 1.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": false
+                }
+              },
+              "icon": "lucide-file",
+              "title": "Untitled 1"
+            }
+          },
+          {
+            "id": "c33af7d84237f55c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Spaces/Home/Recipes/Texas BBQ/Texas Red Chile.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "Texas Red Chile"
+            }
+          },
+          {
+            "id": "a075db82b4c4669d",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Spaces/Automated car sales workflow/installation of Git.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "installation of Git"
+            }
+          },
+          {
+            "id": "f83157828c3f2fe5",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.12.7"
+              },
+              "icon": "lucide-book-up",
+              "title": "Release Notes 1.12.7"
+            }
+          }
+        ],
+        "currentTab": 10
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "9a96402f7ec8521e",
+    "type": "split",
+    "children": [
+      {
+        "id": "3009180c047f6d6d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8578f215a99c65a4",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "96234a908dbfeabc",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "chopp",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "dade9354edc0cad3",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          },
+          {
+            "id": "a94c8e4b45510b93",
+            "type": "leaf",
+            "state": {
+              "type": "recent-files",
+              "state": {},
+              "icon": "clock",
+              "title": "Recent files"
+            }
+          },
+          {
+            "id": "8ab10f3437036489",
+            "type": "leaf",
+            "state": {
+              "type": "mk-path-view",
+              "state": {},
+              "icon": "layout-grid",
+              "title": "Navigator"
+            }
+          }
+        ],
+        "currentTab": 4
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "233a450e0c751315",
+    "type": "split",
+    "children": [
+      {
+        "id": "4b6ecd29c7b0e1b6",
+        "type": "tabs",
+        "dimension": 56.23188405797102,
+        "children": [
+          {
+            "id": "cac2eaddef794a0a",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Spaces/Home/Recipes/Rice/rice cooker instruction booklet .pdf"
+              },
+              "icon": "lucide-ghost",
+              "title": "outline"
+            }
+          },
+          {
+            "id": "aded19932fdcd058",
+            "type": "leaf",
+            "state": {
+              "type": "quiet-outline",
+              "state": {},
+              "icon": "lines-of-text",
+              "title": "Quiet Outline"
+            }
+          },
+          {
+            "id": "0e8d4e234ec067fc",
+            "type": "leaf",
+            "state": {
+              "type": "Strange New Worlds",
+              "state": {},
+              "icon": "file-digit",
+              "title": "Strange New Worlds"
+            }
+          }
+        ],
+        "currentTab": 1
+      },
+      {
+        "id": "0c6b55db7779c768",
+        "type": "tabs",
+        "dimension": 19.323671497584538,
+        "children": [
+          {
+            "id": "19eb6c00fdee90e5",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Spaces/Home/Recipes/Rice/rice cooker instruction booklet .pdf",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for rice cooker instruction booklet"
+            }
+          },
+          {
+            "id": "1ee946c397da757c",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Spaces/Home/Recipes/Rice/rice cooker instruction booklet .pdf",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from rice cooker instruction booklet"
+            }
+          },
+          {
+            "id": "397d75e69f6d4583",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "706c4a3a63ab6867",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "eac505708e702018",
+            "type": "leaf",
+            "state": {
+              "type": "make-context-view",
+              "state": {},
+              "icon": "component",
+              "title": "Explorer"
+            }
+          }
+        ],
+        "currentTab": 4
+      },
+      {
+        "id": "9d634b3d0254c6ed",
+        "type": "tabs",
+        "dimension": 24.444444444444443,
+        "children": [
+          {
+            "id": "021b963e12eef5e4",
+            "type": "leaf",
+            "state": {
+              "type": "Strange New Worlds",
+              "state": {},
+              "icon": "file-digit",
+              "title": "Strange New Worlds"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "bases:Create new base": false,
+      "markdown-importer:Open format converter": false,
+      "zk-prefixer:Create new unique note": false,
+      "audio-recorder:Start/stop recording": false,
+      "publish:Publish changes...": false,
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "templater-obsidian:Templater": false,
+      "workspaces:Manage workspace layouts": false,
+      "recipe-view:Toggle recipe view": false,
+      "random-note:Open random note": false,
+      "obsidian-custom-frames:Open Google Keep": false,
+      "obsidian-custom-frames:Open imgur": false
+    }
+  },
+  "active": "8ab10f3437036489",
+  "lastOpenFiles": [
+    "Spaces/Automated car sales workflow/incognition and proxy wing troubleshooting .md",
+    "Spaces/Automated car sales workflow/installation of Git.md",
+    "Spaces/Automated car sales workflow/Hermes agent build.md",
+    "Spaces/Home/Canadian Food 🇨🇦/Canadian Food 🇨🇦.md",
+    "Spaces/Automated car sales workflow/Node-red installation.md",
+    "Spaces/Automated car sales workflow/n8n Docker installation/Untitled.md",
+    "Spaces/Automated car sales workflow/n8n Docker installation/n8n Docker installation.md",
+    "Spaces/Automated car sales workflow/n8n Docker installation",
+    "Spaces/Automated car sales workflow/Automated car sales workflow.md",
+    "Spaces/Home/Recipes/Rice/Rice Cooker Instructions.md",
+    "Spaces/Automated car sales workflow",
+    "Spaces/Home/Recipes/Jamaican Food/Jamaican Food.md",
+    "Spaces/Home/Recipes/Italian Food/Hot Italian Sausage.md",
+    "Vault.md",
+    "Spaces/Home/Recipes/Texas BBQ/Texas Red Chile.md",
+    "Spaces/Home/Recipes/United Kingdom/Irish Stew.md",
+    "Spaces/Home/Recipes/United Kingdom/United Kingdom.md",
+    "Templates/Song Template.md",
+    "Spaces/Home/Recipes/British Isles Food/Irish Stew.md",
+    "Spaces/Home/Recipes/British Isles Food/British Isles Food.md",
+    "Spaces/Home/Recipes/📃 Grocery list/Ingredients.md",
+    "Untitled 2.md",
+    "Spaces/Home/🎸 Song Library/🎸 Song Library.md",
+    "Spaces/Home/🎸 Song Library/Wish you were hear solo.md",
+    "Untitled 1.md",
+    "Spaces/Home/Recipes/American/Hamburgers/hjk.md",
+    "Spaces/Home/Recipes/American/Hamburgers/Hamburgers.md",
+    "Untitled.md",
+    "Spaces/Home/🎸 Song Library/Editing Portal.canvas",
+    "Assets/Group2.svg",
+    "Spaces/Home/Canadian Food 🇨🇦",
+    "Spaces/Home/Recipes/United Kingdom 🇬🇧",
+    "🎸 Song Library",
+    "Spaces/Home/Recipes/American/Hamburgers",
+    "Spaces/Home/Recipes/American",
+    "Spaces/Home/Recipes/Rice/rice cooker instruction booklet .pdf",
+    "Untitled.canvas",
+    "Recipes/British Isles Food 1/Irish Stew",
+    "Recipes/British Isles Food 1",
+    "Spaces/Home/🎸 Song Library/Song Canvas.canvas",
+    "Untitled 3.canvas",
+    "Untitled 1.canvas",
+    "Untitled 2.canvas",
+    "Untitled 5.canvas",
+    "Untitled 4.canvas",
+    "Untitled 7.canvas",
+    "Untitled 6.canvas"
+  ]
+}

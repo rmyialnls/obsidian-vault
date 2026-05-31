@@ -1,0 +1,284 @@
+{
+  "main": {
+    "id": "f3fe9edfcce3720e",
+    "type": "split",
+    "children": [
+      {
+        "id": "607a0f7a0997538b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7656d58b49a45c31",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "🎸  Guitar/🎶 Songs/More than words.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "fd08a54ffb108c2f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Recipes/Recipes.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "0e68db735125e375",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "♬ Chord Library/C-Minor Chord.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "fcbb84da0a091320",
+    "type": "split",
+    "children": [
+      {
+        "id": "b2324e5cdb61d566",
+        "type": "tabs",
+        "dimension": 41.118743866535816,
+        "children": [
+          {
+            "id": "53600ca58189da95",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "7ab62cf2b9d7f76e",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "tag:#C-Minor-Chord",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "e862b929dc1607c7",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          },
+          {
+            "id": "411228fd0f7b9d84",
+            "type": "leaf",
+            "state": {
+              "type": "recent-files",
+              "state": {}
+            }
+          }
+        ]
+      },
+      {
+        "id": "24a8e0ac95208a45",
+        "type": "tabs",
+        "dimension": 19.627085377821395,
+        "children": [
+          {
+            "id": "18ced90f4a8cb5d8",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "🎸  Guitar/🎶 Songs/More than words.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "86528bf9373eaa45",
+        "type": "tabs",
+        "dimension": 19.627085377821395,
+        "children": [
+          {
+            "id": "2398c58abd3986d6",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "🎸  Guitar/🎶 Songs/More than words.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "b11300a48e4fc68e",
+        "type": "tabs",
+        "dimension": 19.627085377821395,
+        "children": [
+          {
+            "id": "4114c8f7461a0b6b",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "fab669439fd55c1a",
+    "type": "split",
+    "children": [
+      {
+        "id": "c53a679cce433eb0",
+        "type": "tabs",
+        "dimension": 50.289575289575296,
+        "children": [
+          {
+            "id": "87b97b9559726802",
+            "type": "leaf",
+            "state": {
+              "type": "quiet-outline",
+              "state": {}
+            }
+          },
+          {
+            "id": "e0921e1243adb962",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "🎸  Guitar/🎶 Songs/More than words.md"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "41dd47b9adc82cd2",
+        "type": "tabs",
+        "dimension": 49.71042471042471,
+        "children": [
+          {
+            "id": "1db6ac6344544f63",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 337.5
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "daily-notes:Open today's daily note": false,
+      "canvas:Create new canvas": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "audio-recorder:Start/stop recording": false,
+      "workspaces:Manage workspace layouts": false,
+      "templater-obsidian:Templater": false,
+      "cmdr:Add internal link": false,
+      "cmdr:Add tag": false,
+      "cmdr:Toggle heading": false,
+      "cmdr:Insert attachment": false,
+      "cmdr:Toggle bullet list": false,
+      "cmdr:Toggle numbered list": false,
+      "cmdr:Toggle checkbox status": false,
+      "cmdr:Toggle bold": false,
+      "cmdr:Toggle italics": false,
+      "cmdr:Toggle highlight": false,
+      "cmdr:Templates: Insert current date": false,
+      "cmdr:Templater: Open Insert Template modal": false
+    }
+  },
+  "active": "7656d58b49a45c31",
+  "lastOpenFiles": [
+    "♬ Chord Library/C-Minor Chord.md",
+    "2023-12-30.md",
+    "🎸  Guitar/🎶 Songs/More than words.md",
+    "♬ Chord Library/E Minor Chord.md",
+    "♬ Chord Library/G Major Chord.md",
+    "♬ Chord Library/G-7-Chord.md",
+    "♬ Chord Library/C Major Chord.md",
+    "♬ Chord Library/A Minor 7 Chord.md",
+    "Recipes/🍚 Rice/🍚 Rice.md",
+    "Recipes/Recipes.md",
+    "♬ Chord Library/D 7 Chord.md",
+    "♬ Chord Library/G 7 Chord.md",
+    "Recipes/🍚 Rice/Rice Cooker Instructions.md",
+    "Recipes/🍚 Rice/RC1211-IB-ENweb.pdf",
+    "Recipes/Mexican Food/Mexican Food.md",
+    "Recipes/Mexican Food/🌮 Tacos/🌮 Tacos.md",
+    "Recipes/Untitled.canvas",
+    "Recipes/🍚 Rice",
+    "Recipes/Mexican Food/🌮 Tacos/Korean Tacos 🌮.md",
+    "Recipes/Mexican Food/🌮 Tacos",
+    "Recipes/Mexican Food/🌮 Tacos",
+    "Recipes/Mexican Food/Taco's.md",
+    "Recipes/Mexican Food",
+    "🍲 %%Recipes%%/Mexican Food.md",
+    "♬ Chord Library/D Over F Sharp Chord.md",
+    "♯ Hash Tags/D F-Sharp.md",
+    "♬ Chord Library/D Chord.md",
+    "D Over F.md",
+    "D/F.md",
+    "D",
+    "♯ Hash Tags/D-Chord.md",
+    "♯ Hash Tags",
+    "🎸  Guitar/♬ Chord Library/E-Minor-Chord.md",
+    "Part.md",
+    "🍲 %%Recipes%%/food index",
+    "Recipes",
+    "♬ Chord Library"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "showInstructions": true,
+  "showDeletePrompt": true,
+  "saveOnSwitch": false,
+  "saveOnChange": false,
+  "workspaceSettings": false,
+  "systemDarkMode": false,
+  "globalSettings": {
+    "accentColor": "",
+    "cssTheme": "Minimal",
+    "theme": "obsidian",
+    "attachmentFolderPath": "Assets",
+    "alwaysUpdateLinks": true,
+    "showUnsupportedFiles": true,
+    "interfaceFontFamily": "",
+    "textFontFamily": ""
+  },
+  "activeWorkspaceDesktop": "🎸 🎶 Songs",
+  "activeWorkspaceMobile": "",
+  "reloadLivePreview": false,
+  "workspaceSwitcherRibbon": false,
+  "modeSwitcherRibbon": false,
+  "replaceNativeRibbon": false
+}

@@ -1,0 +1,133 @@
+{
+  "version": 2,
+  "confirmDeletion": false,
+  "showDescriptions": false,
+  "showSourcesForDuplicates": true,
+  "debug": false,
+  "mainTrigger": "/",
+  "extraTriggers": [],
+  "useExtraTriggers": false,
+  "triggerOnlyOnNewLine": false,
+  "queryPattern": {},
+  "bindings": [
+    {
+      "id": "editor:insert-wikilink",
+      "icon": "bracket-glyph",
+      "name": "Add internal link",
+      "mode": "any",
+      "chosen": false,
+      "selected": false,
+      "action": "editor:insert-wikilink"
+    },
+    {
+      "id": "editor:insert-tag",
+      "icon": "lucide-tag",
+      "name": "Add tag",
+      "mode": "any",
+      "chosen": false,
+      "selected": false,
+      "action": "editor:insert-tag"
+    },
+    {
+      "id": "editor:set-heading-1",
+      "icon": "heading-glyph",
+      "name": "Set as heading 1",
+      "mode": "any",
+      "chosen": false,
+      "selected": false,
+      "action": "editor:set-heading-1"
+    },
+    {
+      "id": "editor:set-heading-2",
+      "icon": "heading-glyph",
+      "name": "Set as heading 2",
+      "mode": "any",
+      "chosen": false,
+      "selected": false,
+      "action": "editor:set-heading-2"
+    },
+    {
+      "id": "editor:set-heading-3",
+      "icon": "heading-glyph",
+      "name": "Set as heading 3",
+      "mode": "any",
+      "chosen": false,
+      "selected": false,
+      "action": "editor:set-heading-3"
+    },
+    {
+      "id": "editor:set-heading-4",
+      "icon": "heading-glyph",
+      "name": "Set as heading 4",
+      "mode": "any",
+      "chosen": false,
+      "selected": false,
+      "action": "editor:set-heading-4"
+    },
+    {
+      "id": "editor:set-heading-5",
+      "icon": "heading-glyph",
+      "name": "Set as heading 5",
+      "mode": "any",
+      "chosen": false,
+      "selected": false,
+      "action": "editor:set-heading-5"
+    },
+    {
+      "id": "editor:set-heading-6",
+      "icon": "heading-glyph",
+      "name": "Set as heading 6",
+      "mode": "any",
+      "chosen": false,
+      "selected": false,
+      "action": "editor:set-heading-6"
+    },
+    {
+      "id": "editor:toggle-bullet-list",
+      "icon": "lucide-list",
+      "name": "Toggle bullet list",
+      "mode": "any",
+      "chosen": false,
+      "selected": false,
+      "action": "editor:toggle-bullet-list"
+    },
+    {
+      "id": "editor:toggle-numbered-list",
+      "icon": "lucide-list-ordered",
+      "name": "Toggle numbered list",
+      "mode": "any",
+      "chosen": false,
+      "selected": false,
+      "action": "editor:toggle-numbered-list"
+    },
+    {
+      "id": "editor:insert-embed",
+      "icon": "lucide-sticky-note",
+      "name": "Add embed",
+      "mode": "any",
+      "chosen": false,
+      "selected": false,
+      "action": "editor:insert-embed"
+    },
+    {
+      "name": "Attachment",
+      "id": "editor:attach-file",
+      "icon": "paperclip",
+      "mode": "any",
+      "triggerMode": "anywhere",
+      "chosen": false,
+      "selected": false,
+      "action": "editor:attach-file"
+    },
+    {
+      "name": "Template",
+      "id": "templater-obsidian:insert-templater",
+      "icon": "book-copy",
+      "mode": "any",
+      "triggerMode": "anywhere",
+      "chosen": false,
+      "selected": false,
+      "action": "templater-obsidian:insert-templater"
+    }
+  ]
+}

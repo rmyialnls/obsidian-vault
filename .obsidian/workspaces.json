@@ -1,0 +1,765 @@
+{
+  "workspaces": {
+    "🦅 Eagle's Nest": {
+      "main": {
+        "id": "f3fe9edfcce3720e",
+        "type": "split",
+        "children": [
+          {
+            "id": "b6cb324fb7423974",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "fbd1bc6031e9c008",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "🎸  Guitar/More than words.md",
+                    "mode": "source",
+                    "source": false
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "vertical"
+      },
+      "left": {
+        "id": "fcbb84da0a091320",
+        "type": "split",
+        "children": [
+          {
+            "id": "b2324e5cdb61d566",
+            "type": "tabs",
+            "dimension": 46.76470588235294,
+            "children": [
+              {
+                "id": "53600ca58189da95",
+                "type": "leaf",
+                "state": {
+                  "type": "file-explorer",
+                  "state": {
+                    "sortOrder": "alphabetical"
+                  }
+                }
+              },
+              {
+                "id": "7ab62cf2b9d7f76e",
+                "type": "leaf",
+                "state": {
+                  "type": "search",
+                  "state": {
+                    "query": "",
+                    "matchingCase": false,
+                    "explainSearch": false,
+                    "collapseAll": false,
+                    "extraContext": false,
+                    "sortOrder": "alphabetical"
+                  }
+                }
+              },
+              {
+                "id": "e862b929dc1607c7",
+                "type": "leaf",
+                "state": {
+                  "type": "bookmarks",
+                  "state": {}
+                }
+              },
+              {
+                "id": "411228fd0f7b9d84",
+                "type": "leaf",
+                "state": {
+                  "type": "recent-files",
+                  "state": {}
+                }
+              }
+            ]
+          },
+          {
+            "id": "86528bf9373eaa45",
+            "type": "tabs",
+            "dimension": 28.137254901960784,
+            "children": [
+              {
+                "id": "2398c58abd3986d6",
+                "type": "leaf",
+                "state": {
+                  "type": "backlink",
+                  "state": {
+                    "file": "🎸  Guitar/More than words.md",
+                    "collapseAll": false,
+                    "extraContext": false,
+                    "sortOrder": "alphabetical",
+                    "showSearch": false,
+                    "searchQuery": "",
+                    "backlinkCollapsed": false,
+                    "unlinkedCollapsed": true
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "b11300a48e4fc68e",
+            "type": "tabs",
+            "dimension": 25.098039215686274,
+            "children": [
+              {
+                "id": "4114c8f7461a0b6b",
+                "type": "leaf",
+                "state": {
+                  "type": "tag",
+                  "state": {
+                    "sortOrder": "frequency",
+                    "useHierarchy": true
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "horizontal",
+        "width": 300
+      },
+      "right": {
+        "id": "fab669439fd55c1a",
+        "type": "split",
+        "children": [
+          {
+            "id": "c53a679cce433eb0",
+            "type": "tabs",
+            "dimension": 58.03921568627452,
+            "children": [
+              {
+                "id": "18ced90f4a8cb5d8",
+                "type": "leaf",
+                "state": {
+                  "type": "outgoing-link",
+                  "state": {
+                    "file": "🎸  Guitar/More than words.md",
+                    "linksCollapsed": false,
+                    "unlinkedCollapsed": true
+                  }
+                }
+              },
+              {
+                "id": "87b97b9559726802",
+                "type": "leaf",
+                "state": {
+                  "type": "quiet-outline",
+                  "state": {}
+                }
+              }
+            ],
+            "currentTab": 1
+          },
+          {
+            "id": "41dd47b9adc82cd2",
+            "type": "tabs",
+            "dimension": 41.96078431372549,
+            "children": [
+              {
+                "id": "1db6ac6344544f63",
+                "type": "leaf",
+                "state": {
+                  "type": "graph",
+                  "state": {}
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "horizontal",
+        "width": 430.5
+      },
+      "left-ribbon": {
+        "hiddenItems": {
+          "switcher:Open quick switcher": false,
+          "graph:Open graph view": false,
+          "canvas:Create new canvas": false,
+          "daily-notes:Open today's daily note": false,
+          "templates:Insert template": false,
+          "command-palette:Open command palette": false,
+          "cmdr:Add internal link": false,
+          "cmdr:Add tag": false,
+          "cmdr:Toggle heading": false,
+          "cmdr:Insert attachment": false,
+          "cmdr:Toggle bullet list": false,
+          "cmdr:Toggle numbered list": false,
+          "cmdr:Toggle checkbox status": false,
+          "cmdr:Toggle bold": false,
+          "cmdr:Toggle italics": false,
+          "cmdr:Toggle highlight": false,
+          "audio-recorder:Start/stop recording": false,
+          "workspaces:Manage workspace layouts": false,
+          "workspaces-plus:Manage workspaces": false
+        }
+      },
+      "active": "fbd1bc6031e9c008",
+      "workspaces-plus:settings-v1": {
+        "explorerFoldState": [
+          "🎸  Guitar"
+        ]
+      }
+    },
+    "🎸 Guitar 🎸": {
+      "main": {
+        "id": "f3fe9edfcce3720e",
+        "type": "split",
+        "children": [
+          {
+            "id": "fcdc0b802a0a6b9b",
+            "type": "split",
+            "children": [
+              {
+                "id": "3859ce778f58699f",
+                "type": "tabs",
+                "children": [
+                  {
+                    "id": "d6cadc7a2f9d73d4",
+                    "type": "leaf",
+                    "state": {
+                      "type": "mk-space",
+                      "state": {
+                        "path": "🎸 Song Library"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "abd157c3737dcdd6",
+                "type": "tabs",
+                "children": [
+                  {
+                    "id": "07c7f88c0d8f8561",
+                    "type": "leaf",
+                    "state": {
+                      "type": "mk-space",
+                      "state": {
+                        "path": "♬ Chord Library"
+                      }
+                    }
+                  }
+                ]
+              }
+            ],
+            "direction": "horizontal"
+          }
+        ],
+        "direction": "vertical"
+      },
+      "left": {
+        "id": "fcbb84da0a091320",
+        "type": "split",
+        "children": [
+          {
+            "id": "b2324e5cdb61d566",
+            "type": "tabs",
+            "dimension": 42.14079074252651,
+            "children": [
+              {
+                "id": "53600ca58189da95",
+                "type": "leaf",
+                "state": {
+                  "type": "file-explorer",
+                  "state": {
+                    "sortOrder": "alphabetical"
+                  }
+                }
+              },
+              {
+                "id": "7ab62cf2b9d7f76e",
+                "type": "leaf",
+                "state": {
+                  "type": "search",
+                  "state": {
+                    "query": "",
+                    "matchingCase": false,
+                    "explainSearch": false,
+                    "collapseAll": false,
+                    "extraContext": false,
+                    "sortOrder": "alphabetical"
+                  }
+                }
+              },
+              {
+                "id": "e862b929dc1607c7",
+                "type": "leaf",
+                "state": {
+                  "type": "bookmarks",
+                  "state": {}
+                }
+              },
+              {
+                "id": "411228fd0f7b9d84",
+                "type": "leaf",
+                "state": {
+                  "type": "recent-files",
+                  "state": {}
+                }
+              },
+              {
+                "id": "4fcbd5b8ecaeba7e",
+                "type": "leaf",
+                "state": {
+                  "type": "file-explorer",
+                  "state": {
+                    "sortOrder": "alphabetical"
+                  }
+                }
+              },
+              {
+                "id": "8fffa7fb4a4a31f2",
+                "type": "leaf",
+                "state": {
+                  "type": "mk-path-view",
+                  "state": {}
+                }
+              }
+            ],
+            "currentTab": 5
+          },
+          {
+            "id": "fdfe8ddf037398a2",
+            "type": "tabs",
+            "dimension": 19.286403085824496,
+            "children": [
+              {
+                "id": "4114c8f7461a0b6b",
+                "type": "leaf",
+                "state": {
+                  "type": "tag",
+                  "state": {
+                    "sortOrder": "frequency",
+                    "useHierarchy": true
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "86528bf9373eaa45",
+            "type": "tabs",
+            "dimension": 19.286403085824496,
+            "children": [
+              {
+                "id": "2398c58abd3986d6",
+                "type": "leaf",
+                "state": {
+                  "type": "backlink",
+                  "state": {
+                    "collapseAll": false,
+                    "extraContext": false,
+                    "sortOrder": "alphabetical",
+                    "showSearch": false,
+                    "searchQuery": "",
+                    "backlinkCollapsed": false,
+                    "unlinkedCollapsed": true
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "c7282add1c3f8661",
+            "type": "tabs",
+            "dimension": 19.286403085824496,
+            "children": [
+              {
+                "id": "690ca4026e74a6e1",
+                "type": "leaf",
+                "state": {
+                  "type": "outgoing-link",
+                  "state": {
+                    "linksCollapsed": false,
+                    "unlinkedCollapsed": true
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "horizontal",
+        "width": 300
+      },
+      "right": {
+        "id": "fab669439fd55c1a",
+        "type": "split",
+        "children": [
+          {
+            "id": "086f1a6337418448",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "87b97b9559726802",
+                "type": "leaf",
+                "state": {
+                  "type": "quiet-outline",
+                  "state": {}
+                }
+              }
+            ]
+          },
+          {
+            "id": "d61ad0ca2d14beab",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "efd8cd7b04bbe942",
+                "type": "leaf",
+                "state": {
+                  "type": "Strange New Worlds",
+                  "state": {}
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "horizontal",
+        "width": 417.5
+      },
+      "left-ribbon": {
+        "hiddenItems": {
+          "obsidian-custom-frames:Open Google Keep": false,
+          "3d-graph-new:Global 3D Graph": false,
+          "hide-folders:Show hidden folders": false,
+          "recipe-view:Toggle recipe view": false,
+          "cmdr:Templater: Open Insert Template modal": false,
+          "cmdr:Templates: Insert current date": false,
+          "cmdr:Add embed": false,
+          "templater-obsidian:Templater": false,
+          "switcher:Open quick switcher": false,
+          "graph:Open graph view": false,
+          "canvas:Create new canvas": false,
+          "daily-notes:Open today's daily note": false,
+          "templates:Insert template": false,
+          "command-palette:Open command palette": false,
+          "cmdr:Add internal link": false,
+          "cmdr:Add tag": false,
+          "cmdr:Toggle heading": false,
+          "cmdr:Insert attachment": false,
+          "cmdr:Toggle bullet list": false,
+          "cmdr:Toggle numbered list": false,
+          "cmdr:Toggle checkbox status": false,
+          "cmdr:Toggle bold": false,
+          "cmdr:Toggle italics": false,
+          "cmdr:Toggle highlight": false,
+          "audio-recorder:Start/stop recording": false,
+          "workspaces:Manage workspace layouts": false
+        }
+      },
+      "active": "8fffa7fb4a4a31f2",
+      "workspaces-plus:settings-v1": {
+        "explorerFoldState": [
+          "🎸 Song Library"
+        ]
+      }
+    },
+    "🎸 🎶 Songs": {
+      "main": {
+        "id": "f3fe9edfcce3720e",
+        "type": "split",
+        "children": [
+          {
+            "id": "3859ce778f58699f",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "d6cadc7a2f9d73d4",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "🎸 Song Library/banana pancakes.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
+              },
+              {
+                "id": "e89fb5d8a1c9b65a",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "🎸 Song Library/Blackbird.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
+              },
+              {
+                "id": "690a852624b86447",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "🎸 Song Library/Grow old with you.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
+              },
+              {
+                "id": "f26253f71a3ba519",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "🎸 Song Library/Wish You Were Here Rhythm.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
+              },
+              {
+                "id": "a08b97af9c02ce0f",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "🎸 Song Library/Wish you were hear solo.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
+              },
+              {
+                "id": "62bc7c63f8d7b3aa",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "🎸 Song Library/More than words.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "vertical"
+      },
+      "left": {
+        "id": "fcbb84da0a091320",
+        "type": "split",
+        "children": [
+          {
+            "id": "b2324e5cdb61d566",
+            "type": "tabs",
+            "dimension": 42.14079074252651,
+            "children": [
+              {
+                "id": "53600ca58189da95",
+                "type": "leaf",
+                "state": {
+                  "type": "file-explorer",
+                  "state": {
+                    "sortOrder": "alphabetical"
+                  }
+                }
+              },
+              {
+                "id": "7ab62cf2b9d7f76e",
+                "type": "leaf",
+                "state": {
+                  "type": "search",
+                  "state": {
+                    "query": "",
+                    "matchingCase": false,
+                    "explainSearch": false,
+                    "collapseAll": false,
+                    "extraContext": false,
+                    "sortOrder": "alphabetical"
+                  }
+                }
+              },
+              {
+                "id": "e862b929dc1607c7",
+                "type": "leaf",
+                "state": {
+                  "type": "bookmarks",
+                  "state": {}
+                }
+              },
+              {
+                "id": "411228fd0f7b9d84",
+                "type": "leaf",
+                "state": {
+                  "type": "recent-files",
+                  "state": {}
+                }
+              },
+              {
+                "id": "4fcbd5b8ecaeba7e",
+                "type": "leaf",
+                "state": {
+                  "type": "file-explorer",
+                  "state": {
+                    "sortOrder": "alphabetical"
+                  }
+                }
+              },
+              {
+                "id": "8fffa7fb4a4a31f2",
+                "type": "leaf",
+                "state": {
+                  "type": "mk-path-view",
+                  "state": {}
+                }
+              }
+            ],
+            "currentTab": 5
+          },
+          {
+            "id": "fdfe8ddf037398a2",
+            "type": "tabs",
+            "dimension": 19.286403085824496,
+            "children": [
+              {
+                "id": "4114c8f7461a0b6b",
+                "type": "leaf",
+                "state": {
+                  "type": "tag",
+                  "state": {
+                    "sortOrder": "frequency",
+                    "useHierarchy": true
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "86528bf9373eaa45",
+            "type": "tabs",
+            "dimension": 19.286403085824496,
+            "children": [
+              {
+                "id": "2398c58abd3986d6",
+                "type": "leaf",
+                "state": {
+                  "type": "backlink",
+                  "state": {
+                    "file": "🎸 Song Library/banana pancakes.md",
+                    "collapseAll": false,
+                    "extraContext": false,
+                    "sortOrder": "alphabetical",
+                    "showSearch": false,
+                    "searchQuery": "",
+                    "backlinkCollapsed": false,
+                    "unlinkedCollapsed": true
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "c7282add1c3f8661",
+            "type": "tabs",
+            "dimension": 19.286403085824496,
+            "children": [
+              {
+                "id": "690ca4026e74a6e1",
+                "type": "leaf",
+                "state": {
+                  "type": "outgoing-link",
+                  "state": {
+                    "file": "🎸 Song Library/banana pancakes.md",
+                    "linksCollapsed": false,
+                    "unlinkedCollapsed": true
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "horizontal",
+        "width": 200
+      },
+      "right": {
+        "id": "fab669439fd55c1a",
+        "type": "split",
+        "children": [
+          {
+            "id": "086f1a6337418448",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "87b97b9559726802",
+                "type": "leaf",
+                "state": {
+                  "type": "quiet-outline",
+                  "state": {}
+                }
+              }
+            ]
+          },
+          {
+            "id": "d61ad0ca2d14beab",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "efd8cd7b04bbe942",
+                "type": "leaf",
+                "state": {
+                  "type": "Strange New Worlds",
+                  "state": {}
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "horizontal",
+        "width": 276.5
+      },
+      "left-ribbon": {
+        "hiddenItems": {
+          "obsidian-custom-frames:Open Google Keep": false,
+          "3d-graph-new:Global 3D Graph": false,
+          "hide-folders:Show hidden folders": false,
+          "recipe-view:Toggle recipe view": false,
+          "cmdr:Templater: Open Insert Template modal": false,
+          "cmdr:Templates: Insert current date": false,
+          "cmdr:Add embed": false,
+          "templater-obsidian:Templater": false,
+          "switcher:Open quick switcher": false,
+          "graph:Open graph view": false,
+          "canvas:Create new canvas": false,
+          "daily-notes:Open today's daily note": false,
+          "templates:Insert template": false,
+          "command-palette:Open command palette": false,
+          "cmdr:Add internal link": false,
+          "cmdr:Add tag": false,
+          "cmdr:Toggle heading": false,
+          "cmdr:Insert attachment": false,
+          "cmdr:Toggle bullet list": false,
+          "cmdr:Toggle numbered list": false,
+          "cmdr:Toggle checkbox status": false,
+          "cmdr:Toggle bold": false,
+          "cmdr:Toggle italics": false,
+          "cmdr:Toggle highlight": false,
+          "audio-recorder:Start/stop recording": false,
+          "workspaces:Manage workspace layouts": false
+        }
+      },
+      "active": "d6cadc7a2f9d73d4",
+      "workspaces-plus:settings-v1": {
+        "explorerFoldState": [
+          "🎸 Song Library"
+        ]
+      }
+    }
+  },
+  "active": "🎸 🎶 Songs"
+}

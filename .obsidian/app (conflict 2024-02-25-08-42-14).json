@@ -1,0 +1,9 @@
+{
+  "attachmentFolderPath": "Assets",
+  "alwaysUpdateLinks": true,
+  "showUnsupportedFiles": true,
+  "showLineNumber": true,
+  "promptDelete": false,
+  "showInlineTitle": false,
+  "readableLineLength": false
+}

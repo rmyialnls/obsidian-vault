@@ -1,0 +1,54 @@
+{
+  "confirmDeletion": true,
+  "showAddCommand": true,
+  "debug": false,
+  "editorMenu": [
+    {
+      "id": "make-md:mk-spaces",
+      "icon": "align-center-horizontal",
+      "name": "MAKE.md: Open Spaces",
+      "mode": "any"
+    },
+    {
+      "id": "insert-template",
+      "icon": "lucide-copy",
+      "name": "Templates: Insert template",
+      "mode": "any"
+    },
+    {
+      "id": "make-md:mk-reveal-file",
+      "icon": "bug",
+      "name": "song library",
+      "mode": "any"
+    },
+    {
+      "id": "obsidian-quiet-outline:quiet-outline",
+      "icon": "align-center",
+      "name": "Quiet Outline: Quiet Outline",
+      "mode": "any"
+    }
+  ],
+  "fileMenu": [],
+  "leftRibbon": [],
+  "rightRibbon": [],
+  "titleBar": [],
+  "statusBar": [],
+  "pageHeader": [],
+  "macros": [],
+  "explorer": [],
+  "hide": {
+    "statusbar": [],
+    "leftRibbon": []
+  },
+  "spacing": 8,
+  "advancedToolbar": {
+    "rowHeight": 48,
+    "rowCount": 1,
+    "spacing": 0,
+    "buttonWidth": 48,
+    "columnLayout": false,
+    "mappedIcons": [],
+    "tooltips": false,
+    "heightOffset": 0
+  }
+}

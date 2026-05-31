@@ -1,0 +1,38 @@
+{
+  "frames": [
+    {
+      "url": "https://keep.google.com",
+      "displayName": "Google Keep",
+      "icon": "files",
+      "hideOnMobile": true,
+      "addRibbonIcon": true,
+      "openInCenter": true,
+      "zoomLevel": 1,
+      "forceIframe": true,
+      "customCss": "/* hide the menu bar and the \"Keep\" text */\nhtml > body > div:nth-child(2) > div:nth-child(2) > div:first-child,\nhtml > body > div:first-child > header:first-child > div > div:first-child > div > div:first-child > a:first-child > span {\n\tdisplay: none !important;\n}"
+    },
+    {
+      "url": "https://youtu.be/UrIiLvg58SY?si=7Vp08Ue4McMv_ECO",
+      "displayName": "more than words official  video",
+      "icon": "",
+      "hideOnMobile": true,
+      "addRibbonIcon": false,
+      "openInCenter": false,
+      "zoomLevel": 1,
+      "forceIframe": false,
+      "customCss": ""
+    },
+    {
+      "url": "https://rmyialnls.imgur.com/all",
+      "displayName": "imgur",
+      "icon": "",
+      "hideOnMobile": true,
+      "addRibbonIcon": true,
+      "openInCenter": true,
+      "zoomLevel": 1,
+      "forceIframe": true,
+      "customCss": ""
+    }
+  ],
+  "padding": 5
+}

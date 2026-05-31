@@ -1,0 +1,14 @@
+{
+	"nodes":[
+		{"id":"f200ef4bdda555d2","type":"text","text":"Cho","x":1459,"y":671,"width":250,"height":60},
+		{"id":"db12527305a82a44","type":"link","url":"https://adilo.bigcommand.com/project/vyrfK5L_/videos","x":820,"y":-1240,"width":1460,"height":1460},
+		{"id":"48dca89ca4d2915f","type":"link","url":"https://www.scales-chords.com/chord/guitar/","x":854,"y":400,"width":1460,"height":1460,"color":"#fafafa"},
+		{"id":"df6e09b45b6376b2","type":"link","url":"https://real-debrid.com/downloader","x":854,"y":2000,"width":1460,"height":1460},
+		{"id":"817728d57e1d485e","type":"link","url":"https://www.youtube.com/","x":-960,"y":2000,"width":1460,"height":1460},
+		{"id":"dc7250bb185e26bc","type":"link","url":"https://www.totalguitarandbass.com/chords/guitar","x":-960,"y":400,"width":1460,"height":1460},
+		{"id":"fb9e2b7134ad489d","type":"link","url":"https://rmyialnls.imgur.com/all","x":-960,"y":-1240,"width":1460,"height":1460}
+	],
+	"edges":[
+		{"id":"2673bd051fd1e70a","fromNode":"db12527305a82a44","fromSide":"left","toNode":"fb9e2b7134ad489d","toSide":"right","fromEnd":"arrow"}
+	]
+}

@@ -1,0 +1,368 @@
+{
+  "main": {
+    "id": "f3fe9edfcce3720e",
+    "type": "split",
+    "children": [
+      {
+        "id": "1ab64c6eab65296e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "59db16ff52d67f03",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "🎸 Song Library/Blackbird.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "f6487e08f965bc6c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "🎸 Song Library/More than words.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "a564cadffaf2c8c2",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "🎸 Song Library/Grow old with you.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "418013bb90df8aa5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "🎸 Song Library/Wish You Were Here Rhythm.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "1df028004dc6a8d3",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "🎸 Song Library/Wish you were hear solo.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "b1c939d654d3ad8a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "🎸 Song Library/banana pancakes.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "b155daa6f02cdf13",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "Editing Portal.canvas",
+                "viewState": {
+                  "x": 720,
+                  "y": 930,
+                  "zoom": -2.006760884733446
+                }
+              }
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "fcbb84da0a091320",
+    "type": "split",
+    "children": [
+      {
+        "id": "b2324e5cdb61d566",
+        "type": "tabs",
+        "dimension": 42.14079074252651,
+        "children": [
+          {
+            "id": "53600ca58189da95",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "7ab62cf2b9d7f76e",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "a",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "e862b929dc1607c7",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          },
+          {
+            "id": "4fcbd5b8ecaeba7e",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "29baf296a0481ca7",
+            "type": "leaf",
+            "state": {
+              "type": "mk-path-view",
+              "state": {}
+            }
+          },
+          {
+            "id": "2d352dcae486f15b",
+            "type": "leaf",
+            "state": {
+              "type": "recent-files",
+              "state": {}
+            }
+          }
+        ],
+        "currentTab": 4
+      },
+      {
+        "id": "fdfe8ddf037398a2",
+        "type": "tabs",
+        "dimension": 19.286403085824496,
+        "children": [
+          {
+            "id": "4114c8f7461a0b6b",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "86528bf9373eaa45",
+        "type": "tabs",
+        "dimension": 19.286403085824496,
+        "children": [
+          {
+            "id": "2398c58abd3986d6",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "🎸 Song Library/Wish you were hear solo.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "c7282add1c3f8661",
+        "type": "tabs",
+        "dimension": 19.286403085824496,
+        "children": [
+          {
+            "id": "690ca4026e74a6e1",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "🎸 Song Library/Wish you were hear solo.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "fab669439fd55c1a",
+    "type": "split",
+    "children": [
+      {
+        "id": "722ca50bf9ad9a7c",
+        "type": "tabs",
+        "dimension": 48.02259887005649,
+        "children": [
+          {
+            "id": "d18599d4400ab846",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              }
+            }
+          },
+          {
+            "id": "bdbc27266e13fd6b",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "🎸 Song Library/Wish you were hear solo.md"
+              }
+            }
+          },
+          {
+            "id": "56be8d0b9baf5cc9",
+            "type": "leaf",
+            "state": {
+              "type": "quiet-outline",
+              "state": {}
+            }
+          }
+        ],
+        "currentTab": 2
+      },
+      {
+        "id": "ce6478d8cfa963ca",
+        "type": "tabs",
+        "dimension": 51.97740112994351,
+        "children": [
+          {
+            "id": "efd8cd7b04bbe942",
+            "type": "leaf",
+            "state": {
+              "type": "Strange New Worlds",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "markdown-importer:Open format converter": false,
+      "zk-prefixer:Create new unique note": false,
+      "random-note:Open random note": false,
+      "publish:Publish changes...": false,
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "audio-recorder:Start/stop recording": false,
+      "recipe-view:Toggle recipe view": false,
+      "hide-folders:Show hidden folders": false,
+      "templater-obsidian:Templater": false
+    }
+  },
+  "active": "1df028004dc6a8d3",
+  "lastOpenFiles": [
+    "🎸 Song Library/Wish You Were Here Rhythm.md",
+    "Spaces/Home",
+    "Spaces",
+    "🎸 Song Library/Wish you were hear solo.md",
+    "🎸 Song Library/Grow old with you.md",
+    "🎸 Song Library/More than words.md",
+    "🎸 Song Library/Blackbird.md",
+    "🎸 Song Library/banana pancakes.md",
+    "Assets/Extreme - More Than Words.pdf",
+    "Assets/Blackbird  PDF.md",
+    "Assets/Banana Pancakes - G Major - MN0283085.pdf",
+    "Assets/Untitled.md",
+    "Untitled.md",
+    "French/Rules.md",
+    "Editing Portal.canvas",
+    "French/Basics.md",
+    "♬ Chord Library/F Chords/F Chord.md",
+    "2024-02-09.md",
+    "Untitled.canvas",
+    "🎸 Song Library/🎸 Song Library.md",
+    "2024-02-09 (1).md",
+    "Untitled (1).canvas",
+    "🎸 Song Library/Grow old with you (conflict 2024-01-30-21-35-02).md",
+    "♬ Chord Library/D Chords/D 7 Chord.md",
+    "♬ Chord Library/G Chords/G Major Chord.md",
+    "♬ Chord Library/G Chords/G Chords.md",
+    "Physiotherapy/MMT Lower Body.md",
+    "Physiotherapy/MMT Upper Body.md",
+    "Physiotherapy",
+    "Spanish",
+    "Guitar",
+    "French",
+    "Piano",
+    "♬ Chord Library/A Cords/A7  Sus4 Chord.md",
+    "♬ Chord Library/A Cords/A Major Chord.md",
+    "♬ Chord Library/♬ Chord Library.md",
+    "♬ Chord Library/G Chords/G Major Barre Chord.md",
+    "🎸 Song Library/Big Black Car",
+    "🎸 Song Library/Song Canvas.canvas",
+    "Untitled 1.canvas",
+    "Recipes/Untitled.canvas"
+  ]
+}

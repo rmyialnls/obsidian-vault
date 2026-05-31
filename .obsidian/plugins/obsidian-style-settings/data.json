@@ -1,0 +1,8 @@
+{
+  "minimal-style@@image-radius": 14,
+  "minimal-style@@image-grid-fit": "contain",
+  "recipe-view@@thumbnail-size": 300,
+  "minimal-style@@sidebar-tabs-style": "sidebar-tabs-default",
+  "minimal-advanced@@styled-scrollbars": false,
+  "minimal-advanced@@hide-markdown": false
+}
