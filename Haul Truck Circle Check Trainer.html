@@ -81,113 +81,116 @@
       <svg id="truck" viewBox="0 0 760 1040" role="img" aria-label="Top-down haul truck diagram from the EVR circle check sheet">
         <g id="viewport">
           <rect x="0" y="0" width="760" height="1040" fill="#f6f2e8"/>
-          <!-- ===== FRONT (top): ladder, deck, radiator ===== -->
-          <rect x="214" y="46" width="40" height="52" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <line x1="214" y1="63" x2="254" y2="63" stroke="#2b3547" stroke-width="1.8"/>
-          <line x1="214" y1="80" x2="254" y2="80" stroke="#2b3547" stroke-width="1.8"/>
-          <rect x="254" y="52" width="196" height="40" rx="4" fill="#e7e2d4" stroke="#2b3547" stroke-width="3"/>
-          <ellipse cx="340" cy="72" rx="66" ry="30" fill="none" stroke="#8a6f5a" stroke-width="2"/>
-          <rect x="452" y="58" width="86" height="74" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="7 4"/>
-          <!-- ===== ENGINE BLOCK ===== -->
-          <rect x="300" y="132" width="160" height="150" rx="8" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
-          <line x1="333" y1="144" x2="333" y2="270" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="366" y1="144" x2="366" y2="270" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="399" y1="144" x2="399" y2="270" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="432" y1="144" x2="432" y2="270" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="308" y1="180" x2="452" y2="180" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="308" y1="228" x2="452" y2="228" stroke="#2b3547" stroke-width="1.5"/>
-          <circle cx="470" cy="160" r="13" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <circle cx="470" cy="196" r="13" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- ================= FRONT ================= -->
+          <!-- ladder (driver side) + front deck -->
+          <rect x="206" y="48" width="46" height="58" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <line x1="206" y1="67" x2="252" y2="67" stroke="#2b3547" stroke-width="1.8"/>
+          <line x1="206" y1="86" x2="252" y2="86" stroke="#2b3547" stroke-width="1.8"/>
+          <rect x="252" y="54" width="200" height="44" rx="4" fill="#e7e2d4" stroke="#2b3547" stroke-width="3"/>
+          <ellipse cx="300" cy="76" rx="70" ry="34" fill="none" stroke="#8a6f5a" stroke-width="2"/>
+          <!-- radiator, front-centre ahead of engine -->
+          <rect x="404" y="104" width="92" height="76" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="7 4"/>
+          <!-- ================= ENGINE ================= -->
+          <rect x="306" y="146" width="150" height="136" rx="6" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <line x1="337" y1="156" x2="337" y2="272" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="368" y1="156" x2="368" y2="272" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="399" y1="156" x2="399" y2="272" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="430" y1="156" x2="430" y2="272" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="314" y1="190" x2="448" y2="190" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="314" y1="234" x2="448" y2="234" stroke="#2b3547" stroke-width="1.5"/>
+          <!-- turbos -->
+          <circle cx="466" cy="196" r="14" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <circle cx="466" cy="234" r="14" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
           <!-- chassis rails -->
-          <rect x="336" y="282" width="88" height="600" fill="#eae5d7" stroke="#2b3547" stroke-width="3"/>
-          <!-- ===== FRONT TIRES ===== -->
-          <rect x="150" y="146" width="96" height="208" rx="34" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
-          <line x1="156" y1="202" x2="240" y2="202" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="156" y1="250" x2="240" y2="250" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="156" y1="298" x2="240" y2="298" stroke="#2b3547" stroke-width="1.5"/>
-          <rect x="514" y="146" width="96" height="208" rx="34" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
-          <line x1="520" y1="202" x2="604" y2="202" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="520" y1="250" x2="604" y2="250" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="520" y1="298" x2="604" y2="298" stroke="#2b3547" stroke-width="1.5"/>
-          <!-- front hydrair struts -->
-          <circle cx="266" cy="330" r="20" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <circle cx="494" cy="330" r="20" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <!-- ===== HORSE COLLAR + STEERING CROSS OVER ===== -->
-          <rect x="180" y="300" width="400" height="40" rx="6" fill="#e7e2d4" stroke="#2b3547" stroke-width="3"/>
-          <ellipse cx="380" cy="320" rx="112" ry="34" fill="none" stroke="#2b3547" stroke-width="2.5"/>
-          <!-- steering linkage: rods + 2 small joints (LEFT) -->
-          <line x1="246" y1="344" x2="316" y2="386" stroke="#2b3547" stroke-width="3"/>
-          <circle cx="286" cy="368" r="12" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <circle cx="316" cy="388" r="11" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <rect x="326" y="382" width="34" height="14" rx="6" fill="#efe9db" stroke="#2b3547" stroke-width="2"/>
-          <!-- ===== STEERING ACCUMULATORS - 2, LEFT ===== -->
-          <circle cx="300" cy="440" r="21" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
-          <circle cx="300" cy="482" r="21" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
-          <!-- ===== BRAKE ACCUMULATORS - 2, RIGHT ===== -->
-          <circle cx="462" cy="398" r="21" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
-          <circle cx="462" cy="440" r="21" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
-          <!-- ===== TRACTION ALTERNATOR (centre, behind engine) ===== -->
-          <circle cx="380" cy="440" r="30" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
-          <circle cx="380" cy="440" r="12" fill="none" stroke="#2b3547" stroke-width="2"/>
-          <!-- ===== FILTERS - 3 on the RIGHT (2 hoist upper, 1 steering lower) ===== -->
-          <circle cx="470" cy="506" r="14" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="5 4"/>
-          <circle cx="470" cy="540" r="14" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="5 4"/>
-          <circle cx="470" cy="574" r="14" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="5 4"/>
-          <!-- ===== PUMPS (centre) ===== -->
-          <rect x="344" y="506" width="32" height="52" rx="6" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <rect x="386" y="506" width="32" height="52" rx="6" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <!-- ===== HYDRAULIC TANK (LEFT) ===== -->
-          <circle cx="252" cy="576" r="46" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
-          <ellipse cx="246" cy="562" rx="16" ry="7" fill="none" stroke="#2b3547" stroke-width="2"/>
-          <circle cx="262" cy="588" r="10" fill="none" stroke="#2b3547" stroke-width="2"/>
-          <!-- ===== FUEL TANK (RIGHT) ===== -->
-          <rect x="496" y="600" width="112" height="120" rx="6" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
-          <circle cx="512" cy="616" r="7" fill="none" stroke="#2b3547" stroke-width="2"/>
-          <!-- ===== BLOWER TUBE (right of chassis) ===== -->
-          <rect x="436" y="612" width="96" height="22" rx="10" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <!-- ===== NOSE CONE (centre rear) ===== -->
-          <ellipse cx="380" cy="676" rx="56" ry="44" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
-          <polygon points="352,712 408,712 424,806 336,806" fill="#eae5d7" stroke="#2b3547" stroke-width="2.5"/>
-          <!-- grease points: 2 small devices LEFT of nose cone -->
-          <rect x="296" y="654" width="26" height="24" rx="4" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <rect x="296" y="692" width="26" height="24" rx="4" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <rect x="336" y="118" width="88" height="640" fill="#eae5d7" stroke="#2b3547" stroke-width="3"/>
+          <!-- ================= FRONT TIRES (T1 left / T2 right) ================= -->
+          <rect x="99" y="240" width="94" height="246" rx="36" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <line x1="105" y1="300" x2="187" y2="300" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="105" y1="363" x2="187" y2="363" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="105" y1="426" x2="187" y2="426" stroke="#2b3547" stroke-width="1.5"/>
+          <rect x="567" y="240" width="94" height="246" rx="36" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <line x1="573" y1="300" x2="655" y2="300" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="573" y1="363" x2="655" y2="363" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="573" y1="426" x2="655" y2="426" stroke="#2b3547" stroke-width="1.5"/>
+          <!-- ================= HORSE COLLAR + STEERING CROSS OVER ================= -->
+          <rect x="193" y="336" width="374" height="40" rx="6" fill="#e7e2d4" stroke="#2b3547" stroke-width="3"/>
+          <ellipse cx="380" cy="356" rx="106" ry="32" fill="none" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- front hydrair struts, one each side -->
+          <circle cx="243" cy="356" r="21" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <circle cx="517" cy="356" r="21" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- steering linkage (driver side) -->
+          <line x1="215" y1="380" x2="286" y2="404" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="262" cy="396" r="12" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <rect x="292" y="396" width="36" height="15" rx="7" fill="#efe9db" stroke="#2b3547" stroke-width="2"/>
+          <!-- ===== STEERING ACCUMULATORS: 2, LEFT ===== -->
+          <circle cx="266" cy="410" r="20" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="266" cy="452" r="20" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <!-- ===== BRAKE ACCUMULATORS: 2, RIGHT ===== -->
+          <circle cx="494" cy="390" r="20" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="494" cy="432" r="20" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <!-- ===== TRACTION ALTERNATOR: centre of chassis ===== -->
+          <rect x="344" y="410" width="72" height="46" rx="4" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <line x1="344" y1="424" x2="416" y2="424" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="344" y1="442" x2="416" y2="442" stroke="#2b3547" stroke-width="1.5"/>
+          <!-- ===== FILTERS: 3 on the RIGHT (2 hoist above, 1 steering below) ===== -->
+          <circle cx="484" cy="505" r="14" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="5 4"/>
+          <circle cx="484" cy="526" r="14" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="5 4"/>
+          <circle cx="484" cy="548" r="14" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="5 4"/>
+          <!-- ===== PUMPS: centre ===== -->
+          <rect x="346" y="500" width="30" height="44" rx="5" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <rect x="346" y="550" width="30" height="44" rx="5" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- ===== BLOWER TUBE: centre-left of chassis ===== -->
+          <rect x="392" y="524" width="26" height="76" rx="12" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- ===== HYDRAULIC TANK: big circle, LEFT ===== -->
+          <circle cx="255" cy="567" r="44" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <ellipse cx="249" cy="552" rx="16" ry="7" fill="none" stroke="#2b3547" stroke-width="2"/>
+          <circle cx="265" cy="580" r="11" fill="none" stroke="#2b3547" stroke-width="2"/>
+          <!-- ===== FUEL TANK: big rect, RIGHT ===== -->
+          <rect x="505" y="526" width="118" height="86" rx="5" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="521" cy="542" r="7" fill="none" stroke="#2b3547" stroke-width="2"/>
+          <!-- ===== NOSE CONE + A-FRAME ===== -->
+          <circle cx="380" cy="621" r="42" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <polygon points="352,656 408,656 424,758 336,758" fill="#eae5d7" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- grease points: 2, LEFT of nose cone -->
+          <rect x="298" y="600" width="28" height="26" rx="4" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <circle cx="312" cy="613" r="6" fill="none" stroke="#2b3547" stroke-width="2"/>
+          <rect x="298" y="646" width="28" height="26" rx="4" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <circle cx="312" cy="659" r="6" fill="none" stroke="#2b3547" stroke-width="2"/>
           <!-- hoist cylinders: RIGHT of nose cone -->
-          <rect x="440" y="652" width="20" height="56" rx="9" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <rect x="466" y="652" width="20" height="56" rx="9" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <!-- ===== REAR AXLE ===== -->
-          <rect x="214" y="738" width="332" height="48" rx="6" fill="#e7e2d4" stroke="#2b3547" stroke-width="3"/>
-          <!-- ===== REAR DUALS ===== -->
-          <rect x="106" y="690" width="80" height="232" rx="28" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
-          <rect x="192" y="690" width="80" height="232" rx="28" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
-          <rect x="488" y="690" width="80" height="232" rx="28" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
-          <rect x="574" y="690" width="80" height="232" rx="28" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
-          <line x1="112" y1="756" x2="180" y2="756" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="112" y1="820" x2="180" y2="820" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="112" y1="884" x2="180" y2="884" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="580" y1="756" x2="648" y2="756" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="580" y1="820" x2="648" y2="820" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="580" y1="884" x2="648" y2="884" stroke="#2b3547" stroke-width="1.5"/>
+          <rect x="440" y="596" width="22" height="60" rx="10" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <rect x="468" y="596" width="22" height="60" rx="10" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- ================= REAR ================= -->
+          <rect x="214" y="730" width="332" height="46" rx="6" fill="#e7e2d4" stroke="#2b3547" stroke-width="3"/>
+          <!-- rear duals: T3/T4 left, T5/T6 right -->
+          <rect x="151" y="676" width="73" height="258" rx="26" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <rect x="234" y="676" width="73" height="258" rx="26" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <rect x="453" y="676" width="73" height="258" rx="26" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <rect x="536" y="676" width="73" height="258" rx="26" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <line x1="157" y1="742" x2="218" y2="742" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="157" y1="868" x2="218" y2="868" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="542" y1="742" x2="603" y2="742" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="542" y1="868" x2="603" y2="868" stroke="#2b3547" stroke-width="1.5"/>
           <!-- rear hydrair struts -->
-          <circle cx="248" cy="812" r="17" fill="#e0dac9" stroke="#2b3547" stroke-width="3"/>
-          <circle cx="512" cy="812" r="17" fill="#e0dac9" stroke="#2b3547" stroke-width="3"/>
-          <!-- ===== REAR LIGHTS ===== -->
-          <rect x="322" y="946" width="32" height="16" rx="3" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <rect x="406" y="946" width="32" height="16" rx="3" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <line x1="354" y1="954" x2="406" y2="954" stroke="#2b3547" stroke-width="2"/>
-          <line x1="380" y1="922" x2="380" y2="946" stroke="#2b3547" stroke-width="2"/>
+          <circle cx="252" cy="800" r="17" fill="#e0dac9" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="508" cy="800" r="17" fill="#e0dac9" stroke="#2b3547" stroke-width="3"/>
+          <!-- rear lights -->
+          <line x1="380" y1="758" x2="380" y2="944" stroke="#2b3547" stroke-width="2"/>
+          <rect x="322" y="944" width="34" height="17" rx="3" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <rect x="404" y="944" width="34" height="17" rx="3" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <line x1="356" y1="952" x2="404" y2="952" stroke="#2b3547" stroke-width="2"/>
           <g id="tirenums">
-            <circle cx="198" cy="250" r="26" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
-            <text x="198" y="259" text-anchor="middle" font-size="26" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T1</text>
-            <circle cx="562" cy="250" r="26" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
-            <text x="562" y="259" text-anchor="middle" font-size="26" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T2</text>
-            <circle cx="146" cy="806" r="26" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
-            <text x="146" y="815" text-anchor="middle" font-size="26" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T3</text>
-            <circle cx="232" cy="806" r="26" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
-            <text x="232" y="815" text-anchor="middle" font-size="26" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T4</text>
-            <circle cx="528" cy="806" r="26" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
-            <text x="528" y="815" text-anchor="middle" font-size="26" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T5</text>
-            <circle cx="614" cy="806" r="26" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
-            <text x="614" y="815" text-anchor="middle" font-size="26" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T6</text>
+            <circle cx="146" cy="363" r="25" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
+            <text x="146" y="372" text-anchor="middle" font-size="25" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T1</text>
+            <circle cx="614" cy="363" r="25" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
+            <text x="614" y="372" text-anchor="middle" font-size="25" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T2</text>
+            <circle cx="187" cy="805" r="25" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
+            <text x="187" y="814" text-anchor="middle" font-size="25" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T3</text>
+            <circle cx="270" cy="805" r="25" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
+            <text x="270" y="814" text-anchor="middle" font-size="25" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T4</text>
+            <circle cx="489" cy="805" r="25" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
+            <text x="489" y="814" text-anchor="middle" font-size="25" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T5</text>
+            <circle cx="572" cy="805" r="25" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
+            <text x="572" y="814" text-anchor="middle" font-size="25" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T6</text>
           </g>
           <g id="markers"></g>
         </g>
@@ -215,7 +218,7 @@
   </section>
 </main>
 <script>
-const componentsData = [{"num": 1, "id": "lunch_bag", "name": "Leave lunch bag on the bottom step", "cat": "Safety & Procedure", "insp": "Put your lunch bag on the bottom step before the walkaround \u2014 a reminder the circle check is underway.", "ax": 70, "ay": 120, "tx": 232, "ty": 72, "accept": ["lunch"]}, {"num": 2, "id": "dipstick", "name": "Engine Oil Dip Stick", "cat": "Engine Bay", "insp": "Pull the dip stick and confirm engine oil is within the safe range before start-up.", "ax": 70, "ay": 200, "tx": 306, "ty": 196, "accept": ["dipstick", "dip stick"]}, {"num": 3, "id": "engine_debris", "name": "Debris in Engine & Turbo Area", "cat": "Fire Safety", "insp": "Clear debris/combustible material from the engine and turbo area \u2014 hot surfaces are a fire risk.", "ax": 690, "ay": 120, "tx": 470, "ty": 158, "accept": ["debris"]}, {"num": 4, "id": "overhead_leaks", "name": "Leaks Overhead & Turbo Area", "cat": "Engine Bay", "insp": "Look overhead through the engine/turbo for oil, fuel or coolant leaks and weeping hoses.", "ax": 70, "ay": 268, "tx": 320, "ty": 258, "accept": ["overhead", "over head", "head and turbo", "turbo area"]}, {"num": 5, "id": "suspensions_keepers", "name": "Suspensions & Keepers", "cat": "Suspension", "insp": "Inspect suspension mounts and keeper pins/bolts for security, fit and wear.", "ax": 70, "ay": 340, "tx": 252, "ty": 330, "accept": ["suspension", "keeper"]}, {"num": 6, "id": "steering", "name": "Steering", "cat": "Steering", "insp": "Check steering linkage, cylinders and connections for leaks, cracks and loose hardware.", "ax": 70, "ay": 410, "tx": 288, "ty": 370, "accept": ["steering"]}, {"num": 7, "id": "front_hydrair", "name": "Front Hydrair Suspension", "cat": "Suspension", "insp": "Check the front Hydrair strut \u2014 ride height/charge, no oil leaks, rod undamaged.", "ax": 690, "ay": 318, "tx": 512, "ty": 330, "accept": ["front hydrair", "front susp", "hydrair"]}, {"num": 8, "id": "horse_collar", "name": "Horse Collar & Steering Cross Over", "cat": "Steering", "insp": "Inspect the horse collar and steering cross-over for cracks, security and leaks.", "ax": 690, "ay": 246, "tx": 470, "ty": 312, "accept": ["horse collar", "horse", "collar"]}, {"num": 9, "id": "lugs_sidewall", "name": "Lugs & Sidewall", "cat": "Tires & Wheels", "insp": "Check wheel lugs/nuts are present and tight; inspect the sidewall for cuts, bulges or damage.", "ax": 70, "ay": 166, "tx": 196, "ty": 232, "accept": ["lug", "sidewall"], "tips": [[560, 232]]}, {"num": 10, "id": "brake_cooling_lines", "name": "Brake Lines & Cooling Lines", "cat": "Brakes", "insp": "Inspect brake lines and cooling lines for chafing, leaks and secure routing.", "ax": 70, "ay": 600, "tx": 336, "ty": 540, "accept": ["brake line", "cooling line", "brake and cooling"]}, {"num": 11, "id": "steering_accumulators", "name": "Steering Accumulators", "cat": "Steering", "insp": "Check the two steering accumulators (left side) for correct charge, mounting security and leaks.", "ax": 70, "ay": 470, "tx": 279, "ty": 440, "accept": ["steering accum", "steer accum"], "t2": [279, 482]}, {"num": 12, "id": "brake_accumulators", "name": "Brake Accumulators", "cat": "Brakes", "insp": "Check the two brake accumulators (right side) for correct charge, mounting security and leaks.", "ax": 690, "ay": 400, "tx": 483, "ty": 398, "accept": ["brake accum"], "t2": [483, 440]}, {"num": 13, "id": "hoist_circuit_pump", "name": "Hoist Circuit Pump", "cat": "Hydraulics", "insp": "Inspect the hoist circuit pump for leaks, security and hose condition.", "ax": 120, "ay": 700, "tx": 344, "ty": 522, "accept": ["hoist pump", "hoist circuit pump"]}, {"num": 14, "id": "steering_brake_pump", "name": "Steering & Brake Circuit Pump", "cat": "Hydraulics", "insp": "Inspect the steering & brake circuit pump for leaks, security and hose condition.", "ax": 120, "ay": 762, "tx": 386, "ty": 548, "accept": ["steering and brake pump", "steering & brake", "brake circuit pump", "steering brake pump", "brake pump"]}, {"num": 15, "id": "traction_alternator", "name": "Traction Alternator", "cat": "Electrical", "insp": "Inspect the traction alternator area for debris, leaks and secure connections.", "ax": 690, "ay": 470, "tx": 410, "ty": 440, "accept": ["traction alternator", "alternator"]}, {"num": 16, "id": "hoist_circuit_filters", "name": "Hoist Circuit Filters", "cat": "Filters", "insp": "Check the two hoist circuit filters (upper of the three on the right) for leaks, condition and restriction indicators.", "ax": 690, "ay": 530, "tx": 486, "ty": 506, "accept": ["hoist filter", "hoist circuit filter"], "t2": [486, 540]}, {"num": 17, "id": "steering_circuit_filter", "name": "Steering Circuit Filter", "cat": "Filters", "insp": "Check the steering circuit filter \u2014 the lowest of the three filters on the right \u2014 for leaks and condition.", "ax": 690, "ay": 590, "tx": 486, "ty": 574, "accept": ["steering filter", "steering circuit filter"]}, {"num": 18, "id": "blower_tube", "name": "Blower Tube", "cat": "Engine Bay", "insp": "Inspect the blower tube for security, cracks and clear airflow.", "ax": 690, "ay": 650, "tx": 534, "ty": 623, "accept": ["blower"]}, {"num": 19, "id": "fuel_tank", "name": "Fuel Tank & Mounts", "cat": "Fuel System", "insp": "Inspect the fuel tank and mounts for leaks, secure mounting and cap condition.", "ax": 690, "ay": 712, "tx": 610, "ty": 660, "accept": ["fuel"]}, {"num": 20, "id": "hoist_cylinders", "name": "Hoist Cylinders", "cat": "Hydraulics", "insp": "Inspect the hoist cylinders (right of the nose cone) for leaks, rod damage and pin/mount security.", "ax": 690, "ay": 775, "tx": 488, "ty": 678, "accept": ["hoist cylinder", "cylinder"]}, {"num": 21, "id": "hydraulic_tank", "name": "Hydraulic Tank & Mounts", "cat": "Hydraulics", "insp": "Check the hydraulic tank and mounts \u2014 fluid level, secure mounting, no leaks at fittings.", "ax": 120, "ay": 626, "tx": 206, "ty": 576, "accept": ["hydraulic tank", "hyd tank", "hydraulic"]}, {"num": 22, "id": "nose_cone", "name": "Nose Cone", "cat": "Frame", "insp": "Inspect the nose cone / A-frame for cracks, security and leaks.", "ax": 380, "ay": 1000, "tx": 380, "ty": 720, "accept": ["nose cone", "nose"]}, {"num": 23, "id": "grease_flow", "name": "Check for Grease Flow", "cat": "Lubrication", "insp": "Check for grease flow at the two auto-lube points left of the nose cone.", "ax": 120, "ay": 842, "tx": 294, "ty": 666, "accept": ["grease"], "t2": [294, 704]}, {"num": 24, "id": "tires_condition", "name": "Check Tires for Condition", "cat": "Tires & Wheels", "insp": "Check tires overall \u2014 inflation, cuts, separation, and rim/wheel damage.", "ax": 70, "ay": 900, "tx": 142, "ty": 806, "accept": ["tire", "tyre"], "tips": [[228, 806], [524, 806], [610, 806]]}, {"num": 25, "id": "rear_hydrair", "name": "Rear Hydrair Leaks & Ride", "cat": "Suspension", "insp": "Inspect the rear Hydrair suspension for leaks and correct ride height / charge.", "ax": 690, "ay": 845, "tx": 528, "ty": 812, "accept": ["rear hydrair", "rear susp"]}, {"num": 26, "id": "rear_lights", "name": "Rear Lights", "cat": "Electrical", "insp": "Check the rear lights are intact and working.", "ax": 560, "ay": 1000, "tx": 424, "ty": 956, "accept": ["rear light", "lights"]}, {"num": 27, "id": "repeat_other_side", "name": "Repeat for Other Side", "cat": "Procedure", "insp": "Repeat the whole walkaround on the opposite side of the truck.", "ax": 690, "ay": 930, "tx": 640, "ty": 880, "accept": ["repeat", "other side"]}, {"num": 28, "id": "tire1", "name": "Tire 1 \u2014 Driver's Side Front", "cat": "Tire Positions", "insp": "Tire position 1 is the driver's side (left) front tire.", "ax": 70, "ay": 250, "tx": 172, "ty": 250, "accept": ["tire 1", "1", "driver front", "drivers front", "driver side front", "left front", "front left", "lf"], "strict": true}, {"num": 29, "id": "tire2", "name": "Tire 2 \u2014 Passenger Side Front", "cat": "Tire Positions", "insp": "Tire position 2 is the passenger side (right) front tire.", "ax": 690, "ay": 250, "tx": 588, "ty": 250, "accept": ["tire 2", "2", "passenger front", "passenger side front", "right front", "front right", "rf"], "strict": true}, {"num": 30, "id": "tire3", "name": "Tire 3 \u2014 Back Left Outer", "cat": "Tire Positions", "insp": "Tire position 3 is the outer tire on the back left (driver side) dual.", "ax": 70, "ay": 700, "tx": 146, "ty": 760, "accept": ["tire 3", "3", "back left outer", "rear left outer", "left rear outer", "outer left rear", "lro"], "strict": true}, {"num": 31, "id": "tire4", "name": "Tire 4 \u2014 Back Left Inner", "cat": "Tire Positions", "insp": "Tire position 4 is the inner tire on the back left (driver side) dual.", "ax": 70, "ay": 975, "tx": 232, "ty": 880, "accept": ["tire 4", "4", "back left inner", "rear left inner", "left rear inner", "inner left rear", "lri"], "strict": true}, {"num": 32, "id": "tire5", "name": "Tire 5 \u2014 Back Right Inner", "cat": "Tire Positions", "insp": "Tire position 5 is the inner tire on the back right (passenger side) dual.", "ax": 690, "ay": 975, "tx": 528, "ty": 880, "accept": ["tire 5", "5", "back right inner", "rear right inner", "right rear inner", "inner right rear", "rri"], "strict": true}, {"num": 33, "id": "tire6", "name": "Tire 6 \u2014 Back Right Outer", "cat": "Tire Positions", "insp": "Tire position 6 is the outer tire on the back right (passenger side) dual.", "ax": 690, "ay": 700, "tx": 614, "ty": 760, "accept": ["tire 6", "6", "back right outer", "rear right outer", "right rear outer", "outer right rear", "rro"], "strict": true}];
+const componentsData = [{"num": 1, "id": "lunch_bag", "name": "Leave lunch bag on the bottom step", "cat": "Safety & Procedure", "insp": "Put your lunch bag on the bottom step before the walkaround \u2014 a reminder the circle check is underway.", "ax": 70, "ay": 86, "tx": 226, "ty": 76, "accept": ["lunch"]}, {"num": 2, "id": "dipstick", "name": "Engine Oil Dip Stick", "cat": "Engine Bay", "insp": "Pull the dip stick and confirm engine oil is within the safe range before start-up.", "ax": 70, "ay": 170, "tx": 304, "ty": 210, "accept": ["dipstick", "dip stick"]}, {"num": 3, "id": "engine_debris", "name": "Debris in Engine & Turbo Area", "cat": "Fire Safety", "insp": "Clear debris/combustible material from the engine and turbo area \u2014 hot surfaces are a fire risk.", "ax": 690, "ay": 150, "tx": 462, "ty": 196, "accept": ["debris"]}, {"num": 4, "id": "overhead_leaks", "name": "Leaks Overhead & Turbo Area", "cat": "Engine Bay", "insp": "Look overhead through the engine/turbo for oil, fuel or coolant leaks and weeping hoses.", "ax": 70, "ay": 234, "tx": 304, "ty": 250, "accept": ["overhead", "over head", "head and turbo", "turbo area"]}, {"num": 5, "id": "suspensions_keepers", "name": "Suspensions & Keepers", "cat": "Suspension", "insp": "Inspect suspension mounts and keeper pins/bolts for security, fit and wear.", "ax": 70, "ay": 300, "tx": 222, "ty": 350, "accept": ["suspension", "keeper"]}, {"num": 6, "id": "steering", "name": "Steering", "cat": "Steering", "insp": "Check steering linkage, cylinders and connections for leaks, cracks and loose hardware.", "ax": 70, "ay": 396, "tx": 250, "ty": 396, "accept": ["steering"]}, {"num": 7, "id": "front_hydrair", "name": "Front Hydrair Suspension", "cat": "Suspension", "insp": "Check the front Hydrair strut \u2014 ride height/charge, no oil leaks, rod undamaged.", "ax": 690, "ay": 320, "tx": 540, "ty": 356, "accept": ["front hydrair", "front susp", "hydrair"]}, {"num": 8, "id": "horse_collar", "name": "Horse Collar & Steering Cross Over", "cat": "Steering", "insp": "Inspect the horse collar and steering cross-over for cracks, security and leaks.", "ax": 690, "ay": 240, "tx": 452, "ty": 344, "accept": ["horse collar", "horse", "collar"]}, {"num": 9, "id": "lugs_sidewall", "name": "Lugs & Sidewall", "cat": "Tires & Wheels", "insp": "Check wheel lugs/nuts are present and tight; inspect the sidewall for cuts, bulges or damage.", "ax": 70, "ay": 430, "tx": 116, "ty": 400, "accept": ["lug", "sidewall"], "tips": [[644, 400]]}, {"num": 10, "id": "brake_cooling_lines", "name": "Brake Lines & Cooling Lines", "cat": "Brakes", "insp": "Inspect brake lines and cooling lines for chafing, leaks and secure routing.", "ax": 70, "ay": 500, "tx": 336, "ty": 470, "accept": ["brake line", "cooling line", "brake and cooling"]}, {"num": 11, "id": "steering_accumulators", "name": "Steering Accumulators", "cat": "Steering", "insp": "Check the two steering accumulators (left side) for correct charge, mounting security and leaks.", "ax": 70, "ay": 560, "tx": 246, "ty": 410, "accept": ["steering accum", "steer accum"], "tips": [[246, 452]]}, {"num": 12, "id": "brake_accumulators", "name": "Brake Accumulators", "cat": "Brakes", "insp": "Check the two brake accumulators (right side) for correct charge, mounting security and leaks.", "ax": 690, "ay": 396, "tx": 516, "ty": 390, "accept": ["brake accum"], "tips": [[516, 432]]}, {"num": 13, "id": "hoist_circuit_pump", "name": "Hoist Circuit Pump", "cat": "Hydraulics", "insp": "Inspect the hoist circuit pump for leaks, security and hose condition.", "ax": 120, "ay": 700, "tx": 344, "ty": 516, "accept": ["hoist pump", "hoist circuit pump"]}, {"num": 14, "id": "steering_brake_pump", "name": "Steering & Brake Circuit Pump", "cat": "Hydraulics", "insp": "Inspect the steering & brake circuit pump for leaks, security and hose condition.", "ax": 120, "ay": 770, "tx": 344, "ty": 568, "accept": ["steering and brake pump", "steering & brake", "brake circuit pump", "steering brake pump", "brake pump"]}, {"num": 15, "id": "traction_alternator", "name": "Traction Alternator", "cat": "Electrical", "insp": "Inspect the traction alternator area for debris, leaks and secure connections.", "ax": 690, "ay": 462, "tx": 418, "ty": 432, "accept": ["traction alternator", "alternator"]}, {"num": 16, "id": "hoist_circuit_filters", "name": "Hoist Circuit Filters", "cat": "Filters", "insp": "Check the two hoist circuit filters (upper of the three on the right) for leaks, condition and restriction indicators.", "ax": 690, "ay": 520, "tx": 500, "ty": 505, "accept": ["hoist filter", "hoist circuit filter"], "tips": [[500, 526]]}, {"num": 17, "id": "steering_circuit_filter", "name": "Steering Circuit Filter", "cat": "Filters", "insp": "Check the steering circuit filter \u2014 the lowest of the three filters on the right \u2014 for leaks and condition.", "ax": 690, "ay": 585, "tx": 500, "ty": 548, "accept": ["steering filter", "steering circuit filter"]}, {"num": 18, "id": "blower_tube", "name": "Blower Tube", "cat": "Engine Bay", "insp": "Inspect the blower tube for security, cracks and clear airflow.", "ax": 690, "ay": 650, "tx": 420, "ty": 560, "accept": ["blower"]}, {"num": 19, "id": "fuel_tank", "name": "Fuel Tank & Mounts", "cat": "Fuel System", "insp": "Inspect the fuel tank and mounts for leaks, secure mounting and cap condition.", "ax": 690, "ay": 712, "tx": 625, "ty": 570, "accept": ["fuel"]}, {"num": 20, "id": "hoist_cylinders", "name": "Hoist Cylinders", "cat": "Hydraulics", "insp": "Inspect the hoist cylinders (right of the nose cone) for leaks, rod damage and pin/mount security.", "ax": 690, "ay": 775, "tx": 492, "ty": 626, "accept": ["hoist cylinder", "cylinder"]}, {"num": 21, "id": "hydraulic_tank", "name": "Hydraulic Tank & Mounts", "cat": "Hydraulics", "insp": "Check the hydraulic tank and mounts \u2014 fluid level, secure mounting, no leaks at fittings.", "ax": 120, "ay": 626, "tx": 212, "ty": 567, "accept": ["hydraulic tank", "hyd tank", "hydraulic"]}, {"num": 22, "id": "nose_cone", "name": "Nose Cone", "cat": "Frame", "insp": "Inspect the nose cone / A-frame for cracks, security and leaks.", "ax": 380, "ay": 1004, "tx": 380, "ty": 665, "accept": ["nose cone", "nose"]}, {"num": 23, "id": "grease_flow", "name": "Check for Grease Flow", "cat": "Lubrication", "insp": "Check for grease flow at the two auto-lube points left of the nose cone.", "ax": 120, "ay": 842, "tx": 294, "ty": 613, "accept": ["grease"], "tips": [[294, 659]]}, {"num": 24, "id": "tires_condition", "name": "Check Tires for Condition", "cat": "Tires & Wheels", "insp": "Check tires overall \u2014 inflation, cuts, separation, and rim/wheel damage.", "ax": 70, "ay": 900, "tx": 149, "ty": 790, "accept": ["tire", "tyre"], "tips": [[232, 790], [451, 790], [534, 790]]}, {"num": 25, "id": "rear_hydrair", "name": "Rear Hydrair Leaks & Ride", "cat": "Suspension", "insp": "Inspect the rear Hydrair suspension for leaks and correct ride height / charge.", "ax": 690, "ay": 848, "tx": 527, "ty": 800, "accept": ["rear hydrair", "rear susp"]}, {"num": 26, "id": "rear_lights", "name": "Rear Lights", "cat": "Electrical", "insp": "Check the rear lights are intact and working.", "ax": 560, "ay": 1004, "tx": 440, "ty": 952, "accept": ["rear light", "lights"]}, {"num": 27, "id": "repeat_other_side", "name": "Repeat for Other Side", "cat": "Procedure", "insp": "Repeat the whole walkaround on the opposite side of the truck.", "ax": 690, "ay": 930, "tx": 640, "ty": 880, "accept": ["repeat", "other side"]}, {"num": 28, "id": "tire1", "name": "Tire 1 \u2014 Driver's Side Front", "cat": "Tire Positions", "insp": "Tire position 1 is the driver's side (left) front tire.", "ax": 70, "ay": 363, "tx": 122, "ty": 363, "accept": ["tire 1", "1", "driver front", "drivers front", "driver side front", "left front", "front left", "lf"], "strict": true}, {"num": 29, "id": "tire2", "name": "Tire 2 \u2014 Passenger Side Front", "cat": "Tire Positions", "insp": "Tire position 2 is the passenger side (right) front tire.", "ax": 690, "ay": 363, "tx": 638, "ty": 363, "accept": ["tire 2", "2", "passenger front", "passenger side front", "right front", "front right", "rf"], "strict": true}, {"num": 30, "id": "tire3", "name": "Tire 3 \u2014 Back Left Outer", "cat": "Tire Positions", "insp": "Tire position 3 is the outer tire on the back left (driver side) dual.", "ax": 70, "ay": 690, "tx": 187, "ty": 700, "accept": ["tire 3", "3", "back left outer", "rear left outer", "left rear outer", "outer left rear", "lro"], "strict": true}, {"num": 31, "id": "tire4", "name": "Tire 4 \u2014 Back Left Inner", "cat": "Tire Positions", "insp": "Tire position 4 is the inner tire on the back left (driver side) dual.", "ax": 70, "ay": 975, "tx": 270, "ty": 910, "accept": ["tire 4", "4", "back left inner", "rear left inner", "left rear inner", "inner left rear", "lri"], "strict": true}, {"num": 32, "id": "tire5", "name": "Tire 5 \u2014 Back Right Inner", "cat": "Tire Positions", "insp": "Tire position 5 is the inner tire on the back right (passenger side) dual.", "ax": 690, "ay": 975, "tx": 489, "ty": 910, "accept": ["tire 5", "5", "back right inner", "rear right inner", "right rear inner", "inner right rear", "rri"], "strict": true}, {"num": 33, "id": "tire6", "name": "Tire 6 \u2014 Back Right Outer", "cat": "Tire Positions", "insp": "Tire position 6 is the outer tire on the back right (passenger side) dual.", "ax": 690, "ay": 690, "tx": 572, "ty": 700, "accept": ["tire 6", "6", "back right outer", "rear right outer", "right rear outer", "outer right rear", "rro"], "strict": true}];
 const KEY='haulTruckSheet_v2';
 let progress={};
 function load(){try{progress=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){progress={}}
