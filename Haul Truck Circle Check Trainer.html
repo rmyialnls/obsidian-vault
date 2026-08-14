@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haul Truck Circle Check - Anki Spaced Repetition Trainer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hotspot-blank { animation: pulse-border 2s infinite; }
+        @keyframes pulse-border {
+            0%, 100% { stroke: #f59e0b; stroke-width: 3; }
+            50% { stroke: #ef4444; stroke-width: 5; }
+        }
+        .correct-flash { animation: flash-green 0.6s ease-in-out; }
+        .wrong-flash { animation: flash-red 0.6s ease-in-out; }
+        @keyframes flash-green { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(34, 197, 94, 0.2); } }
+        @keyframes flash-red { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(239, 68, 68, 0.2); } }
+        .hotspot-dot { cursor: pointer; transition: all 0.15s ease; }
+        .hotspot-dot:hover { filter: brightness(1.3); }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 shadow-lg flex justify-between items-center flex-wrap gap-4">
+        <div class="flex items-center space-x-3">
+            <div class="bg-amber-500 text-slate-950 font-black px-3 py-1.5 rounded-lg text-xl tracking-wider">EVR</div>
+            <div>
+                <h1 class="text-xl font-bold text-white">Circle Check - Anki Diagram Trainer</h1>
+                <p class="text-xs text-slate-400">Komatsu Haul Truck Component Identification &amp; Spaced Repetition</p>
+            </div>
+        </div>
+
+        <!-- Mode Switcher -->
+        <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-700">
+            <button id="mode-diagram-btn" onclick="setMode('diagram')" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-amber-500 text-slate-950 shadow">
+                🎯 5-Blank Diagram Quiz
+            </button>
+            <button id="mode-flashcards-btn" onclick="setMode('flashcards')" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-white transition-all">
+                🎴 Anki Flashcards
+            </button>
+            <button id="mode-study-btn" onclick="setMode('study')" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-white transition-all">
+                🗺️ Reference Diagram
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Diagram Column (Left) -->
+        <section class="lg:col-span-7 bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
+            <div class="flex justify-between items-center mb-2">
+                <h2 id="diagram-title" class="text-md font-bold text-slate-300 flex items-center gap-2">
+                    <span>🚚 Haul Truck Schematic</span>
+                    <span id="quiz-progress-badge" class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full">Round 1</span>
+                </h2>
+                <div class="text-xs text-slate-400 flex items-center gap-3">
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> Mastered: <strong id="stat-mastered" class="text-emerald-400">0</strong></span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-amber-500"></span> Review Queue: <strong id="stat-review" class="text-amber-400">27</strong></span>
+                </div>
+            </div>
+
+            <!-- SVG Haul Truck Diagram -->
+            <div class="relative flex-1 bg-slate-950 rounded-xl border border-slate-800 p-2 overflow-hidden flex items-center justify-center min-h-[500px]">
+                <svg id="truck-svg" viewBox="0 0 600 800" class="w-full h-full max-h-[720px] object-contain">
+                    <defs>
+                        <linearGradient id="chassisGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#334155"/>
+                            <stop offset="100%" stop-color="#1e293b"/>
+                        </linearGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+
+                    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="1"/>
+                    </pattern>
+                    <rect width="600" height="800" fill="url(#grid)" />
+
+                    <!-- Front Bumper/Steps -->
+                    <rect x="220" y="50" width="160" height="25" rx="4" fill="#475569" stroke="#64748b" stroke-width="2"/>
+                    <!-- Front Tires -->
+                    <rect x="70" y="140" width="70" height="180" rx="15" fill="#0f172a" stroke="#475569" stroke-width="4"/>
+                    <rect x="460" y="140" width="70" height="180" rx="15" fill="#0f172a" stroke="#475569" stroke-width="4"/>
+                    <line x1="70" y1="170" x2="140" y2="170" stroke="#334155" stroke-width="2"/>
+                    <line x1="70" y1="230" x2="140" y2="230" stroke="#334155" stroke-width="2"/>
+                    <line x1="70" y1="290" x2="140" y2="290" stroke="#334155" stroke-width="2"/>
+                    <line x1="460" y1="170" x2="530" y2="170" stroke="#334155" stroke-width="2"/>
+                    <line x1="460" y1="230" x2="530" y2="230" stroke="#334155" stroke-width="2"/>
+                    <line x1="460" y1="290" x2="530" y2="290" stroke="#334155" stroke-width="2"/>
+
+                    <!-- Main Chassis Rails -->
+                    <rect x="230" y="70" width="140" height="580" rx="8" fill="url(#chassisGrad)" stroke="#475569" stroke-width="3"/>
+                    <!-- Horse Collar Crossbar -->
+                    <rect x="140" y="220" width="320" height="30" rx="6" fill="#64748b" stroke="#94a3b8" stroke-width="2"/>
+                    <!-- Engine Bay -->
+                    <rect x="250" y="100" width="100" height="110" rx="6" fill="#1e293b" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="300" y="155" fill="#64748b" font-size="12" text-anchor="middle" font-weight="bold">ENGINE</text>
+                    <!-- Hydraulic Tank -->
+                    <circle cx="175" cy="460" r="35" fill="#1e293b" stroke="#3b82f6" stroke-width="3"/>
+                    <text x="175" y="465" fill="#60a5fa" font-size="10" font-weight="bold" text-anchor="middle">HYD TANK</text>
+                    <!-- Fuel Tank -->
+                    <rect x="390" y="420" width="70" height="80" rx="8" fill="#1e293b" stroke="#eab308" stroke-width="3"/>
+                    <text x="425" y="465" fill="#fde047" font-size="10" font-weight="bold" text-anchor="middle">FUEL</text>
+                    <!-- Nose Cone A-Frame -->
+                    <polygon points="300,430 250,530 350,530" fill="#334155" stroke="#ef4444" stroke-width="3"/>
+                    <circle cx="300" cy="450" r="8" fill="#ef4444"/>
+                    <text x="300" y="510" fill="#fca5a5" font-size="11" font-weight="bold" text-anchor="middle">NOSE CONE</text>
+                    <!-- Rear Dual Tires -->
+                    <rect x="50" y="530" width="60" height="200" rx="12" fill="#0f172a" stroke="#475569" stroke-width="3"/>
+                    <rect x="120" y="530" width="60" height="200" rx="12" fill="#0f172a" stroke="#475569" stroke-width="3"/>
+                    <rect x="420" y="530" width="60" height="200" rx="12" fill="#0f172a" stroke="#475569" stroke-width="3"/>
+                    <rect x="490" y="530" width="60" height="200" rx="12" fill="#0f172a" stroke="#475569" stroke-width="3"/>
+                    <!-- Rear Axle Housing -->
+                    <rect x="180" y="610" width="240" height="40" rx="6" fill="#334155" stroke="#64748b" stroke-width="2"/>
+                    <!-- Rear Hydrair Suspension Struts -->
+                    <circle cx="230" cy="675" r="14" fill="#0284c7" stroke="#38bdf8" stroke-width="2"/>
+                    <circle cx="370" cy="675" r="14" fill="#0284c7" stroke="#38bdf8" stroke-width="2"/>
+
+                    <!-- Dynamic Hotspots & Callout Lines Container -->
+                    <g id="hotspots-group"></g>
+                </svg>
+            </div>
+
+            <div class="mt-3 flex justify-between items-center text-xs text-slate-400">
+                <span>💡 Click blank hotspots on the truck or select options on the right panel.</span>
+                <button onclick="resetAnkiProgress()" class="text-slate-500 hover:text-red-400 underline">Reset Memory Progress</button>
+            </div>
+        </section>
+
+        <!-- Interactive Control Column (Right) -->
+        <section class="lg:col-span-5 flex flex-col gap-4">
+
+            <!-- Panel Mode 1: 5-Blank Quiz Mode -->
+            <div id="quiz-panel" class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl flex-1 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center border-b border-slate-700 pb-3 mb-4">
+                        <h3 class="font-bold text-amber-400 text-lg flex items-center gap-2">
+                            <span>🧠 Anki Active Recall Round</span>
+                        </h3>
+                        <span id="blanks-remaining-tag" class="bg-slate-900 border border-slate-700 text-xs px-2.5 py-1 rounded-lg text-slate-300 font-mono">5 Blanks Active</span>
+                    </div>
+
+                    <p id="quiz-instructions" class="text-sm text-slate-300 mb-4">
+                        Match each labeled blank (<span class="font-bold text-amber-400">#1</span> to <span class="font-bold text-amber-400">#5</span>) on the haul truck diagram to its correct component name and inspection detail.
+                    </p>
+
+                    <!-- Blank Selector Tabs -->
+                    <div id="blank-tabs" class="flex gap-2 mb-4 overflow-x-auto pb-1"></div>
+
+                    <!-- Active Blank Question Card -->
+                    <div id="active-blank-card" class="bg-slate-900 border border-slate-700 rounded-xl p-4 mb-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span id="card-blank-number" class="text-sm font-black text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 rounded-md">BLANK #1</span>
+                            <span id="card-location-hint" class="text-xs text-slate-400 font-mono">Location: Engine Bay</span>
+                        </div>
+                        <p id="card-question-text" class="text-base font-semibold text-white mb-1">Which component belongs at this arrow?</p>
+                        <p id="card-inspection-hint" class="text-xs text-amber-300/80 italic mb-3">Inspection key: "Check for debris..."</p>
+
+                        <div id="options-container" class="grid grid-cols-1 gap-2"></div>
+                    </div>
+
+                    <!-- Instant Feedback Box -->
+                    <div id="feedback-box" class="hidden p-3 rounded-xl border mb-4 transition-all">
+                        <p id="feedback-title" class="font-bold text-sm mb-1"></p>
+                        <p id="feedback-detail" class="text-xs leading-relaxed"></p>
+                    </div>
+                </div>
+
+                <!-- Next / Continue Action -->
+                <div class="pt-3 border-t border-slate-700 flex justify-between items-center">
+                    <span id="score-round-tracker" class="text-xs text-slate-400 font-mono">Correct this round: 0/5</span>
+                    <button id="next-round-btn" onclick="generateNewQuizRound()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg flex items-center gap-2">
+                        <span>Next 5 Blanks</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel Mode 2: Anki Flashcards Mode -->
+            <div id="flashcards-panel" class="hidden bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl flex-1 flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center border-b border-slate-700 pb-3 mb-4">
+                        <h3 class="font-bold text-amber-400 text-lg">🎴 Spaced Repetition Flashcards</h3>
+                        <span id="fc-queue-count" class="bg-slate-900 text-xs px-2.5 py-1 rounded-lg text-slate-300">Card 1 of 27</span>
+                    </div>
+
+                    <div id="flashcard" onclick="flipCard()" class="cursor-pointer min-h-[260px] bg-slate-900 border-2 border-slate-700 hover:border-amber-500/50 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 relative shadow-inner">
+                        <div class="flex justify-between items-start">
+                            <span id="fc-category" class="text-xs uppercase tracking-wider font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-md">Location / Arrow</span>
+                            <span class="text-xs text-slate-500 font-mono">Click to Flip 🔄</span>
+                        </div>
+
+                        <div class="my-auto text-center py-4">
+                            <div id="fc-front-content">
+                                <h4 id="fc-question" class="text-xl font-bold text-white mb-2">Arrow pointing to Mid-Chassis Left Rail</h4>
+                                <p id="fc-subtext" class="text-xs text-slate-400">What component is mounted here and what is inspected?</p>
+                            </div>
+                            <div id="fc-back-content" class="hidden">
+                                <h4 id="fc-answer" class="text-xl font-black text-amber-400 mb-2">Hydraulic Tank &amp; Mounts</h4>
+                                <div id="fc-detail" class="text-sm text-slate-300 space-y-2 text-left bg-slate-800/80 p-3 rounded-xl border border-slate-700/50">
+                                    <p><strong>Inspection:</strong> Check tank securement, mounts, sight glass level, and fittings for leaks.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center text-xs text-slate-500 italic">
+                            <span id="fc-flip-hint">Show Answer</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anki Review Buttons -->
+                <div id="anki-controls" class="hidden grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-slate-700">
+                    <button onclick="rateAnkiCard('again')" class="bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/40 py-2 rounded-xl text-xs font-bold transition-all">
+                        ❌ Missed It<br><span class="font-normal opacity-70">Repeat Soon</span>
+                    </button>
+                    <button onclick="rateAnkiCard('good')" class="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 py-2 rounded-xl text-xs font-bold transition-all">
+                        🤔 Hard<br><span class="font-normal opacity-70">Queue Later</span>
+                    </button>
+                    <button onclick="rateAnkiCard('easy')" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 py-2 rounded-xl text-xs font-bold transition-all">
+                        ✅ Mastered<br><span class="font-normal opacity-70">Got It Solid</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel Mode 3: Reference Study Mode -->
+            <div id="study-panel" class="hidden bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl flex-1 flex-col">
+                <div class="border-b border-slate-700 pb-3 mb-4">
+                    <h3 class="font-bold text-amber-400 text-lg">🗺️ Interactive Component Cheat Sheet</h3>
+                    <p class="text-xs text-slate-400">Click any component on the left schematic to view full inspection specs.</p>
+                </div>
+
+                <div id="study-details" class="bg-slate-900 border border-slate-700 rounded-xl p-4 flex-1 overflow-y-auto">
+                    <p class="text-slate-400 text-sm italic text-center py-8">Select any numbered node on the diagram to inspect its exact walkaround requirements.</p>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // ===================================================================
+        // DATASET — EVR / Glencore "Haul Truck School - Circle Check" cheat sheet
+        // Every component, its walkaround location, category, and inspection note.
+        // ===================================================================
+        const componentsData = [
+            { id:'lunch_bag', name:'Leave lunch bag on the bottom step', location:'Front Ladder / Bottom Step', category:'Safety & Procedure',
+              inspection:'Place your lunch bag on the bottom step before the walkaround. It is a visual reminder that a circle check is in progress and stops anyone driving off before it is finished.',
+              x:300, y:45 },
+            { id:'engine_oil_dipstick', name:'Engine Oil Dip Stick', location:'Engine Bay - Left', category:'Engine Bay',
+              inspection:'Pull the engine oil dip stick and confirm the oil level is within the safe range before start-up.',
+              x:262, y:118 },
+            { id:'engine_debris', name:'Debris in Engine & Turbo Area', location:'Engine Bay - Upper', category:'Fire Safety',
+              inspection:'Scan the engine and turbo area for any debris or combustible material and remove it — hot surfaces are a fire risk.',
+              x:300, y:92 },
+            { id:'overhead_leaks', name:'Leaks Overhead & Turbo Area', location:'Engine Bay - Overhead', category:'Engine Bay',
+              inspection:'Look overhead through the engine and turbo area for oil, fuel or coolant leaks and any high-pressure hose weeping.',
+              x:338, y:118 },
+            { id:'suspensions_keepers', name:'Suspensions & Keepers', location:'Front Suspension Mounts', category:'Suspension',
+              inspection:'Inspect suspension mounts and keeper pins/bolts for security, correct fit and wear.',
+              x:150, y:165 },
+            { id:'front_hydrair', name:'Front Hydrair Suspension', location:'Front Suspension Strut', category:'Suspension',
+              inspection:'Inspect the front Hydrair suspension strut — correct ride height/charge, no oil leaks, and rod free of damage.',
+              x:450, y:165 },
+            { id:'horse_collar', name:'Horse Collar & Steering Cross Over', location:'Front Axle Center Crossbar', category:'Steering',
+              inspection:'Inspect the horse collar and steering cross-over for cracks, security and leaks.',
+              x:300, y:235 },
+            { id:'steering', name:'Steering', location:'Front Steering Linkage', category:'Steering',
+              inspection:'Check steering linkage, cylinders and connections for leaks, cracks and loose or missing hardware.',
+              x:180, y:305 },
+            { id:'lugs_sidewall', name:'Lugs & Sidewall', location:'Front Wheel - Left', category:'Tires & Wheels',
+              inspection:'Check the wheel lugs/nuts are present and tight and inspect the tire sidewall for cuts, bulges or damage.',
+              x:105, y:235 },
+            { id:'tires_condition', name:'Check Tires for Condition', location:'Front Wheel - Right', category:'Tires & Wheels',
+              inspection:'Check tires for overall condition — inflation, cuts, separation, and rim/wheel damage.',
+              x:495, y:235 },
+            { id:'brake_cooling_lines', name:'Brake Lines & Cooling Lines', location:'Mid Chassis', category:'Brakes',
+              inspection:'Inspect brake lines and cooling lines for chafing, leaks and secure routing.',
+              x:232, y:345 },
+            { id:'traction_alternator', name:'Traction Alternator', location:'Mid Chassis Center', category:'Electrical',
+              inspection:'Inspect the traction alternator area for debris, leaks and secure connections.',
+              x:350, y:345 },
+            { id:'steering_accumulators', name:'Steering Accumulators', location:'Center Chassis - Upper', category:'Steering',
+              inspection:'Check the steering accumulators for correct charge, mounting security and leaks.',
+              x:370, y:290 },
+            { id:'brake_accumulators', name:'Brake Accumulators', location:'Center Chassis - Upper', category:'Brakes',
+              inspection:'Check the brake accumulators for correct charge, mounting security and leaks.',
+              x:432, y:268 },
+            { id:'hoist_circuit_pump', name:'Hoist Circuit Pump', location:'Center Chassis - Pumps', category:'Hydraulics',
+              inspection:'Inspect the hoist circuit pump for leaks, security and hose condition.',
+              x:255, y:400 },
+            { id:'steering_brake_pump', name:'Steering & Brake Circuit Pump', location:'Center Chassis - Pumps', category:'Hydraulics',
+              inspection:'Inspect the steering & brake circuit pump for leaks, security and hose condition.',
+              x:300, y:400 },
+            { id:'hoist_circuit_filters', name:'Hoist Circuit Filters', location:'Center Chassis - Filters', category:'Filters',
+              inspection:'Check the hoist circuit filters for leaks, condition and any restriction indicators.',
+              x:355, y:430 },
+            { id:'steering_circuit_filter', name:'Steering Circuit Filter', location:'Center Chassis - Filters', category:'Filters',
+              inspection:'Check the steering circuit filter for leaks, condition and any restriction indicator.',
+              x:378, y:468 },
+            { id:'blower_tube', name:'Blower Tube', location:'Center Chassis - Lower', category:'Engine Bay',
+              inspection:'Inspect the blower tube for security, cracks and clear airflow.',
+              x:340, y:500 },
+            { id:'hydraulic_tank', name:'Hydraulic Tank & Mounts', location:'Left Chassis Tank', category:'Hydraulics',
+              inspection:'Inspect the hydraulic tank and mounts — fluid level via sight glass, secure mounting, and no leaks at fittings.',
+              x:175, y:460 },
+            { id:'fuel_tank', name:'Fuel Tank & Mounts', location:'Right Chassis Tank', category:'Fuel System',
+              inspection:'Inspect the fuel tank and mounts for leaks, secure mounting and cap condition.',
+              x:425, y:460 },
+            { id:'hoist_cylinders', name:'Hoist Cylinders', location:'Rear of Chassis Tank', category:'Hydraulics',
+              inspection:'Inspect the hoist cylinders for leaks, rod damage and pin/mount security.',
+              x:460, y:400 },
+            { id:'nose_cone', name:'Nose Cone', location:'Rear A-Frame / Differential', category:'Frame',
+              inspection:'Inspect the nose cone / A-frame for cracks, security and leaks.',
+              x:300, y:490 },
+            { id:'grease_flow', name:'Check for Grease Flow', location:'Auto-Lube Points', category:'Lubrication',
+              inspection:'Check for grease flow at the auto-lube points to confirm the greasing system is working.',
+              x:300, y:558 },
+            { id:'rear_hydrair', name:'Rear Hydrair Leaks & Ride', location:'Rear Suspension Struts', category:'Suspension',
+              inspection:'Inspect the rear Hydrair suspension for leaks and correct ride height / charge.',
+              x:300, y:700 },
+            { id:'rear_lights', name:'Rear Lights', location:'Rear of Truck', category:'Electrical',
+              inspection:'Check the rear lights are intact and working.',
+              x:505, y:560 },
+            { id:'repeat_other_side', name:'Repeat for Other Side', location:'Opposite Side of Truck', category:'Procedure',
+              inspection:'Repeat the entire walkaround on the opposite side of the truck so both sides are fully checked.',
+              x:90, y:630 }
+        ];
+
+        // ===================================================================
+        // SPACED REPETITION STATE (localStorage persisted)
+        // ===================================================================
+        const STORAGE_KEY = 'haulTruckAnkiProgress_v1';
+        // status: 'new' | 'review' | 'mastered'; ease drives simple SM-2-lite scheduling.
+        let progress = {};
+
+        function loadProgress() {
+            try {
+                progress = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+            } catch (e) { progress = {}; }
+            // Ensure every component has a record.
+            componentsData.forEach(c => {
+                if (!progress[c.id]) {
+                    progress[c.id] = { status: 'new', reps: 0, due: 0, box: 0 };
+                }
+            });
+        }
+        function saveProgress() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+        }
+
+        function masteredCount() {
+            return componentsData.filter(c => progress[c.id].status === 'mastered').length;
+        }
+        function reviewCount() {
+            return componentsData.filter(c => progress[c.id].status !== 'mastered').length;
+        }
+        function updateStats() {
+            document.getElementById('stat-mastered').textContent = masteredCount();
+            document.getElementById('stat-review').textContent = reviewCount();
+        }
+
+        // ===================================================================
+        // UTILITIES
+        // ===================================================================
+        function shuffle(arr) {
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+        function byId(id) { return componentsData.find(c => c.id === id); }
+        function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+        // Weighted pick: components that are not mastered / are due come first.
+        function pickStudySet(n) {
+            const now = Date.now();
+            const ranked = componentsData.slice().sort((a, b) => {
+                const pa = progress[a.id], pb = progress[b.id];
+                const score = p => (p.status === 'mastered' ? 2 : p.status === 'review' ? 1 : 0)
+                                   + (p.due <= now ? 0 : 0.5);
+                return score(pa) - score(pb) || Math.random() - 0.5;
+            });
+            return ranked.slice(0, n);
+        }
+
+        // ===================================================================
+        // MODE MANAGEMENT
+        // ===================================================================
+        let currentMode = 'diagram';
+        function setMode(mode) {
+            currentMode = mode;
+            const panels = { diagram: 'quiz-panel', flashcards: 'flashcards-panel', study: 'study-panel' };
+            Object.entries(panels).forEach(([m, pid]) => {
+                const el = document.getElementById(pid);
+                el.classList.toggle('hidden', m !== mode);
+                el.classList.toggle('flex', m === mode);
+            });
+            // Header button styles
+            [['diagram','mode-diagram-btn'],['flashcards','mode-flashcards-btn'],['study','mode-study-btn']].forEach(([m, bid]) => {
+                const b = document.getElementById(bid);
+                const active = m === mode;
+                b.className = 'px-4 py-2 rounded-lg text-sm font-semibold transition-all ' +
+                    (active ? 'bg-amber-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white');
+            });
+
+            if (mode === 'diagram') { renderQuizHotspots(); }
+            else if (mode === 'flashcards') { renderFlashcardHotspots(); showFlashcard(); }
+            else if (mode === 'study') { renderStudyHotspots(); }
+        }
+
+        // ===================================================================
+        // MODE 1: 5-BLANK DIAGRAM QUIZ
+        // ===================================================================
+        let quizRound = 0;
+        let quizBlanks = [];        // array of components being quizzed this round
+        let activeBlankIdx = 0;
+        let answered = {};          // id -> true/false correct
+
+        function generateNewQuizRound() {
+            quizRound++;
+            quizBlanks = shuffle(pickStudySet(Math.min(5, componentsData.length)));
+            activeBlankIdx = 0;
+            answered = {};
+            document.getElementById('quiz-progress-badge').textContent = 'Round ' + quizRound;
+            document.getElementById('blanks-remaining-tag').textContent = quizBlanks.length + ' Blanks Active';
+            document.getElementById('feedback-box').classList.add('hidden');
+            renderBlankTabs();
+            renderActiveBlank();
+            renderQuizHotspots();
+            updateRoundScore();
+        }
+
+        function renderBlankTabs() {
+            const wrap = document.getElementById('blank-tabs');
+            wrap.innerHTML = '';
+            quizBlanks.forEach((c, i) => {
+                const done = answered.hasOwnProperty(c.id);
+                const correct = answered[c.id] === true;
+                const active = i === activeBlankIdx;
+                const btn = document.createElement('button');
+                btn.onclick = () => { activeBlankIdx = i; renderActiveBlank(); renderBlankTabs(); renderQuizHotspots(); };
+                let cls = 'flex-shrink-0 w-10 h-10 rounded-lg text-sm font-black border transition-all ';
+                if (done) cls += correct ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 ' : 'bg-red-500/20 text-red-300 border-red-500/50 ';
+                else cls += 'bg-slate-900 text-amber-400 border-slate-700 ';
+                if (active) cls += 'ring-2 ring-amber-400';
+                btn.className = cls;
+                btn.textContent = done ? (correct ? '✓' : '✗') : (i + 1);
+                wrap.appendChild(btn);
+            });
+        }
+
+        function renderActiveBlank() {
+            const c = quizBlanks[activeBlankIdx];
+            document.getElementById('card-blank-number').textContent = 'BLANK #' + (activeBlankIdx + 1);
+            document.getElementById('card-location-hint').textContent = 'Location: ' + c.location;
+            document.getElementById('card-question-text').textContent = 'Which component is at this arrow on the truck?';
+            const hint = c.inspection.length > 60 ? c.inspection.slice(0, 60) + '…' : c.inspection;
+            document.getElementById('card-inspection-hint').textContent = 'Inspection key: "' + hint + '"';
+
+            // Build 4 options: correct + 3 distractors
+            const distractors = shuffle(componentsData.filter(x => x.id !== c.id)).slice(0, 3);
+            const options = shuffle([c, ...distractors]);
+            const cont = document.getElementById('options-container');
+            cont.innerHTML = '';
+            const alreadyAnswered = answered.hasOwnProperty(c.id);
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'text-left px-3 py-2.5 rounded-lg border text-sm transition-all bg-slate-800 border-slate-700 hover:border-amber-500/60 hover:bg-slate-700/60 text-slate-200';
+                btn.textContent = opt.name;
+                if (alreadyAnswered) {
+                    btn.disabled = true;
+                    if (opt.id === c.id) btn.className = 'text-left px-3 py-2.5 rounded-lg border text-sm bg-emerald-500/15 border-emerald-500/50 text-emerald-200';
+                    else btn.className = 'text-left px-3 py-2.5 rounded-lg border text-sm bg-slate-800 border-slate-700 text-slate-500 opacity-60';
+                } else {
+                    btn.onclick = () => answerBlank(c, opt);
+                }
+                cont.appendChild(btn);
+            });
+
+            if (alreadyAnswered) showFeedback(c, answered[c.id]);
+            else document.getElementById('feedback-box').classList.add('hidden');
+        }
+
+        function answerBlank(component, chosen) {
+            const correct = chosen.id === component.id;
+            answered[component.id] = correct;
+
+            // Update spaced-repetition record based on quiz performance.
+            const rec = progress[component.id];
+            if (correct) {
+                rec.reps++;
+                rec.box = Math.min((rec.box || 0) + 1, 5);
+                rec.status = rec.box >= 3 ? 'mastered' : 'review';
+            } else {
+                rec.box = 0;
+                rec.status = 'review';
+            }
+            saveProgress();
+            updateStats();
+
+            // Flash the diagram column
+            const svg = document.getElementById('truck-svg');
+            svg.classList.remove('correct-flash','wrong-flash');
+            void svg.offsetWidth;
+            svg.classList.add(correct ? 'correct-flash' : 'wrong-flash');
+
+            showFeedback(component, correct);
+            renderBlankTabs();
+            renderActiveBlank();
+            renderQuizHotspots();
+            updateRoundScore();
+
+            // Auto-advance to next unanswered blank
+            const nextUnanswered = quizBlanks.findIndex((c, i) => i > activeBlankIdx && !answered.hasOwnProperty(c.id));
+            if (nextUnanswered !== -1) {
+                setTimeout(() => { activeBlankIdx = nextUnanswered; renderActiveBlank(); renderBlankTabs(); renderQuizHotspots(); }, 1100);
+            }
+        }
+
+        function showFeedback(component, correct) {
+            const box = document.getElementById('feedback-box');
+            box.classList.remove('hidden');
+            box.className = 'p-3 rounded-xl border mb-4 transition-all ' +
+                (correct ? 'bg-emerald-500/10 border-emerald-500/40' : 'bg-red-500/10 border-red-500/40');
+            document.getElementById('feedback-title').textContent = correct ? '✅ Correct — ' + component.name : '❌ Not quite — it was ' + component.name;
+            document.getElementById('feedback-title').className = 'font-bold text-sm mb-1 ' + (correct ? 'text-emerald-300' : 'text-red-300');
+            document.getElementById('feedback-detail').textContent = component.inspection;
+            document.getElementById('feedback-detail').className = 'text-xs leading-relaxed ' + (correct ? 'text-emerald-100/80' : 'text-red-100/80');
+        }
+
+        function updateRoundScore() {
+            const correct = Object.values(answered).filter(Boolean).length;
+            document.getElementById('score-round-tracker').textContent = 'Correct this round: ' + correct + '/' + quizBlanks.length;
+        }
+
+        // ===================================================================
+        // MODE 2: ANKI FLASHCARDS
+        // ===================================================================
+        let fcQueue = [];
+        let fcIndex = 0;
+        let fcFlipped = false;
+
+        function buildFlashcardQueue() {
+            // Due/new/review first, mastered last — classic Anki-style ordering.
+            fcQueue = pickStudySet(componentsData.length);
+            fcIndex = 0;
+        }
+
+        function showFlashcard() {
+            if (fcQueue.length === 0) buildFlashcardQueue();
+            if (fcIndex >= fcQueue.length) { buildFlashcardQueue(); }
+            fcFlipped = false;
+            const c = fcQueue[fcIndex];
+            document.getElementById('fc-category').textContent = c.category;
+            document.getElementById('fc-question').textContent = 'Arrow pointing to: ' + c.location;
+            document.getElementById('fc-subtext').textContent = 'What component is here, and what do you inspect?';
+            document.getElementById('fc-answer').textContent = c.name;
+            document.getElementById('fc-detail').innerHTML = '<p><strong>Inspection:</strong> ' + esc(c.inspection) + '</p>';
+            document.getElementById('fc-front-content').classList.remove('hidden');
+            document.getElementById('fc-back-content').classList.add('hidden');
+            document.getElementById('fc-flip-hint').textContent = 'Show Answer';
+            document.getElementById('anki-controls').classList.add('hidden');
+            document.getElementById('fc-queue-count').textContent = 'Card ' + (fcIndex + 1) + ' of ' + fcQueue.length;
+            renderFlashcardHotspots();
+        }
+
+        function flipCard() {
+            if (currentMode !== 'flashcards') return;
+            fcFlipped = !fcFlipped;
+            document.getElementById('fc-front-content').classList.toggle('hidden', fcFlipped);
+            document.getElementById('fc-back-content').classList.toggle('hidden', !fcFlipped);
+            document.getElementById('fc-flip-hint').textContent = fcFlipped ? 'Rate your recall below' : 'Show Answer';
+            document.getElementById('anki-controls').classList.toggle('hidden', !fcFlipped);
+        }
+
+        function rateAnkiCard(rating) {
+            const c = fcQueue[fcIndex];
+            const rec = progress[c.id];
+            const now = Date.now();
+            const DAY = 86400000;
+            if (rating === 'again') {
+                rec.box = 0; rec.status = 'review'; rec.due = now + 60000; // ~1 min
+            } else if (rating === 'good') {
+                rec.box = Math.min((rec.box || 0) + 1, 5);
+                rec.status = rec.box >= 4 ? 'mastered' : 'review';
+                rec.due = now + rec.box * DAY;
+            } else if (rating === 'easy') {
+                rec.box = 5; rec.status = 'mastered';
+                rec.due = now + 7 * DAY;
+                rec.reps = (rec.reps || 0) + 1;
+            }
+            rec.reps = (rec.reps || 0) + 1;
+            saveProgress();
+            updateStats();
+
+            // "Again" re-queues the card near the end of this session.
+            if (rating === 'again') {
+                fcQueue.push(fcQueue.splice(fcIndex, 1)[0]);
+            } else {
+                fcIndex++;
+            }
+            showFlashcard();
+        }
+
+        // ===================================================================
+        // MODE 3: REFERENCE / STUDY
+        // ===================================================================
+        function showStudyDetail(c) {
+            const rec = progress[c.id];
+            const statusBadge = {
+                mastered: '<span class="text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded text-xs">Mastered</span>',
+                review:   '<span class="text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded text-xs">In Review</span>',
+                new:      '<span class="text-slate-300 bg-slate-500/10 border border-slate-500/30 px-2 py-0.5 rounded text-xs">Not Started</span>'
+            }[rec.status];
+            document.getElementById('study-details').innerHTML =
+                '<div class="space-y-3">' +
+                    '<div class="flex items-center justify-between">' +
+                        '<span class="text-xs uppercase tracking-wider font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-md">' + esc(c.category) + '</span>' +
+                        statusBadge +
+                    '</div>' +
+                    '<h4 class="text-2xl font-black text-white">' + esc(c.name) + '</h4>' +
+                    '<p class="text-sm text-slate-400 font-mono">📍 ' + esc(c.location) + '</p>' +
+                    '<div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/50">' +
+                        '<p class="text-xs font-bold text-amber-300 uppercase tracking-wide mb-1">Inspection</p>' +
+                        '<p class="text-sm text-slate-200 leading-relaxed">' + esc(c.inspection) + '</p>' +
+                    '</div>' +
+                    '<p class="text-xs text-slate-500">Reps: ' + (rec.reps || 0) + '</p>' +
+                '</div>';
+        }
+
+        // ===================================================================
+        // HOTSPOT RENDERING (SVG)
+        // ===================================================================
+        function clearHotspots() { document.getElementById('hotspots-group').innerHTML = ''; }
+
+        function makeDot(c, label, opts) {
+            opts = opts || {};
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            g.setAttribute('class', 'hotspot-dot');
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', c.x);
+            circle.setAttribute('cy', c.y);
+            circle.setAttribute('r', opts.r || 13);
+            circle.setAttribute('fill', opts.fill || '#0f172a');
+            circle.setAttribute('stroke', opts.stroke || '#f59e0b');
+            circle.setAttribute('stroke-width', opts.strokeWidth || 3);
+            if (opts.pulse) circle.setAttribute('class', 'hotspot-blank');
+            if (opts.glow) circle.setAttribute('filter', 'url(#glow)');
+            g.appendChild(circle);
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', c.x);
+            text.setAttribute('y', c.y + 4);
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('font-size', opts.fontSize || 12);
+            text.setAttribute('font-weight', 'bold');
+            text.setAttribute('fill', opts.textFill || '#f59e0b');
+            text.textContent = label;
+            g.appendChild(text);
+            if (opts.onClick) g.addEventListener('click', opts.onClick);
+            return g;
+        }
+
+        function renderQuizHotspots() {
+            clearHotspots();
+            const grp = document.getElementById('hotspots-group');
+            quizBlanks.forEach((c, i) => {
+                const done = answered.hasOwnProperty(c.id);
+                const correct = answered[c.id] === true;
+                const active = i === activeBlankIdx;
+                let fill = '#0f172a', stroke = '#f59e0b', textFill = '#f59e0b';
+                if (done) {
+                    fill = correct ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)';
+                    stroke = correct ? '#10b981' : '#ef4444';
+                    textFill = correct ? '#6ee7b7' : '#fca5a5';
+                }
+                grp.appendChild(makeDot(c, String(i + 1), {
+                    fill, stroke, textFill,
+                    pulse: !done && active,
+                    glow: active,
+                    r: active ? 15 : 13,
+                    onClick: () => { activeBlankIdx = i; renderActiveBlank(); renderBlankTabs(); renderQuizHotspots(); }
+                }));
+            });
+        }
+
+        function renderFlashcardHotspots() {
+            clearHotspots();
+            const grp = document.getElementById('hotspots-group');
+            const current = fcQueue[fcIndex];
+            componentsData.forEach((c, i) => {
+                const isCurrent = current && c.id === current.id;
+                const rec = progress[c.id];
+                const stroke = rec.status === 'mastered' ? '#10b981' : rec.status === 'review' ? '#f59e0b' : '#64748b';
+                grp.appendChild(makeDot(c, String(i + 1), {
+                    r: isCurrent ? 15 : 9,
+                    fontSize: isCurrent ? 12 : 9,
+                    fill: isCurrent ? 'rgba(245,158,11,0.3)' : '#0f172a',
+                    stroke: isCurrent ? '#f59e0b' : stroke,
+                    textFill: isCurrent ? '#fde047' : '#94a3b8',
+                    glow: isCurrent
+                }));
+            });
+        }
+
+        function renderStudyHotspots() {
+            clearHotspots();
+            const grp = document.getElementById('hotspots-group');
+            componentsData.forEach((c, i) => {
+                const rec = progress[c.id];
+                const stroke = rec.status === 'mastered' ? '#10b981' : rec.status === 'review' ? '#f59e0b' : '#64748b';
+                const textFill = rec.status === 'mastered' ? '#6ee7b7' : rec.status === 'review' ? '#fbbf24' : '#cbd5e1';
+                grp.appendChild(makeDot(c, String(i + 1), {
+                    r: 11, fontSize: 11, stroke, textFill,
+                    onClick: () => showStudyDetail(c)
+                }));
+            });
+        }
+
+        // ===================================================================
+        // RESET
+        // ===================================================================
+        function resetAnkiProgress() {
+            if (!confirm('Reset all memory progress? This clears mastered/review state for every component.')) return;
+            localStorage.removeItem(STORAGE_KEY);
+            progress = {};
+            loadProgress();
+            saveProgress();
+            updateStats();
+            buildFlashcardQueue();
+            generateNewQuizRound();
+            if (currentMode === 'flashcards') showFlashcard();
+            if (currentMode === 'study') renderStudyHotspots();
+        }
+
+        // ===================================================================
+        // INIT
+        // ===================================================================
+        loadProgress();
+        saveProgress();
+        updateStats();
+        buildFlashcardQueue();
+        generateNewQuizRound();
+        setMode('diagram');
+    </script>
+</body>
+</html>
