@@ -7,8 +7,7 @@
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{--bg:#0f172a;--panel:#1e293b;--panel2:#0f172a;--line:#334155;--line2:#475569;--ink:#e2e8f0;--muted:#94a3b8;
-        --amber:#f59e0b;--amber-l:#fbbf24;--green:#10b981;--green-l:#6ee7b7;--red:#ef4444;--red-l:#fca5a5;
-        --paper:#f6f2e8;--sketch:#2b3547;--arrow:#963434}
+        --amber:#f59e0b;--amber-l:#fbbf24;--green:#10b981;--green-l:#6ee7b7;--red:#ef4444;--red-l:#fca5a5;--paper:#f6f2e8}
   body{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);
        color:var(--ink);min-height:100vh;display:flex;flex-direction:column;line-height:1.5}
   button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
@@ -22,19 +21,19 @@
   .toggle{display:flex;background:var(--panel2);padding:4px;border-radius:12px;border:1px solid var(--line)}
   .toggle button{padding:8px 14px;border-radius:9px;font-size:14px;font-weight:600;color:var(--muted)}
   .toggle button.on{background:var(--amber);color:#0b1220}
-  main{flex:1;width:100%;max-width:1300px;margin:0 auto;padding:18px;display:grid;grid-template-columns:1fr;gap:18px}
-  @media(min-width:1000px){main{grid-template-columns:1.35fr 1fr}}
+  main{flex:1;width:100%;max-width:1320px;margin:0 auto;padding:18px;display:grid;grid-template-columns:1fr;gap:18px}
+  @media(min-width:1000px){main{grid-template-columns:1.3fr 1fr}}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
   .card h2{font-size:15px;color:#cbd5e1;margin-bottom:10px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center}
   .pill{font-size:12px;background:rgba(245,158,11,.18);color:var(--amber-l);border:1px solid rgba(245,158,11,.35);padding:2px 10px;border-radius:999px}
   .stage{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden;touch-action:none}
-  svg#truck{width:100%;height:auto;display:block;cursor:grab;max-height:76vh;margin:0 auto}
+  svg#truck{width:100%;height:auto;display:block;cursor:grab;max-height:78vh;margin:0 auto}
   svg#truck.drag{cursor:grabbing}
   .zoomctl{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:6px;z-index:5}
   .zoomctl button{width:34px;height:34px;border-radius:9px;background:rgba(15,23,42,.85);border:1px solid var(--line2);
-      color:#e2e8f0;font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+      color:#e2e8f0;font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center}
   .zoomctl button:hover{background:rgba(30,41,59,.95);border-color:var(--amber)}
-  .zoomctl button.rz{font-size:12px;font-weight:700}
+  .zoomctl button.rz{font-size:12px}
   .hint{font-size:12px;color:var(--muted);margin-top:10px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
   .hint a{color:var(--muted);text-decoration:underline;cursor:pointer}.hint a:hover{color:var(--red-l)}
   .progress{height:8px;border-radius:999px;background:#0b1220;border:1px solid var(--line);overflow:hidden;flex:1;min-width:120px}
@@ -55,7 +54,7 @@
   .actions{display:flex;gap:10px;padding-top:14px;margin-top:6px;border-top:1px solid var(--line)}
   .btn{font-weight:700;padding:11px 18px;border-radius:11px}.btn.amber{background:var(--amber);color:#0b1220;flex:1}.btn.amber:hover{background:var(--amber-l)}
   .btn.green{background:var(--green);color:#04231a}
-  .studylist{display:flex;flex-direction:column;gap:6px;max-height:640px;overflow-y:auto}
+  .studylist{display:flex;flex-direction:column;gap:6px;max-height:660px;overflow-y:auto}
   .item{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-radius:10px;border:1px solid transparent;cursor:pointer}
   .item:hover{background:var(--panel2)}.item.sel{background:var(--panel2);border-color:rgba(245,158,11,.4)}
   .inum{flex-shrink:0;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;background:var(--line2);color:#fff}
@@ -68,161 +67,142 @@
 <body>
 <header>
   <div class="brand"><div class="logo">EVR</div>
-    <div><h1>Circle Check — Cheat Sheet Trainer</h1><div class="sub">Your diagram, redrawn clean · arrows point at every part · zoom &amp; pan</div></div></div>
+    <div><h1>Circle Check &mdash; Cheat Sheet Trainer</h1><div class="sub">Your sheet redrawn &middot; arrows point at each part &middot; zoom &amp; pan</div></div></div>
   <div class="counts">
     <span><span class="dot" style="background:var(--green)"></span>Mastered <strong id="c-master" style="color:var(--green-l)">0</strong></span>
     <span><span class="dot" style="background:var(--red)"></span>Missed <strong id="c-missed" style="color:var(--red-l)">0</strong></span>
-    <div class="toggle"><button id="tb-test" class="on" onclick="setMode('test')">✍️ Test</button><button id="tb-study" onclick="setMode('study')">📖 Study</button></div>
+    <div class="toggle"><button id="tb-test" class="on" onclick="setMode('test')">&#9997;&#65039; Test</button><button id="tb-study" onclick="setMode('study')">&#128214; Study</button></div>
   </div>
 </header>
 <main>
   <section class="card">
-    <h2><span id="dtitle">🚚 Top-down truck — blanks 1–5</span><span id="rpill" class="pill">Round 1</span></h2>
+    <h2><span id="dtitle">&#128666; Top-down truck &mdash; blanks 1&ndash;5</span><span id="rpill" class="pill">Round 1</span></h2>
     <div class="stage" id="stage">
-      <svg id="truck" viewBox="0 0 760 1040" role="img" aria-label="Top-down haul truck diagram recreated from the EVR circle check cheat sheet">
+      <svg id="truck" viewBox="0 0 760 1040" role="img" aria-label="Top-down haul truck diagram from the EVR circle check sheet">
         <g id="viewport">
           <rect x="0" y="0" width="760" height="1040" fill="#f6f2e8"/>
-          <!-- ===== TOP-DOWN TRUCK (front at top), redrawn from the cheat sheet ===== -->
-          <!-- front ladder + deck -->
-          <rect x="232" y="44" width="44" height="46" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <line x1="232" y1="59" x2="276" y2="59" stroke="#2b3547" stroke-width="2"/>
-          <line x1="232" y1="74" x2="276" y2="74" stroke="#2b3547" stroke-width="2"/>
-          <rect x="280" y="48" width="200" height="34" rx="4" fill="#e7e2d4" stroke="#2b3547" stroke-width="3"/>
-          <!-- chassis spine -->
-          <rect x="336" y="82" width="88" height="800" rx="8" fill="#eae5d7" stroke="#2b3547" stroke-width="3"/>
-          <!-- engine block (cartoon detail) -->
-          <rect x="318" y="128" width="130" height="140" rx="8" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
-          <line x1="345" y1="140" x2="345" y2="256" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="372" y1="140" x2="372" y2="256" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="399" y1="140" x2="399" y2="256" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="326" y1="176" x2="440" y2="176" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="326" y1="220" x2="440" y2="220" stroke="#2b3547" stroke-width="1.5"/>
-          <rect x="424" y="136" width="18" height="24" rx="4" fill="#e0dac9" stroke="#2b3547" stroke-width="2"/>
-          <!-- front tires -->
-          <rect x="152" y="152" width="96" height="212" rx="34" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
-          <line x1="158" y1="210" x2="242" y2="210" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="158" y1="258" x2="242" y2="258" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="158" y1="306" x2="242" y2="306" stroke="#2b3547" stroke-width="1.5"/>
-          <rect x="512" y="152" width="96" height="212" rx="34" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
-          <line x1="518" y1="210" x2="602" y2="210" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="518" y1="258" x2="602" y2="258" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="518" y1="306" x2="602" y2="306" stroke="#2b3547" stroke-width="1.5"/>
-          <!-- horse collar crossbar -->
-          <rect x="180" y="308" width="400" height="36" rx="8" fill="#e7e2d4" stroke="#2b3547" stroke-width="3"/>
-          <!-- steering linkage -->
-          <line x1="238" y1="330" x2="304" y2="370" stroke="#2b3547" stroke-width="3"/>
-          <circle cx="262" cy="352" r="10" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <circle cx="296" cy="364" r="8" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <!-- traction alternator -->
-          <circle cx="380" cy="402" r="26" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
-          <circle cx="380" cy="402" r="10" fill="none" stroke="#2b3547" stroke-width="2"/>
-          <!-- accumulators -->
-          <circle cx="306" cy="436" r="13" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <circle cx="330" cy="450" r="11" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <circle cx="492" cy="380" r="13" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <circle cx="520" cy="392" r="11" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <!-- pumps -->
-          <rect x="348" y="478" width="30" height="46" rx="5" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <rect x="394" y="478" width="30" height="46" rx="5" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <!-- filters (dashed, like the sheet) -->
-          <circle cx="478" cy="462" r="14" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="5 4"/>
-          <circle cx="500" cy="446" r="11" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="5 4"/>
-          <circle cx="513" cy="488" r="11" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="5 4"/>
-          <!-- blower tube -->
-          <rect x="432" y="540" width="92" height="20" rx="9" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <!-- hydraulic tank (left) -->
-          <rect x="198" y="476" width="104" height="118" rx="14" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
-          <line x1="210" y1="506" x2="290" y2="506" stroke="#2b3547" stroke-width="1.5"/>
-          <!-- fuel tank (right) -->
-          <rect x="484" y="524" width="108" height="128" rx="10" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
-          <circle cx="538" cy="540" r="7" fill="none" stroke="#2b3547" stroke-width="2"/>
-          <!-- nose cone -->
-          <polygon points="380,596 338,668 422,668" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
-          <circle cx="380" cy="622" r="9" fill="#e0dac9" stroke="#2b3547" stroke-width="2.5"/>
-          <!-- hoist cylinders -->
-          <rect x="448" y="602" width="16" height="52" rx="7" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <rect x="472" y="602" width="16" height="52" rx="7" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <!-- grease device -->
-          <circle cx="302" cy="652" r="20" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <circle cx="296" cy="646" r="6" fill="#2b3547"/>
-          <!-- rear axle -->
-          <rect x="214" y="722" width="332" height="46" rx="8" fill="#e7e2d4" stroke="#2b3547" stroke-width="3"/>
-          <!-- rear duals -->
-          <rect x="108" y="672" width="78" height="238" rx="28" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
-          <rect x="196" y="672" width="78" height="238" rx="28" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
-          <rect x="486" y="672" width="78" height="238" rx="28" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
-          <rect x="574" y="672" width="78" height="238" rx="28" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
-          <line x1="114" y1="740" x2="186" y2="740" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="114" y1="800" x2="186" y2="800" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="114" y1="860" x2="186" y2="860" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="580" y1="740" x2="652" y2="740" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="580" y1="800" x2="652" y2="800" stroke="#2b3547" stroke-width="1.5"/>
-          <line x1="580" y1="860" x2="652" y2="860" stroke="#2b3547" stroke-width="1.5"/>
+          <!-- ===== FRONT (top): ladder, deck, radiator ===== -->
+          <rect x="214" y="46" width="40" height="52" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <line x1="214" y1="63" x2="254" y2="63" stroke="#2b3547" stroke-width="1.8"/>
+          <line x1="214" y1="80" x2="254" y2="80" stroke="#2b3547" stroke-width="1.8"/>
+          <rect x="254" y="52" width="196" height="40" rx="4" fill="#e7e2d4" stroke="#2b3547" stroke-width="3"/>
+          <ellipse cx="340" cy="72" rx="66" ry="30" fill="none" stroke="#8a6f5a" stroke-width="2"/>
+          <rect x="452" y="58" width="86" height="74" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="7 4"/>
+          <!-- ===== ENGINE BLOCK ===== -->
+          <rect x="300" y="132" width="160" height="150" rx="8" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <line x1="333" y1="144" x2="333" y2="270" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="366" y1="144" x2="366" y2="270" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="399" y1="144" x2="399" y2="270" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="432" y1="144" x2="432" y2="270" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="308" y1="180" x2="452" y2="180" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="308" y1="228" x2="452" y2="228" stroke="#2b3547" stroke-width="1.5"/>
+          <circle cx="470" cy="160" r="13" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <circle cx="470" cy="196" r="13" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- chassis rails -->
+          <rect x="336" y="282" width="88" height="600" fill="#eae5d7" stroke="#2b3547" stroke-width="3"/>
+          <!-- ===== FRONT TIRES ===== -->
+          <rect x="150" y="146" width="96" height="208" rx="34" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <line x1="156" y1="202" x2="240" y2="202" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="156" y1="250" x2="240" y2="250" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="156" y1="298" x2="240" y2="298" stroke="#2b3547" stroke-width="1.5"/>
+          <rect x="514" y="146" width="96" height="208" rx="34" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <line x1="520" y1="202" x2="604" y2="202" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="520" y1="250" x2="604" y2="250" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="520" y1="298" x2="604" y2="298" stroke="#2b3547" stroke-width="1.5"/>
+          <!-- front hydrair struts -->
+          <circle cx="266" cy="330" r="20" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <circle cx="494" cy="330" r="20" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- ===== HORSE COLLAR + STEERING CROSS OVER ===== -->
+          <rect x="180" y="300" width="400" height="40" rx="6" fill="#e7e2d4" stroke="#2b3547" stroke-width="3"/>
+          <ellipse cx="380" cy="320" rx="112" ry="34" fill="none" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- steering linkage: rods + 2 small joints (LEFT) -->
+          <line x1="246" y1="344" x2="316" y2="386" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="286" cy="368" r="12" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <circle cx="316" cy="388" r="11" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <rect x="326" y="382" width="34" height="14" rx="6" fill="#efe9db" stroke="#2b3547" stroke-width="2"/>
+          <!-- ===== STEERING ACCUMULATORS - 2, LEFT ===== -->
+          <circle cx="300" cy="440" r="21" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="300" cy="482" r="21" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <!-- ===== BRAKE ACCUMULATORS - 2, RIGHT ===== -->
+          <circle cx="462" cy="398" r="21" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="462" cy="440" r="21" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <!-- ===== TRACTION ALTERNATOR (centre, behind engine) ===== -->
+          <circle cx="380" cy="440" r="30" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="380" cy="440" r="12" fill="none" stroke="#2b3547" stroke-width="2"/>
+          <!-- ===== FILTERS - 3 on the RIGHT (2 hoist upper, 1 steering lower) ===== -->
+          <circle cx="470" cy="506" r="14" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="5 4"/>
+          <circle cx="470" cy="540" r="14" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="5 4"/>
+          <circle cx="470" cy="574" r="14" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="5 4"/>
+          <!-- ===== PUMPS (centre) ===== -->
+          <rect x="344" y="506" width="32" height="52" rx="6" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <rect x="386" y="506" width="32" height="52" rx="6" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- ===== HYDRAULIC TANK (LEFT) ===== -->
+          <circle cx="252" cy="576" r="46" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <ellipse cx="246" cy="562" rx="16" ry="7" fill="none" stroke="#2b3547" stroke-width="2"/>
+          <circle cx="262" cy="588" r="10" fill="none" stroke="#2b3547" stroke-width="2"/>
+          <!-- ===== FUEL TANK (RIGHT) ===== -->
+          <rect x="496" y="600" width="112" height="120" rx="6" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="512" cy="616" r="7" fill="none" stroke="#2b3547" stroke-width="2"/>
+          <!-- ===== BLOWER TUBE (right of chassis) ===== -->
+          <rect x="436" y="612" width="96" height="22" rx="10" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- ===== NOSE CONE (centre rear) ===== -->
+          <ellipse cx="380" cy="676" rx="56" ry="44" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <polygon points="352,712 408,712 424,806 336,806" fill="#eae5d7" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- grease points: 2 small devices LEFT of nose cone -->
+          <rect x="296" y="654" width="26" height="24" rx="4" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <rect x="296" y="692" width="26" height="24" rx="4" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- hoist cylinders: RIGHT of nose cone -->
+          <rect x="440" y="652" width="20" height="56" rx="9" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <rect x="466" y="652" width="20" height="56" rx="9" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- ===== REAR AXLE ===== -->
+          <rect x="214" y="738" width="332" height="48" rx="6" fill="#e7e2d4" stroke="#2b3547" stroke-width="3"/>
+          <!-- ===== REAR DUALS ===== -->
+          <rect x="106" y="690" width="80" height="232" rx="28" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <rect x="192" y="690" width="80" height="232" rx="28" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <rect x="488" y="690" width="80" height="232" rx="28" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <rect x="574" y="690" width="80" height="232" rx="28" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <line x1="112" y1="756" x2="180" y2="756" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="112" y1="820" x2="180" y2="820" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="112" y1="884" x2="180" y2="884" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="580" y1="756" x2="648" y2="756" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="580" y1="820" x2="648" y2="820" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="580" y1="884" x2="648" y2="884" stroke="#2b3547" stroke-width="1.5"/>
           <!-- rear hydrair struts -->
-          <circle cx="250" cy="798" r="15" fill="#e0dac9" stroke="#2b3547" stroke-width="3"/>
-          <circle cx="510" cy="798" r="15" fill="#e0dac9" stroke="#2b3547" stroke-width="3"/>
-          <!-- rear lights -->
-          <rect x="332" y="958" width="28" height="14" rx="3" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <rect x="400" y="958" width="28" height="14" rx="3" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
-          <line x1="360" y1="965" x2="400" y2="965" stroke="#2b3547" stroke-width="2"/>
-          <!-- markers + arrows injected here -->
+          <circle cx="248" cy="812" r="17" fill="#e0dac9" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="512" cy="812" r="17" fill="#e0dac9" stroke="#2b3547" stroke-width="3"/>
+          <!-- ===== REAR LIGHTS ===== -->
+          <rect x="322" y="946" width="32" height="16" rx="3" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <rect x="406" y="946" width="32" height="16" rx="3" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <line x1="354" y1="954" x2="406" y2="954" stroke="#2b3547" stroke-width="2"/>
+          <line x1="380" y1="922" x2="380" y2="946" stroke="#2b3547" stroke-width="2"/>
           <g id="markers"></g>
         </g>
       </svg>
       <div class="zoomctl">
         <button onclick="zoomBtn(1.3)" title="Zoom in">+</button>
-        <button onclick="zoomBtn(1/1.3)" title="Zoom out">−</button>
-        <button class="rz" onclick="zoomReset()" title="Reset view">⤢</button>
+        <button onclick="zoomBtn(1/1.3)" title="Zoom out">&minus;</button>
+        <button class="rz" onclick="zoomReset()" title="Reset view">&#10530;</button>
       </div>
     </div>
-    <div class="hint"><span id="dhint">💡 Each numbered circle has an arrow pointing at its part — just like your sheet. Zoom/pinch and pan.</span><a onclick="resetProgress()">Reset progress</a></div>
+    <div class="hint"><span id="dhint">&#128161; Follow each numbered arrow to the part. Scroll/pinch to zoom, drag to pan.</span><a onclick="resetProgress()">Reset progress</a></div>
     <div class="hint"><div class="progress"><span id="pfill" style="width:0%"></span></div><span id="ptext" style="font-family:ui-monospace,monospace">0/27 mastered</span></div>
   </section>
   <section class="card" id="panel-test">
-    <div class="rowline"><h3>✍️ What is each blank?</h3><span id="score" class="tag">0/5</span></div>
+    <div class="rowline"><h3>&#9997;&#65039; What is each blank?</h3><span id="score" class="tag">0/5</span></div>
     <div class="lead">Follow each numbered arrow to the part it points at, then type what it is. Close enough counts.</div>
     <div id="blanks"></div>
     <div class="actions"><button id="check" class="btn amber" onclick="checkAnswers()">Check answers</button>
-      <button id="next" class="btn green" style="display:none" onclick="newRound()">Next 5 →</button></div>
+      <button id="next" class="btn green" style="display:none" onclick="newRound()">Next 5 &rarr;</button></div>
   </section>
   <section class="card" id="panel-study" style="display:none">
-    <div class="rowline"><h3>📖 Every component</h3><span class="tag">27 parts</span></div>
-    <div class="lead">All 27 arrows shown, numbered like the quiz. Tap a part here or on the diagram to highlight it.</div>
+    <div class="rowline"><h3>&#128214; Every component</h3><span class="tag">27 parts</span></div>
+    <div class="lead">All 27 arrows shown. Tap a part here or on the diagram to highlight it, then zoom in.</div>
     <div id="studylist" class="studylist"></div>
   </section>
 </main>
 <script>
-/* ax,ay = numbered circle (where the label text sits on the sheet); tx,ty = arrow tip (the part itself) */
-const componentsData = [
- {num:1,id:'lunch_bag',name:'Leave lunch bag on the bottom step',cat:'Safety & Procedure',insp:'Put your lunch bag on the bottom step before the walkaround — a reminder the circle check is underway.',ax:92,ay:100,tx:252,ty:64,accept:['lunch']},
- {num:2,id:'dipstick',name:'Engine Oil Dip Stick',cat:'Engine Bay',insp:'Pull the dip stick and confirm engine oil is within the safe range before start-up.',ax:80,ay:238,tx:320,ty:206,accept:['dipstick','dip stick']},
- {num:3,id:'engine_debris',name:'Debris in Engine & Turbo Area',cat:'Fire Safety',insp:'Clear debris/combustible material from the engine and turbo area — hot surfaces are a fire risk.',ax:160,ay:70,tx:348,ty:132,accept:['debris']},
- {num:4,id:'overhead_leaks',name:'Leaks Overhead & Turbo Area',cat:'Engine Bay',insp:'Look overhead through the engine/turbo for oil, fuel or coolant leaks and weeping hoses.',ax:80,ay:330,tx:352,ty:262,accept:['overhead','over head','head and turbo','turbo area']},
- {num:5,id:'suspensions_keepers',name:'Suspensions & Keepers',cat:'Suspension',insp:'Inspect suspension mounts and keeper pins/bolts for security, fit and wear.',ax:80,ay:432,tx:232,ty:322,accept:['suspension','keeper']},
- {num:6,id:'steering',name:'Steering',cat:'Steering',insp:'Check steering linkage, cylinders and connections for leaks, cracks and loose hardware.',ax:80,ay:540,tx:268,ty:356,accept:['steering']},
- {num:7,id:'front_hydrair',name:'Front Hydrair Suspension',cat:'Suspension',insp:'Check the front Hydrair strut — ride height/charge, no oil leaks, rod undamaged.',ax:668,ay:92,tx:560,ty:200,accept:['front hydrair','front susp','hydrair']},
- {num:8,id:'horse_collar',name:'Horse Collar & Steering Cross Over',cat:'Steering',insp:'Inspect the horse collar and steering cross-over for cracks, security and leaks.',ax:238,ay:28,tx:340,ty:314,accept:['horse collar','horse','collar']},
- {num:9,id:'lugs_sidewall',name:'Lugs & Sidewall',cat:'Tires & Wheels',insp:'Check wheel lugs/nuts are present and tight; inspect the sidewall for cuts, bulges or damage.',ax:80,ay:650,tx:200,ty:260,accept:['lug','sidewall']},
- {num:10,id:'brake_cooling_lines',name:'Brake Lines & Cooling Lines',cat:'Brakes',insp:'Inspect brake lines and cooling lines for chafing, leaks and secure routing.',ax:80,ay:760,tx:346,ty:560,accept:['brake line','cooling line','brake and cooling']},
- {num:11,id:'steering_accumulators',name:'Steering Accumulators',cat:'Steering',insp:'Check the steering accumulators for correct charge, mounting security and leaks.',ax:255,ay:1012,tx:318,ty:448,accept:['steering accum','steer accum']},
- {num:12,id:'brake_accumulators',name:'Brake Accumulators',cat:'Brakes',insp:'Check the brake accumulators for correct charge, mounting security and leaks.',ax:668,ay:250,tx:508,ty:388,accept:['brake accum']},
- {num:13,id:'hoist_circuit_pump',name:'Hoist Circuit Pump',cat:'Hydraulics',insp:'Inspect the hoist circuit pump for leaks, security and hose condition.',ax:330,ay:1012,tx:363,ty:522,accept:['hoist pump','hoist circuit pump']},
- {num:14,id:'steering_brake_pump',name:'Steering & Brake Circuit Pump',cat:'Hydraulics',insp:'Inspect the steering & brake circuit pump for leaks, security and hose condition.',ax:405,ay:1012,tx:409,ty:522,accept:['steering and brake pump','steering & brake','brake circuit pump','steering brake pump','brake pump']},
- {num:15,id:'traction_alternator',name:'Traction Alternator',cat:'Electrical',insp:'Inspect the traction alternator area for debris, leaks and secure connections.',ax:560,ay:28,tx:394,ty:390,accept:['traction alternator','alternator']},
- {num:16,id:'hoist_circuit_filters',name:'Hoist Circuit Filters',cat:'Filters',insp:'Check the hoist circuit filters for leaks, condition and restriction indicators.',ax:668,ay:330,tx:487,ty:455,accept:['hoist filter','hoist circuit filter']},
- {num:17,id:'steering_circuit_filter',name:'Steering Circuit Filter',cat:'Filters',insp:'Check the steering circuit filter for leaks, condition and restriction indicator.',ax:668,ay:395,tx:514,ty:488,accept:['steering filter','steering circuit filter']},
- {num:18,id:'blower_tube',name:'Blower Tube',cat:'Engine Bay',insp:'Inspect the blower tube for security, cracks and clear airflow.',ax:668,ay:460,tx:480,ty:550,accept:['blower']},
- {num:19,id:'fuel_tank',name:'Fuel Tank & Mounts',cat:'Fuel System',insp:'Inspect the fuel tank and mounts for leaks, secure mounting and cap condition.',ax:668,ay:525,tx:540,ty:588,accept:['fuel']},
- {num:20,id:'hoist_cylinders',name:'Hoist Cylinders',cat:'Hydraulics',insp:'Inspect the hoist cylinders for leaks, rod damage and pin/mount security.',ax:668,ay:595,tx:468,ty:628,accept:['hoist cylinder','cylinder']},
- {num:21,id:'hydraulic_tank',name:'Hydraulic Tank & Mounts',cat:'Hydraulics',insp:'Check the hydraulic tank and mounts — fluid level, secure mounting, no leaks at fittings.',ax:180,ay:1012,tx:250,ty:592,accept:['hydraulic tank','hyd tank','hydraulic']},
- {num:22,id:'nose_cone',name:'Nose Cone',cat:'Frame',insp:'Inspect the nose cone / A-frame for cracks, security and leaks.',ax:555,ay:1012,tx:392,ty:650,accept:['nose cone','nose']},
- {num:23,id:'grease_flow',name:'Check for Grease Flow',cat:'Lubrication',insp:'Check for grease flow at the auto-lube points to confirm the greasing system is working.',ax:480,ay:1012,tx:308,ty:668,accept:['grease']},
- {num:24,id:'tires_condition',name:'Check Tires for Condition',cat:'Tires & Wheels',insp:'Check tires overall — inflation, cuts, separation, and rim/wheel damage.',ax:80,ay:870,tx:147,ty:850,accept:['tire','tyre']},
- {num:25,id:'rear_hydrair',name:'Rear Hydrair Leaks & Ride',cat:'Suspension',insp:'Inspect the rear Hydrair suspension for leaks and correct ride height / charge.',ax:668,ay:745,tx:513,ty:798,accept:['rear hydrair','rear susp']},
- {num:26,id:'rear_lights',name:'Rear Lights',cat:'Electrical',insp:'Check the rear lights are intact and working.',ax:668,ay:860,tx:416,ty:962,accept:['rear light','lights']},
- {num:27,id:'repeat_other_side',name:'Repeat for Other Side',cat:'Procedure',insp:'Repeat the whole walkaround on the opposite side of the truck.',ax:668,ay:975,tx:600,ty:940,accept:['repeat','other side']}
-];
-const KEY='haulTruckTopDown_v1';
+const componentsData = [{"num": 1, "id": "lunch_bag", "name": "Leave lunch bag on the bottom step", "cat": "Safety & Procedure", "insp": "Put your lunch bag on the bottom step before the walkaround \u2014 a reminder the circle check is underway.", "ax": 70, "ay": 120, "tx": 232, "ty": 72, "accept": ["lunch"]}, {"num": 2, "id": "dipstick", "name": "Engine Oil Dip Stick", "cat": "Engine Bay", "insp": "Pull the dip stick and confirm engine oil is within the safe range before start-up.", "ax": 70, "ay": 200, "tx": 306, "ty": 196, "accept": ["dipstick", "dip stick"]}, {"num": 3, "id": "engine_debris", "name": "Debris in Engine & Turbo Area", "cat": "Fire Safety", "insp": "Clear debris/combustible material from the engine and turbo area \u2014 hot surfaces are a fire risk.", "ax": 690, "ay": 120, "tx": 470, "ty": 158, "accept": ["debris"]}, {"num": 4, "id": "overhead_leaks", "name": "Leaks Overhead & Turbo Area", "cat": "Engine Bay", "insp": "Look overhead through the engine/turbo for oil, fuel or coolant leaks and weeping hoses.", "ax": 70, "ay": 268, "tx": 320, "ty": 258, "accept": ["overhead", "over head", "head and turbo", "turbo area"]}, {"num": 5, "id": "suspensions_keepers", "name": "Suspensions & Keepers", "cat": "Suspension", "insp": "Inspect suspension mounts and keeper pins/bolts for security, fit and wear.", "ax": 70, "ay": 340, "tx": 250, "ty": 328, "accept": ["suspension", "keeper"]}, {"num": 6, "id": "steering", "name": "Steering", "cat": "Steering", "insp": "Check steering linkage, cylinders and connections for leaks, cracks and loose hardware.", "ax": 70, "ay": 410, "tx": 288, "ty": 370, "accept": ["steering"]}, {"num": 7, "id": "front_hydrair", "name": "Front Hydrair Suspension", "cat": "Suspension", "insp": "Check the front Hydrair strut \u2014 ride height/charge, no oil leaks, rod undamaged.", "ax": 690, "ay": 330, "tx": 510, "ty": 330, "accept": ["front hydrair", "front susp", "hydrair"]}, {"num": 8, "id": "horse_collar", "name": "Horse Collar & Steering Cross Over", "cat": "Steering", "insp": "Inspect the horse collar and steering cross-over for cracks, security and leaks.", "ax": 690, "ay": 246, "tx": 470, "ty": 312, "accept": ["horse collar", "horse", "collar"]}, {"num": 9, "id": "lugs_sidewall", "name": "Lugs & Sidewall", "cat": "Tires & Wheels", "insp": "Check wheel lugs/nuts are present and tight; inspect the sidewall for cuts, bulges or damage.", "ax": 70, "ay": 166, "tx": 168, "ty": 220, "accept": ["lug", "sidewall"]}, {"num": 10, "id": "brake_cooling_lines", "name": "Brake Lines & Cooling Lines", "cat": "Brakes", "insp": "Inspect brake lines and cooling lines for chafing, leaks and secure routing.", "ax": 70, "ay": 600, "tx": 336, "ty": 540, "accept": ["brake line", "cooling line", "brake and cooling"]}, {"num": 11, "id": "steering_accumulators", "name": "Steering Accumulators", "cat": "Steering", "insp": "Check the two steering accumulators (left side) for correct charge, mounting security and leaks.", "ax": 70, "ay": 470, "tx": 279, "ty": 440, "accept": ["steering accum", "steer accum"], "t2": [279, 482]}, {"num": 12, "id": "brake_accumulators", "name": "Brake Accumulators", "cat": "Brakes", "insp": "Check the two brake accumulators (right side) for correct charge, mounting security and leaks.", "ax": 690, "ay": 400, "tx": 483, "ty": 398, "accept": ["brake accum"], "t2": [483, 440]}, {"num": 13, "id": "hoist_circuit_pump", "name": "Hoist Circuit Pump", "cat": "Hydraulics", "insp": "Inspect the hoist circuit pump for leaks, security and hose condition.", "ax": 120, "ay": 700, "tx": 344, "ty": 522, "accept": ["hoist pump", "hoist circuit pump"]}, {"num": 14, "id": "steering_brake_pump", "name": "Steering & Brake Circuit Pump", "cat": "Hydraulics", "insp": "Inspect the steering & brake circuit pump for leaks, security and hose condition.", "ax": 120, "ay": 762, "tx": 386, "ty": 548, "accept": ["steering and brake pump", "steering & brake", "brake circuit pump", "steering brake pump", "brake pump"]}, {"num": 15, "id": "traction_alternator", "name": "Traction Alternator", "cat": "Electrical", "insp": "Inspect the traction alternator area for debris, leaks and secure connections.", "ax": 690, "ay": 470, "tx": 410, "ty": 440, "accept": ["traction alternator", "alternator"]}, {"num": 16, "id": "hoist_circuit_filters", "name": "Hoist Circuit Filters", "cat": "Filters", "insp": "Check the two hoist circuit filters (upper of the three on the right) for leaks, condition and restriction indicators.", "ax": 690, "ay": 530, "tx": 486, "ty": 506, "accept": ["hoist filter", "hoist circuit filter"], "t2": [486, 540]}, {"num": 17, "id": "steering_circuit_filter", "name": "Steering Circuit Filter", "cat": "Filters", "insp": "Check the steering circuit filter \u2014 the lowest of the three filters on the right \u2014 for leaks and condition.", "ax": 690, "ay": 590, "tx": 486, "ty": 574, "accept": ["steering filter", "steering circuit filter"]}, {"num": 18, "id": "blower_tube", "name": "Blower Tube", "cat": "Engine Bay", "insp": "Inspect the blower tube for security, cracks and clear airflow.", "ax": 690, "ay": 650, "tx": 534, "ty": 623, "accept": ["blower"]}, {"num": 19, "id": "fuel_tank", "name": "Fuel Tank & Mounts", "cat": "Fuel System", "insp": "Inspect the fuel tank and mounts for leaks, secure mounting and cap condition.", "ax": 690, "ay": 712, "tx": 610, "ty": 660, "accept": ["fuel"]}, {"num": 20, "id": "hoist_cylinders", "name": "Hoist Cylinders", "cat": "Hydraulics", "insp": "Inspect the hoist cylinders (right of the nose cone) for leaks, rod damage and pin/mount security.", "ax": 690, "ay": 775, "tx": 488, "ty": 678, "accept": ["hoist cylinder", "cylinder"]}, {"num": 21, "id": "hydraulic_tank", "name": "Hydraulic Tank & Mounts", "cat": "Hydraulics", "insp": "Check the hydraulic tank and mounts \u2014 fluid level, secure mounting, no leaks at fittings.", "ax": 120, "ay": 626, "tx": 206, "ty": 576, "accept": ["hydraulic tank", "hyd tank", "hydraulic"]}, {"num": 22, "id": "nose_cone", "name": "Nose Cone", "cat": "Frame", "insp": "Inspect the nose cone / A-frame for cracks, security and leaks.", "ax": 380, "ay": 1000, "tx": 380, "ty": 720, "accept": ["nose cone", "nose"]}, {"num": 23, "id": "grease_flow", "name": "Check for Grease Flow", "cat": "Lubrication", "insp": "Check for grease flow at the two auto-lube points left of the nose cone.", "ax": 120, "ay": 842, "tx": 294, "ty": 666, "accept": ["grease"], "t2": [294, 704]}, {"num": 24, "id": "tires_condition", "name": "Check Tires for Condition", "cat": "Tires & Wheels", "insp": "Check tires overall \u2014 inflation, cuts, separation, and rim/wheel damage.", "ax": 70, "ay": 930, "tx": 146, "ty": 860, "accept": ["tire", "tyre"]}, {"num": 25, "id": "rear_hydrair", "name": "Rear Hydrair Leaks & Ride", "cat": "Suspension", "insp": "Inspect the rear Hydrair suspension for leaks and correct ride height / charge.", "ax": 690, "ay": 845, "tx": 530, "ty": 812, "accept": ["rear hydrair", "rear susp"]}, {"num": 26, "id": "rear_lights", "name": "Rear Lights", "cat": "Electrical", "insp": "Check the rear lights are intact and working.", "ax": 560, "ay": 1000, "tx": 424, "ty": 956, "accept": ["rear light", "lights"]}, {"num": 27, "id": "repeat_other_side", "name": "Repeat for Other Side", "cat": "Procedure", "insp": "Repeat the whole walkaround on the opposite side of the truck.", "ax": 690, "ay": 930, "tx": 640, "ty": 880, "accept": ["repeat", "other side"]}];
+const KEY='haulTruckSheet_v2';
 let progress={};
 function load(){try{progress=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){progress={}}
   componentsData.forEach(c=>{if(!progress[c.id])progress[c.id]={box:0,lapses:0,reps:0,mastered:false}});}
@@ -249,8 +229,8 @@ function setMode(m){mode=m;
   document.getElementById('panel-test').style.display=m==='test'?'':'none';
   document.getElementById('panel-study').style.display=m==='study'?'':'none';
   document.getElementById('tb-test').className=m==='test'?'on':'';document.getElementById('tb-study').className=m==='study'?'on':'';
-  document.getElementById('dtitle').textContent=m==='test'?'🚚 Top-down truck — blanks 1–5':'🚚 Top-down truck — all 27 parts';
-  document.getElementById('dhint').textContent=m==='test'?'💡 Each numbered circle has an arrow pointing at its part. Zoom/pinch and pan.':'💡 All arrows shown. Tap a number to highlight; zoom in for detail.';
+  document.getElementById('dtitle').innerHTML=m==='test'?'&#128666; Top-down truck &mdash; blanks 1&ndash;5':'&#128666; Top-down truck &mdash; all 27 parts';
+  document.getElementById('dhint').innerHTML=m==='test'?'&#128161; Follow each numbered arrow to the part. Scroll/pinch to zoom, drag to pan.':'&#128161; All arrows shown. Tap a number to highlight; zoom in for detail.';
   if(m==='study')renderStudyList();renderMarkers();}
 
 function newRound(){round++;current=shuffle(pickRound(5));checked=false;
@@ -287,52 +267,46 @@ function renderStudyList(){const w=document.getElementById('studylist');w.innerH
     el.innerHTML='<div class="inum">'+c.num+'</div><div><div class="iname">'+esc(c.name)+'</div><div class="iinsp">'+esc(c.insp)+'</div></div>';
     w.appendChild(el);});}
 
-/* ---------- markers: numbered circle + arrow to the part (like the sheet) ---------- */
 function svgEl(t){return document.createElementNS('http://www.w3.org/2000/svg',t)}
 function drawArrow(g,x1,y1,x2,y2,col,wgt){
   const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len;
-  const sx=x1+ux*19,sy=y1+uy*19;              /* start outside the circle */
-  const ex=x2-ux*4,ey=y2-uy*4;
+  const sx=x1+ux*19,sy=y1+uy*19,ex=x2-ux*3,ey=y2-uy*3;
   const ln=svgEl('line');ln.setAttribute('x1',sx);ln.setAttribute('y1',sy);ln.setAttribute('x2',ex);ln.setAttribute('y2',ey);
-  ln.setAttribute('stroke',col);ln.setAttribute('stroke-width',wgt);g.appendChild(ln);
-  const ah=10,aw=5.5,bx=x2-ux*ah,by=y2-uy*ah;  /* arrowhead */
+  ln.setAttribute('stroke',col);ln.setAttribute('stroke-width',wgt);ln.setAttribute('stroke-linecap','round');g.appendChild(ln);
+  const ah=11,aw=6,bx=x2-ux*ah,by=y2-uy*ah;
   const p=svgEl('polygon');
   p.setAttribute('points',x2+','+y2+' '+(bx-uy*aw)+','+(by+ux*aw)+' '+(bx+uy*aw)+','+(by-ux*aw));
-  p.setAttribute('fill',col);g.appendChild(p);
-}
+  p.setAttribute('fill',col);g.appendChild(p);}
 function renderMarkers(){const g=document.getElementById('markers');g.innerHTML='';
   const show=mode==='test'?current:componentsData;
   show.forEach((c,i)=>{
-    let circleFill='#f59e0b',tcol='#1a2233',acol='#963434',r=15,label=(mode==='test'?(i+1):c.num),wgt=2.5;
+    let fill='#f59e0b',tcol='#1a2233',acol='#963434',r=15,label=(mode==='test'?(i+1):c.num),wgt=2.6;
     const st=stateOf(c);
-    if(mode==='study'){
-      r=13;
-      circleFill = st==='mastered' ? '#10b981' : st==='missed' ? '#ef4444' : st==='learning' ? '#f59e0b' : '#64748b';
-      tcol = (st==='missed'||st==='new') ? '#ffffff' : '#1a2233';
-      if(c.id===selId){r=17;acol='#f59e0b';wgt=4;}
+    if(mode==='study'){r=13;
+      fill = st==='mastered'?'#10b981': st==='missed'?'#ef4444': st==='learning'?'#f59e0b':'#64748b';
+      tcol = (st==='missed'||st==='new')?'#ffffff':'#1a2233';
+      if(c.id===selId){r=18;acol='#f59e0b';wgt=4;}
     } else if(checked){
       const good=isCorrect((document.getElementById('ans-'+i)||{}).dataset?.val||'',c);
-      circleFill=good?'#10b981':'#ef4444';tcol=good?'#04231a':'#fff';acol=good?'#10b981':'#ef4444';wgt=3;
-    }
+      fill=good?'#10b981':'#ef4444';tcol=good?'#04231a':'#fff';acol=good?'#10b981':'#ef4444';wgt=3.2;}
     const grp=svgEl('g');grp.setAttribute('class','mk');
     drawArrow(grp,c.ax,c.ay,c.tx,c.ty,acol,wgt);
+    if(c.t2)drawArrow(grp,c.ax,c.ay,c.t2[0],c.t2[1],acol,wgt);
     const ci=svgEl('circle');ci.setAttribute('class','badge');ci.setAttribute('cx',c.ax);ci.setAttribute('cy',c.ay);ci.setAttribute('r',r);
-    ci.setAttribute('fill',circleFill);ci.setAttribute('stroke','#1a2233');ci.setAttribute('stroke-width',2.5);
+    ci.setAttribute('fill',fill);ci.setAttribute('stroke','#1a2233');ci.setAttribute('stroke-width',2.5);
     const tx=svgEl('text');tx.setAttribute('x',c.ax);tx.setAttribute('y',c.ay+5);tx.setAttribute('text-anchor','middle');
     tx.setAttribute('font-size',r>=15?15:13);tx.setAttribute('fill',tcol);tx.textContent=label;
     grp.appendChild(ci);grp.appendChild(tx);
     if(mode==='study'){grp.style.cursor='pointer';grp.addEventListener('click',()=>{selId=c.id;renderStudyList();renderMarkers();});}
     g.appendChild(grp);});}
 
-/* ---------- zoom + pan ---------- */
 const svg=document.getElementById('truck'),vp=document.getElementById('viewport');
 const VW=760,VH=1040,MINK=0.8,MAXK=10;
 let k=1,tx=0,ty=0;
 function applyT(){vp.setAttribute('transform','translate('+tx+' '+ty+') scale('+k+')')}
 function clientToSvg(cx,cy){const r=svg.getBoundingClientRect();return {x:(cx-r.left)/r.width*VW,y:(cy-r.top)/r.height*VH}}
 function clampPan(){if(k<=1){tx=(VW-VW*k)/2;ty=(VH-VH*k)/2;}else{tx=Math.min(0,Math.max(VW-VW*k,tx));ty=Math.min(0,Math.max(VH-VH*k,ty));}}
-function zoomAt(sx,sy,factor){const nk=Math.max(MINK,Math.min(MAXK,k*factor));const wx=(sx-tx)/k,wy=(sy-ty)/k;
-  tx=sx-wx*nk;ty=sy-wy*nk;k=nk;clampPan();applyT()}
+function zoomAt(sx,sy,f){const nk=Math.max(MINK,Math.min(MAXK,k*f));const wx=(sx-tx)/k,wy=(sy-ty)/k;tx=sx-wx*nk;ty=sy-wy*nk;k=nk;clampPan();applyT()}
 function zoomBtn(f){zoomAt(VW/2,VH/2,f)}
 function zoomReset(){k=1;tx=0;ty=0;clampPan();applyT()}
 svg.addEventListener('wheel',e=>{e.preventDefault();const p=clientToSvg(e.clientX,e.clientY);zoomAt(p.x,p.y,e.deltaY<0?1.12:1/1.12)},{passive:false});
