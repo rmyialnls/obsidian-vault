@@ -27,7 +27,7 @@
   .card h2{font-size:15px;color:#cbd5e1;margin-bottom:10px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center}
   .pill{font-size:12px;background:rgba(245,158,11,.18);color:var(--amber-l);border:1px solid rgba(245,158,11,.35);padding:2px 10px;border-radius:999px}
   .stage{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden;touch-action:none}
-  svg#truck{width:100%;height:auto;display:block;cursor:grab;max-height:78vh;margin:0 auto}
+  svg#truck{width:100%;height:auto;display:block;cursor:grab;max-height:82vh;margin:0 auto;overflow:visible}
   svg#truck.drag{cursor:grabbing}
   .zoomctl{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:6px;z-index:5}
   .zoomctl button{width:34px;height:34px;border-radius:9px;background:rgba(15,23,42,.85);border:1px solid var(--line2);
@@ -258,7 +258,7 @@ function setMode(m){mode=m;
 function newRound(){round++;current=shuffle(pickRound(5));checked=false;
   document.getElementById('rpill').textContent='Round '+round;document.getElementById('score').textContent='0/5';
   document.getElementById('check').style.display='';document.getElementById('next').style.display='none';
-  renderBlanks();renderMarkers();const f=document.getElementById('ans-0');if(f)f.focus();}
+  renderBlanks();renderMarkers();const f=document.getElementById('ans-0');if(f){try{f.focus({preventScroll:true})}catch(e){}}}
 function renderBlanks(){const w=document.getElementById('blanks');w.innerHTML='';
   current.forEach((c,i)=>{const row=document.createElement('div');row.className='blank';
     const top=document.createElement('div');top.className='btop';
@@ -347,6 +347,8 @@ svg.addEventListener('dblclick',e=>{e.preventDefault();const p=clientToSvg(e.cli
 
 function resetProgress(){if(!confirm('Reset all progress?'))return;localStorage.removeItem(KEY);progress={};load();save();updateStats();if(mode==='study')renderStudyList();newRound();}
 load();save();updateStats();newRound();setMode('test');applyT();
+window.scrollTo(0,0);
+window.addEventListener('load',()=>window.scrollTo(0,0));
 </script>
 </body>
 </html>
