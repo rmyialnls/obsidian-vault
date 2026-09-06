@@ -12,4 +12,5 @@ object Routes {
     const val CAPTURE = "capture"
     const val MANUAL = "manual"
     const val SETTINGS = "settings"
+    const val PAYWALL = "paywall"
 }

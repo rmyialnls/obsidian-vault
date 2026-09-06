@@ -12,10 +12,13 @@ import com.tracksnatcher.app.ui.capture.CaptureScreen
 import com.tracksnatcher.app.ui.manual.ManualScreen
 import com.tracksnatcher.app.ui.navigation.CaptureLaunch
 import com.tracksnatcher.app.ui.navigation.Routes
+import com.tracksnatcher.app.ui.paywall.PaywallScreen
+import com.tracksnatcher.app.ui.settings.SettingsScreen
 
 /**
  * App root + navigation graph. The capture flow is always the start destination — the whole
- * product is built around landing there in one tap; manual mode is a side route.
+ * product is built around landing there in one tap; manual mode, settings, and the paywall
+ * are side routes.
  */
 @Composable
 fun TrackSnatcherAppRoot(initialLaunch: CaptureLaunch) {
@@ -30,10 +33,26 @@ fun TrackSnatcherAppRoot(initialLaunch: CaptureLaunch) {
                 CaptureScreen(
                     initialLaunch = initialLaunch,
                     onOpenManualMode = { navController.navigate(Routes.MANUAL) },
+                    onOpenPaywall = { navController.navigate(Routes.PAYWALL) },
                 )
             }
             composable(Routes.MANUAL) {
-                ManualScreen(onBack = { navController.popBackStack() })
+                ManualScreen(
+                    onBack = { navController.popBackStack() },
+                    onOpenSettings = { navController.navigate(Routes.SETTINGS) },
+                )
+            }
+            composable(Routes.SETTINGS) {
+                SettingsScreen(
+                    onBack = { navController.popBackStack() },
+                    onOpenPaywall = { navController.navigate(Routes.PAYWALL) },
+                )
+            }
+            composable(Routes.PAYWALL) {
+                PaywallScreen(
+                    onDismiss = { navController.popBackStack() },
+                    onPurchased = { navController.popBackStack() },
+                )
             }
         }
     }

@@ -115,6 +115,16 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.security.crypto)
 
+    // Billing (Pro subscriptions + lifetime unlock)
+    implementation(libs.billing.ktx)
+
+    // Location tagging ("Sonic Memory")
+    implementation(libs.play.services.location)
+    implementation(libs.kotlinx.coroutines.play.services)
+
+    // Image loading (album artwork on the share card)
+    implementation(libs.coil.compose)
+
     // OAuth via Chrome Custom Tabs
     implementation(libs.androidx.browser)
 

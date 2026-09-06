@@ -9,10 +9,12 @@ import com.tracksnatcher.app.data.remote.YouTubePlaylistItemDto
 import com.tracksnatcher.app.data.remote.YouTubeResourceIdDto
 import com.tracksnatcher.app.data.remote.YouTubeSnippetDto
 import com.tracksnatcher.app.domain.model.AppError
+import com.tracksnatcher.app.domain.model.DuplicateMatch
 import com.tracksnatcher.app.domain.model.MusicService
 import com.tracksnatcher.app.domain.model.Playlist
 import com.tracksnatcher.app.domain.model.Track
 import com.tracksnatcher.app.domain.repository.PlaylistRepository
+import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -99,6 +101,30 @@ class StreamingPlaylistRepository @Inject constructor(
             }
         }
 
+    override suspend fun findDuplicate(playlist: Playlist, track: Track): Result<DuplicateMatch?> =
+        safeCall(playlist.service) {
+            val providerId = track.providerId(playlist.service)
+            when (playlist.service) {
+                MusicService.SPOTIFY -> spotifyApi.getPlaylistTracks(playlist.id).items
+                    .firstOrNull { item ->
+                        val t = item.track ?: return@firstOrNull false
+                        (providerId != null && t.uri == providerId) ||
+                            (t.name.equals(track.title, ignoreCase = true) &&
+                                t.artists.any { it.name.equals(track.artist, ignoreCase = true) })
+                    }
+                    ?.let { DuplicateMatch(playlist.name, it.addedAt?.toEpochMsOrNull()) }
+
+                MusicService.YOUTUBE_MUSIC -> youTubeApi.getPlaylistItems(playlist.id).items
+                    .firstOrNull { item ->
+                        (providerId != null && item.snippet.resourceId?.videoId == providerId) ||
+                            item.snippet.title.equals("${track.title}", ignoreCase = true)
+                    }
+                    ?.let { DuplicateMatch(playlist.name) }
+
+                MusicService.AMAZON_MUSIC -> null
+            }
+        }
+
     override suspend fun addTrackToPlaylist(playlist: Playlist, track: Track): Result<Unit> =
         safeCall(playlist.service) {
             val providerId = track.providerId(playlist.service)
@@ -137,6 +163,9 @@ class StreamingPlaylistRepository @Inject constructor(
         // A 401 surfaces here via Retrofit's HttpException; treat as needing re-auth.
         Result.failure(AppError.NotAuthorized(service))
     }
+
+    private fun String.toEpochMsOrNull(): Long? =
+        runCatching { Instant.parse(this).toEpochMilli() }.getOrNull()
 
     private companion object {
         const val PINNED_LIMIT = 4

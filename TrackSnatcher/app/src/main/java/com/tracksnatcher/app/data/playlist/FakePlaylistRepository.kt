@@ -1,5 +1,6 @@
 package com.tracksnatcher.app.data.playlist
 
+import com.tracksnatcher.app.domain.model.DuplicateMatch
 import com.tracksnatcher.app.domain.model.MusicService
 import com.tracksnatcher.app.domain.model.Playlist
 import com.tracksnatcher.app.domain.model.Track
@@ -43,10 +44,27 @@ class FakePlaylistRepository @Inject constructor() : PlaylistRepository {
         return Result.success(results)
     }
 
+    override suspend fun findDuplicate(playlist: Playlist, track: Track): Result<DuplicateMatch?> {
+        delay(150)
+        val added = addedTracks[playlist.id]?.get(track.dedupeKey())
+        return Result.success(added?.let { DuplicateMatch(playlist.name, addedAtEpochMs = it) })
+    }
+
     override suspend fun addTrackToPlaylist(playlist: Playlist, track: Track): Result<Unit> {
         delay(450) // simulate the append round-trip
+        addedTracks.getOrPut(playlist.id) { mutableMapOf() }[track.dedupeKey()] = System.currentTimeMillis()
         return Result.success(Unit)
     }
+
+    /** Playlist id -> (dedupe key -> added-at ms). Seeded so a duplicate is demoable. */
+    private val addedTracks: MutableMap<String, MutableMap<String, Long>> = mutableMapOf(
+        "pl_fav" to mutableMapOf(
+            Track("rec_1", "Midnight City", "M83").dedupeKey() to 1_695_000_000_000, // ~Sep 2023
+        ),
+    )
+
+    private fun Track.dedupeKey(): String =
+        providerId(MusicService.SPOTIFY) ?: "${title.lowercase()}|${artist.lowercase()}"
 
     private val extraPlaylists = listOf(
         Playlist("pl_chill", "Chill", MusicService.SPOTIFY, trackCount = 41),

@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -33,8 +34,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.GraphicEq
+import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -45,7 +48,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -58,36 +60,36 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.tracksnatcher.app.billing.Entitlements
+import com.tracksnatcher.app.billing.TierLimits
 import com.tracksnatcher.app.domain.model.AppError
 import com.tracksnatcher.app.domain.model.MusicService
 import com.tracksnatcher.app.domain.model.Playlist
 import com.tracksnatcher.app.domain.model.Track
 import com.tracksnatcher.app.ui.navigation.CaptureLaunch
+import com.tracksnatcher.app.ui.share.ShareableMemoryCard
 import com.tracksnatcher.app.ui.theme.TileHues
 import com.tracksnatcher.app.ui.theme.TrackSnatcherTheme
 import kotlinx.coroutines.delay
 
 private const val SUCCESS_DISMISS_MS = 1_100L
 
-// Mic permission is enforced explicitly below (checkSelfPermission + the request launcher);
-// lint can't trace that guard through the ViewModel, so we suppress the false positive.
-@SuppressLint("MissingPermission")
+@SuppressLint("MissingPermission") // mic permission is checked below; lint can't trace it via the VM
 @Composable
 fun CaptureScreen(
     initialLaunch: CaptureLaunch,
     onOpenManualMode: () -> Unit,
+    onOpenPaywall: () -> Unit,
     viewModel: CaptureViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val entitlements by viewModel.entitlements.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
-    ) { granted ->
-        if (granted) viewModel.startCapture() else viewModel.mikePermissionDenied()
-    }
+    ) { granted -> if (granted) viewModel.startCapture() else viewModel.mikePermissionDenied() }
 
-    // Kick off the flow once: register any target playlist, then ensure mic permission.
     LaunchedEffect(Unit) {
         (initialLaunch as? CaptureLaunch.Immediate)?.let { viewModel.setTargetPlaylist(it.targetPlaylistName) }
         val granted = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
@@ -95,9 +97,10 @@ fun CaptureScreen(
         if (granted) viewModel.startCapture() else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
     }
 
-    // Auto-dismiss the overlay shortly after a successful add.
+    // Auto-dismiss only when there's no shareable memory to linger on.
     LaunchedEffect(state) {
-        if (state is CaptureUiState.Added) {
+        val added = state as? CaptureUiState.Added
+        if (added != null && added.memory == null) {
             delay(SUCCESS_DISMISS_MS)
             (context as? Activity)?.finish()
         }
@@ -113,25 +116,51 @@ fun CaptureScreen(
     ) {
         AnimatedContent(targetState = state, label = "capture-state") { current ->
             when (current) {
-                CaptureUiState.Idle, CaptureUiState.Listening ->
-                    ListeningContent()
+                CaptureUiState.Idle, CaptureUiState.Listening -> ListeningContent()
+
+                CaptureUiState.LimitReached ->
+                    LimitReachedContent(onUpgrade = onOpenPaywall, onClose = { (context as? Activity)?.finish() })
 
                 is CaptureUiState.Matched ->
                     MatchedContent(
                         track = current.track,
                         playlists = current.playlists,
-                        onPick = { viewModel.addToPlaylist(current.track, it) },
+                        entitlements = entitlements,
+                        onPick = { viewModel.chooseTarget(current.track, it, current.playlists) },
                         onOpenManualMode = onOpenManualMode,
+                        onUpgrade = onOpenPaywall,
                     )
 
-                is CaptureUiState.Adding ->
-                    AddingContent(track = current.track, playlist = current.playlist)
+                is CaptureUiState.DuplicateWarning -> {
+                    // Grid stays behind the sheet so "Choose another" is one tap away.
+                    MatchedContent(
+                        track = current.track,
+                        playlists = current.gridPlaylists,
+                        entitlements = entitlements,
+                        onPick = { viewModel.chooseTarget(current.track, it, current.gridPlaylists) },
+                        onOpenManualMode = onOpenManualMode,
+                        onUpgrade = onOpenPaywall,
+                    )
+                    DuplicateBottomSheet(
+                        track = current.track,
+                        duplicate = current.duplicate,
+                        onAddAnyway = { viewModel.addAnyway(current.track, current.playlist) },
+                        onChooseAnother = { viewModel.chooseAnother(current.track, current.gridPlaylists) },
+                        onDismiss = { viewModel.chooseAnother(current.track, current.gridPlaylists) },
+                    )
+                }
+
+                is CaptureUiState.Adding -> AddingContent(current.track, current.playlist)
 
                 is CaptureUiState.Added ->
-                    AddedContent(track = current.track, playlist = current.playlist)
+                    AddedContent(
+                        track = current.track,
+                        playlist = current.playlist,
+                        memory = current.memory,
+                        onDone = { (context as? Activity)?.finish() },
+                    )
 
-                is CaptureUiState.Error ->
-                    ErrorContent(error = current.error, onRetry = viewModel::retry)
+                is CaptureUiState.Error -> ErrorContent(current.error, onRetry = viewModel::retry)
             }
         }
     }
@@ -145,7 +174,7 @@ private fun ListeningContent() {
     val scale by transition.animateFloat(
         initialValue = 0.85f,
         targetValue = 1.15f,
-        animationSpec = infiniteRepeatable(tween(750), androidx.compose.animation.core.RepeatMode.Reverse),
+        animationSpec = infiniteRepeatable(tween(750), RepeatMode.Reverse),
         label = "scale",
     )
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -157,26 +186,39 @@ private fun ListeningContent() {
                 .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(
-                imageVector = Icons.Filled.GraphicEq,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(56.dp),
-            )
+            Icon(Icons.Filled.GraphicEq, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(56.dp))
         }
         Spacer(Modifier.height(28.dp))
-        Text(
-            text = "Listening…",
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
+        Text("Listening…", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground)
         Spacer(Modifier.height(6.dp))
         Text(
-            text = "Point at the music for a few seconds",
+            "Point at the music for a few seconds",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
+    }
+}
+
+// --- Free cap reached ----------------------------------------------------------------
+
+@Composable
+private fun LimitReachedContent(onUpgrade: () -> Unit, onClose: () -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(Icons.Filled.LockOpen, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(56.dp))
+        Spacer(Modifier.height(16.dp))
+        Text("You've hit your free limit", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center)
+        Spacer(Modifier.height(6.dp))
+        Text(
+            "Free includes ${TierLimits.FREE_MONTHLY_SNATCH_CAP} snatches a month. Go Pro for unlimited.",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(24.dp))
+        Button(onClick = onUpgrade, modifier = Modifier.fillMaxWidth()) { Text("Upgrade to Pro") }
+        Spacer(Modifier.height(8.dp))
+        TextButton(onClick = onClose) { Text("Maybe later") }
     }
 }
 
@@ -186,37 +228,35 @@ private fun ListeningContent() {
 private fun MatchedContent(
     track: Track,
     playlists: List<Playlist>,
+    entitlements: Entitlements,
     onPick: (Playlist) -> Unit,
     onOpenManualMode: () -> Unit,
+    onUpgrade: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
+    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         TrackHeader(track)
         Spacer(Modifier.height(24.dp))
-        Text(
-            text = "Add to",
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
+        Text("Add to", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
         Spacer(Modifier.height(16.dp))
         LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            columns = GridCells.Fixed(if (playlists.size == 1) 1 else 2),
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
             contentPadding = PaddingValues(vertical = 4.dp),
             modifier = Modifier.fillMaxWidth(),
         ) {
-            itemsIndexed(playlists.take(4), key = { _, p -> p.id }) { index, playlist ->
-                PlaylistTile(
-                    playlist = playlist,
-                    hue = TileHues[index % TileHues.size],
-                    onClick = { onPick(playlist) },
-                )
+            itemsIndexed(playlists, key = { _, p -> p.id }) { index, playlist ->
+                PlaylistTile(playlist, TileHues[index % TileHues.size], onClick = { onPick(playlist) })
             }
         }
         Spacer(Modifier.height(12.dp))
+        if (!entitlements.isPro) {
+            TextButton(onClick = onUpgrade) {
+                Icon(Icons.Filled.LockOpen, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.size(6.dp))
+                Text("Unlock 4 one-tap playlists with Pro")
+            }
+        }
         TextButton(onClick = onOpenManualMode) {
             Icon(Icons.Filled.Search, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.size(6.dp))
@@ -226,11 +266,7 @@ private fun MatchedContent(
 }
 
 @Composable
-private fun PlaylistTile(
-    playlist: Playlist,
-    hue: Color,
-    onClick: () -> Unit,
-) {
+private fun PlaylistTile(playlist: Playlist, hue: Color, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -242,19 +278,8 @@ private fun PlaylistTile(
         contentAlignment = Alignment.BottomStart,
     ) {
         Column {
-            Text(
-                text = playlist.name,
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.Bold,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
-                text = "${playlist.trackCount} tracks",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Text(playlist.name, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text("${playlist.trackCount} tracks", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -266,51 +291,38 @@ private fun AddingContent(track: Track, playlist: Playlist) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
         Spacer(Modifier.height(20.dp))
-        Text(
-            text = "Adding to ${playlist.name}…",
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onBackground,
-            textAlign = TextAlign.Center,
-        )
+        Text("Adding to ${playlist.name}…", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center)
         Spacer(Modifier.height(4.dp))
-        Text(
-            text = "${track.title} · ${track.artist}",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        Text("${track.title} · ${track.artist}", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
 @Composable
-private fun AddedContent(track: Track, playlist: Playlist) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+private fun AddedContent(
+    track: Track,
+    playlist: Playlist,
+    memory: com.tracksnatcher.app.domain.model.SonicMemory?,
+    onDone: () -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
         Box(
-            modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary),
+            modifier = Modifier.size(88.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(
-                imageVector = Icons.Filled.Check,
-                contentDescription = "Added",
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(64.dp),
-            )
+            Icon(Icons.Filled.Check, contentDescription = "Added", tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(48.dp))
         }
-        Spacer(Modifier.height(24.dp))
-        Text(
-            text = "Added to ${playlist.name}",
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(6.dp))
-        Text(
-            text = "${track.title} · ${track.artist}",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        Spacer(Modifier.height(16.dp))
+        Text("Added to ${playlist.name}", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center)
+
+        if (memory != null) {
+            Spacer(Modifier.height(20.dp))
+            ShareableMemoryCard(memory = memory)
+            Spacer(Modifier.height(8.dp))
+            TextButton(onClick = onDone) { Text("Done") }
+        }
     }
 }
 
@@ -319,19 +331,9 @@ private fun AddedContent(track: Track, playlist: Playlist) {
 @Composable
 private fun ErrorContent(error: AppError, onRetry: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = error.userMessage(),
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-            textAlign = TextAlign.Center,
-        )
+        Text(error.userMessage(), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center)
         Spacer(Modifier.height(8.dp))
-        Text(
-            text = error.userHint(),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
+        Text(error.userHint(), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
         Spacer(Modifier.height(20.dp))
         TextButton(onClick = onRetry) {
             Icon(Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -343,20 +345,9 @@ private fun ErrorContent(error: AppError, onRetry: () -> Unit) {
 
 @Composable
 private fun TrackHeader(track: Track) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.alpha(0.98f)) {
-        Text(
-            text = track.title,
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Text(
-            text = track.artist,
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(track.title, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis)
+        Text(track.artist, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -390,14 +381,10 @@ private fun MatchedPreview() {
                 Playlist("3", "Gym", MusicService.SPOTIFY, 132, pinned = true),
                 Playlist("4", "Country", MusicService.SPOTIFY, 57, pinned = true),
             ),
+            entitlements = Entitlements(),
             onPick = {},
             onOpenManualMode = {},
+            onUpgrade = {},
         )
     }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF0E0F13)
-@Composable
-private fun ListeningPreview() {
-    TrackSnatcherTheme { ListeningContent() }
 }

@@ -28,6 +28,14 @@ interface YouTubeApi {
         @Query("maxResults") maxResults: Int = 20,
     ): YouTubeSearchListDto
 
+    /** Existing items in a playlist — used for duplicate detection. */
+    @GET("youtube/v3/playlistItems")
+    suspend fun getPlaylistItems(
+        @Query("playlistId") playlistId: String,
+        @Query("part") part: String = "snippet",
+        @Query("maxResults") maxResults: Int = 50,
+    ): YouTubePlaylistItemsListDto
+
     /** POST https://www.googleapis.com/youtube/v3/playlistItems?part=snippet */
     @POST("youtube/v3/playlistItems")
     suspend fun insertPlaylistItem(
@@ -35,6 +43,9 @@ interface YouTubeApi {
         @Body body: YouTubePlaylistItemDto,
     ): YouTubePlaylistItemDto
 }
+
+@Serializable
+data class YouTubePlaylistItemsListDto(val items: List<YouTubePlaylistItemDto> = emptyList())
 
 @Serializable
 data class YouTubePlaylistListDto(val items: List<YouTubePlaylistDto> = emptyList())

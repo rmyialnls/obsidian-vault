@@ -99,8 +99,51 @@ cp local.properties.example local.properties   # then edit
 > The Gradle wrapper JAR is not committed. Run `gradle wrapper --gradle-version 8.11.1`
 > once (or open in Android Studio) to generate `gradlew` + `gradle-wrapper.jar`.
 
+## Monetization & advanced curation (phase 2)
+
+Layered on top of the capture flow, all enforced through one entitlement source of truth.
+
+### Subscriptions & paywall
+- `billing/` — `SubscriptionManager` interface with a Play Billing v7 implementation
+  (`PlayBillingSubscriptionManager`); swap in RevenueCat behind the interface without
+  touching callers.
+- `EntitlementStore` (DataStore) is the single gate: tier, rolling 30-day free-cap usage,
+  and the auto-vibe toggle. Free = 10 snatches/mo + 1 quick playlist; Pro = unlimited + 4
+  quick playlists + smart features. Products: `pro_monthly` ($1.99), `pro_yearly` ($14.99),
+  `pro_lifetime` ($19.99 one-time).
+- `ui/paywall/PaywallScreen` — benefits, per-plan pricing cards, Restore Purchases.
+
+### Auto-duplicate detection
+- `PlaylistRepository.findDuplicate` checks the target playlist (by service track id, then
+  title+artist) before appending — implemented for Spotify (`added_at`) and YouTube.
+- `ui/capture/DuplicateBottomSheet` intercepts the one-tap flow with *"Already in
+  '[Playlist]' (added [date])"* → **Add Anyway** / **Choose Another Playlist**.
+
+### Sonic Memory + social share card
+- `location/FusedLocationProvider` fetches coarse location (runtime-permission-gated) and
+  reverse-geocodes to "City, Region".
+- `SonicMemoryStore` (DataStore) persists `{trackId, timestamp, place, lat/lng, playlist}`.
+- `ui/share/MemoryCard` renders the stylized card; `ShareableMemoryCard` captures it to a
+  Bitmap via `GraphicsLayer.toImageBitmap()`, writes it through a `FileProvider`, and fires
+  the native share sheet (`ACTION_SEND`) for Instagram Stories / social.
+
+### Smart Vibe Match auto-filer
+- `GenreSource` pulls artist genres (Spotify artist endpoint; MusicBrainz-ready) — no
+  reliance on the deprecated `audio-features` endpoint.
+- `VibeMatcher` maps genre keywords → buckets (`country/americana → Country Road`,
+  `hip hop/trap/edm → Gym`, `indie/folk/acoustic → Chill`) and resolves the bucket to the
+  user's real playlist by name.
+- Pro users toggle **Auto-Vibe Match** in `ui/settings/SettingsScreen`; when on, a match is
+  filed automatically (still through the duplicate check) with no manual tap.
+
+Gating, duplicate interception, auto-vibe routing, and memory capture are all woven into one
+place — `CaptureViewModel` — so every append path (quick-tap, voice/widget target, auto-vibe)
+goes through the same checks.
+
 ## Status
 
-Scaffold: architecture, both OAuth managers, and the Listening → 4-button picker are in
-place and demoable on dummy data. Next: point `RECOGNITION_BASE_URL` at the live backend and
-flip the repository binding to `StreamingPlaylistRepository`.
+Scaffold: architecture, both OAuth managers, the Listening → 4-button picker, and the full
+phase-2 monetization/curation surface are in place and demoable on dummy data
+(`FakePlaylistRepository`, `FakeGenreSource`). Not yet compiled in CI. Next: point
+`RECOGNITION_BASE_URL` at the live backend, flip the repository/genre bindings to the
+streaming implementations, and configure the Play Console products.

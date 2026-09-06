@@ -1,7 +1,9 @@
 package com.tracksnatcher.app.domain.repository
 
+import com.tracksnatcher.app.domain.model.DuplicateMatch
 import com.tracksnatcher.app.domain.model.MusicService
 import com.tracksnatcher.app.domain.model.Playlist
+import com.tracksnatcher.app.domain.model.SonicMemory
 import com.tracksnatcher.app.domain.model.Track
 import kotlinx.coroutines.flow.Flow
 
@@ -22,6 +24,18 @@ interface PlaylistRepository {
     /** Free-text track search used by manual mode. */
     suspend fun searchTracks(service: MusicService, query: String): Result<List<Track>>
 
+    /**
+     * Check whether [track] is already in [playlist], matching on the service track id first
+     * and falling back to title+artist. Returns null when no duplicate is found.
+     */
+    suspend fun findDuplicate(playlist: Playlist, track: Track): Result<DuplicateMatch?>
+
     /** Append [track] to [playlist]. Idempotent where the underlying API allows it. */
     suspend fun addTrackToPlaylist(playlist: Playlist, track: Track): Result<Unit>
+}
+
+/** Local history of captured moments ("Sonic Memories"). */
+interface SonicMemoryRepository {
+    fun observeMemories(): Flow<List<SonicMemory>>
+    suspend fun save(memory: SonicMemory)
 }
