@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tracksnatcher.app.session.ApprovalMode
+import com.tracksnatcher.app.session.QrGenerator
 import com.tracksnatcher.app.session.Session
 import com.tracksnatcher.app.session.SessionTemplate
 import com.tracksnatcher.app.session.TapeItem
