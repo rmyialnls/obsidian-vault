@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haul Truck Circle Check - Cheat Sheet Trainer</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{overscroll-behavior:none}
+  :root{--bg:#0f172a;--panel:#1e293b;--panel2:#0f172a;--line:#334155;--line2:#475569;--ink:#e2e8f0;--muted:#94a3b8;
+        --amber:#f59e0b;--amber-l:#fbbf24;--green:#10b981;--green-l:#6ee7b7;--red:#ef4444;--red-l:#fca5a5;--paper:#f6f2e8}
+  body{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);
+       color:var(--ink);min-height:100vh;display:flex;flex-direction:column;line-height:1.5}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  strong{font-weight:700}
+  header{background:var(--panel);border-bottom:1px solid var(--line);padding:14px 22px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{background:var(--amber);color:#0b1220;font-weight:900;padding:6px 12px;border-radius:10px;font-size:20px;letter-spacing:2px}
+  h1{font-size:18px;color:#fff}.sub{font-size:12px;color:var(--muted)}
+  .counts{display:flex;gap:14px;font-size:12px;color:var(--muted);align-items:center;flex-wrap:wrap}
+  .dot{width:11px;height:11px;border-radius:50%;display:inline-block;vertical-align:-1px;margin-right:5px}
+  .toggle{display:flex;background:var(--panel2);padding:4px;border-radius:12px;border:1px solid var(--line)}
+  .toggle button{padding:8px 14px;border-radius:9px;font-size:14px;font-weight:600;color:var(--muted)}
+  .toggle button.on{background:var(--amber);color:#0b1220}
+  main{flex:1;width:100%;max-width:1320px;margin:0 auto;padding:18px;display:grid;grid-template-columns:1fr;gap:18px}
+  @media(min-width:1000px){main{grid-template-columns:1.3fr 1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+  .card h2{font-size:15px;color:#cbd5e1;margin-bottom:10px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center}
+  .pill{font-size:12px;background:rgba(245,158,11,.18);color:var(--amber-l);border:1px solid rgba(245,158,11,.35);padding:2px 10px;border-radius:999px}
+  .stage{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  svg#truck{width:100%;height:auto;display:block;cursor:grab;max-height:82vh;margin:0 auto;overflow:visible;touch-action:pan-y}
+  svg#truck.drag{cursor:grabbing}
+  .zoomctl{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:6px;z-index:5}
+  .zoomctl button{width:34px;height:34px;border-radius:9px;background:rgba(15,23,42,.85);border:1px solid var(--line2);
+      color:#e2e8f0;font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .zoomctl button:hover{background:rgba(30,41,59,.95);border-color:var(--amber)}
+  .zoomctl button.rz{font-size:12px}
+  .hint{font-size:12px;color:var(--muted);margin-top:10px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  .hint a{color:var(--muted);text-decoration:underline;cursor:pointer}.hint a:hover{color:var(--red-l)}
+  .progress{height:8px;border-radius:999px;background:#0b1220;border:1px solid var(--line);overflow:hidden;flex:1;min-width:120px}
+  .progress>span{display:block;height:100%;background:linear-gradient(90deg,var(--amber),var(--green));transition:width .4s}
+  .rowline{border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+  .rowline h3{color:var(--amber-l);font-size:17px}
+  .tag{background:var(--panel2);border:1px solid var(--line);font-size:12px;padding:4px 10px;border-radius:9px;color:#cbd5e1;font-family:ui-monospace,monospace}
+  .lead{font-size:14px;color:#cbd5e1;margin-bottom:14px}
+  .blank{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+  .btop{display:flex;align-items:center;gap:10px}
+  .qn{flex-shrink:0;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;background:var(--amber);color:#0b1220}
+  .qn.ok{background:var(--green);color:#04231a}.qn.bad{background:var(--red);color:#fff}
+  input.ans{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:10px 12px;color:var(--ink);font-size:15px;outline:none}
+  input.ans:focus{border-color:var(--amber);box-shadow:0 0 0 2px rgba(245,158,11,.25)}
+  input.ans.ok{border-color:var(--green);background:rgba(16,185,129,.08)}input.ans.bad{border-color:var(--red);background:rgba(239,68,68,.08)}
+  .fb{font-size:13px;padding-left:40px}.fb.ok{color:var(--green-l)}.fb.bad{color:var(--red-l)}.fb b{color:#fff}
+  .fb .insp{display:block;color:var(--muted);margin-top:3px}.fb .iwr{margin-left:8px;text-decoration:underline;color:var(--muted);cursor:pointer}.fb .iwr:hover{color:var(--green-l)}
+  .actions{display:flex;gap:10px;padding-top:14px;margin-top:6px;border-top:1px solid var(--line)}
+  .btn{font-weight:700;padding:11px 18px;border-radius:11px}.btn.amber{background:var(--amber);color:#0b1220;flex:1}.btn.amber:hover{background:var(--amber-l)}
+  .btn.green{background:var(--green);color:#04231a}
+  .studylist{display:flex;flex-direction:column;gap:6px;max-height:660px;overflow-y:auto}
+  .item{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-radius:10px;border:1px solid transparent;cursor:pointer}
+  .item:hover{background:var(--panel2)}.item.sel{background:var(--panel2);border-color:rgba(245,158,11,.4)}
+  .inum{flex-shrink:0;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;background:var(--line2);color:#fff}
+  .item.st-mastered .inum{background:var(--green);color:#04231a}.item.st-missed .inum{background:var(--red);color:#fff}
+  .iname{font-weight:700;color:#fff;font-size:14px}.iinsp{font-size:12px;color:var(--muted)}
+  .mk text{pointer-events:none;font-weight:800;font-family:ui-sans-serif,system-ui,sans-serif}
+  .mk circle.badge{cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo">EVR</div>
+    <div><h1>Circle Check &mdash; Cheat Sheet Trainer</h1><div class="sub">Your sheet redrawn &middot; arrows point at each part &middot; zoom &amp; pan</div></div></div>
+  <div class="counts">
+    <span><span class="dot" style="background:var(--green)"></span>Mastered <strong id="c-master" style="color:var(--green-l)">0</strong></span>
+    <span><span class="dot" style="background:var(--red)"></span>Missed <strong id="c-missed" style="color:var(--red-l)">0</strong></span>
+    <div class="toggle"><button id="tb-test" class="on" onclick="setMode('test')">&#9997;&#65039; Test</button><button id="tb-study" onclick="setMode('study')">&#128214; Study</button></div>
+  </div>
+</header>
+<main>
+  <section class="card">
+    <h2><span id="dtitle">&#128666; Top-down truck &mdash; blanks 1&ndash;5</span><span id="rpill" class="pill">Round 1</span></h2>
+    <div class="stage" id="stage">
+      <svg id="truck" viewBox="0 0 760 1040" role="img" aria-label="Top-down haul truck diagram from the EVR circle check sheet">
+        <g id="viewport">
+          <rect x="0" y="0" width="760" height="1040" fill="#f6f2e8"/>
+          <!-- ================= FRONT ================= -->
+          <!-- ladder (driver side) + front deck -->
+          <rect x="206" y="48" width="46" height="58" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <line x1="206" y1="67" x2="252" y2="67" stroke="#2b3547" stroke-width="1.8"/>
+          <line x1="206" y1="86" x2="252" y2="86" stroke="#2b3547" stroke-width="1.8"/>
+          <rect x="252" y="54" width="200" height="44" rx="4" fill="#e7e2d4" stroke="#2b3547" stroke-width="3"/>
+          <ellipse cx="300" cy="76" rx="70" ry="34" fill="none" stroke="#8a6f5a" stroke-width="2"/>
+          <!-- radiator, front-centre ahead of engine -->
+          <rect x="404" y="104" width="92" height="76" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="7 4"/>
+          <!-- ================= ENGINE ================= -->
+          <rect x="306" y="146" width="150" height="136" rx="6" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <line x1="337" y1="156" x2="337" y2="272" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="368" y1="156" x2="368" y2="272" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="399" y1="156" x2="399" y2="272" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="430" y1="156" x2="430" y2="272" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="314" y1="190" x2="448" y2="190" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="314" y1="234" x2="448" y2="234" stroke="#2b3547" stroke-width="1.5"/>
+          <!-- turbos -->
+          <circle cx="466" cy="196" r="14" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <circle cx="466" cy="234" r="14" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- chassis rails -->
+          <rect x="336" y="118" width="88" height="640" fill="#eae5d7" stroke="#2b3547" stroke-width="3"/>
+          <!-- ================= FRONT TIRES (T1 left / T2 right) ================= -->
+          <rect x="99" y="240" width="94" height="246" rx="36" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <line x1="105" y1="300" x2="187" y2="300" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="105" y1="363" x2="187" y2="363" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="105" y1="426" x2="187" y2="426" stroke="#2b3547" stroke-width="1.5"/>
+          <rect x="567" y="240" width="94" height="246" rx="36" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <line x1="573" y1="300" x2="655" y2="300" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="573" y1="363" x2="655" y2="363" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="573" y1="426" x2="655" y2="426" stroke="#2b3547" stroke-width="1.5"/>
+          <!-- rims + lug nuts -->
+          <circle cx="146" cy="363" r="27" fill="#e7e2d4" stroke="#2b3547" stroke-width="2.5"/>
+          <circle cx="146" cy="363" r="9" fill="#ded7c4" stroke="#2b3547" stroke-width="2"/>
+          <circle cx="146.0" cy="346.0" r="4.2" fill="#f6f2e8" stroke="#2b3547" stroke-width="1.8"/>
+          <circle cx="160.7" cy="354.5" r="4.2" fill="#f6f2e8" stroke="#2b3547" stroke-width="1.8"/>
+          <circle cx="160.7" cy="371.5" r="4.2" fill="#f6f2e8" stroke="#2b3547" stroke-width="1.8"/>
+          <circle cx="146.0" cy="380.0" r="4.2" fill="#f6f2e8" stroke="#2b3547" stroke-width="1.8"/>
+          <circle cx="131.3" cy="371.5" r="4.2" fill="#f6f2e8" stroke="#2b3547" stroke-width="1.8"/>
+          <circle cx="131.3" cy="354.5" r="4.2" fill="#f6f2e8" stroke="#2b3547" stroke-width="1.8"/>
+          <circle cx="614" cy="363" r="27" fill="#e7e2d4" stroke="#2b3547" stroke-width="2.5"/>
+          <circle cx="614" cy="363" r="9" fill="#ded7c4" stroke="#2b3547" stroke-width="2"/>
+          <circle cx="614.0" cy="346.0" r="4.2" fill="#f6f2e8" stroke="#2b3547" stroke-width="1.8"/>
+          <circle cx="628.7" cy="354.5" r="4.2" fill="#f6f2e8" stroke="#2b3547" stroke-width="1.8"/>
+          <circle cx="628.7" cy="371.5" r="4.2" fill="#f6f2e8" stroke="#2b3547" stroke-width="1.8"/>
+          <circle cx="614.0" cy="380.0" r="4.2" fill="#f6f2e8" stroke="#2b3547" stroke-width="1.8"/>
+          <circle cx="599.3" cy="371.5" r="4.2" fill="#f6f2e8" stroke="#2b3547" stroke-width="1.8"/>
+          <circle cx="599.3" cy="354.5" r="4.2" fill="#f6f2e8" stroke="#2b3547" stroke-width="1.8"/>
+          <!-- ================= HORSE COLLAR + STEERING CROSS OVER ================= -->
+          <rect x="193" y="336" width="374" height="40" rx="6" fill="#e7e2d4" stroke="#2b3547" stroke-width="3"/>
+          <ellipse cx="380" cy="356" rx="106" ry="32" fill="none" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- front hydrair struts, at the wheels -->
+          <circle cx="200" cy="356" r="19" fill="#e0dac9" stroke="#2b3547" stroke-width="2.5"/>
+          <circle cx="560" cy="356" r="19" fill="#e0dac9" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- ===== STEERING: kingpin hub, knuckle arm, steering cylinder + rod, ball joints ===== -->
+          <!-- driver (left) side -->
+          <circle cx="262" cy="304" r="31" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="262" cy="304" r="13" fill="#ded7c4" stroke="#2b3547" stroke-width="2.5"/>
+          <polygon points="240,328 288,328 270,400 236,392" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <g transform="rotate(18 272 414)">
+            <rect x="218" y="399" width="108" height="30" rx="11" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+            <line x1="248" y1="414" x2="320" y2="414" stroke="#2b3547" stroke-width="2" stroke-dasharray="7 5"/>
+            <line x1="248" y1="405" x2="248" y2="423" stroke="#2b3547" stroke-width="2"/>
+          </g>
+          <circle cx="216" cy="399" r="11" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <circle cx="328" cy="435" r="13" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- passenger (right) side, mirrored -->
+          <circle cx="498" cy="304" r="31" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="498" cy="304" r="13" fill="#ded7c4" stroke="#2b3547" stroke-width="2.5"/>
+          <polygon points="472,328 520,328 524,392 490,400" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <g transform="rotate(-18 488 414)">
+            <rect x="434" y="399" width="108" height="30" rx="11" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+            <line x1="440" y1="414" x2="512" y2="414" stroke="#2b3547" stroke-width="2" stroke-dasharray="7 5"/>
+            <line x1="512" y1="405" x2="512" y2="423" stroke="#2b3547" stroke-width="2"/>
+          </g>
+          <circle cx="544" cy="399" r="11" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <circle cx="432" cy="435" r="13" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- ===== STEERING ACCUMULATORS: 2, LEFT ===== -->
+          <circle cx="266" cy="410" r="20" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="266" cy="452" r="20" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <!-- ===== BRAKE ACCUMULATORS: 2, RIGHT ===== -->
+          <circle cx="494" cy="390" r="20" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="494" cy="432" r="20" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <!-- ===== TRACTION ALTERNATOR: centre of chassis ===== -->
+          <rect x="344" y="410" width="72" height="46" rx="4" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <line x1="344" y1="424" x2="416" y2="424" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="344" y1="442" x2="416" y2="442" stroke="#2b3547" stroke-width="1.5"/>
+          <!-- ===== FILTERS: 3 on the RIGHT (2 hoist above, 1 steering below) ===== -->
+          <circle cx="484" cy="505" r="14" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="5 4"/>
+          <circle cx="484" cy="526" r="14" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="5 4"/>
+          <circle cx="484" cy="548" r="14" fill="none" stroke="#2b3547" stroke-width="2.5" stroke-dasharray="5 4"/>
+          <!-- ===== PUMPS: centre ===== -->
+          <rect x="346" y="500" width="30" height="44" rx="5" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <rect x="346" y="550" width="30" height="44" rx="5" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- ===== BLOWER TUBE: centre-left of chassis ===== -->
+          <rect x="392" y="524" width="26" height="76" rx="12" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- ===== HYDRAULIC TANK: big circle, LEFT ===== -->
+          <circle cx="255" cy="567" r="44" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <ellipse cx="249" cy="552" rx="16" ry="7" fill="none" stroke="#2b3547" stroke-width="2"/>
+          <circle cx="265" cy="580" r="11" fill="none" stroke="#2b3547" stroke-width="2"/>
+          <!-- ===== FUEL TANK: big rect, RIGHT ===== -->
+          <rect x="505" y="526" width="118" height="86" rx="5" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="521" cy="542" r="7" fill="none" stroke="#2b3547" stroke-width="2"/>
+          <!-- ===== NOSE CONE + A-FRAME ===== -->
+          <circle cx="380" cy="621" r="42" fill="#efe9db" stroke="#2b3547" stroke-width="3"/>
+          <polygon points="352,656 408,656 424,758 336,758" fill="#eae5d7" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- grease points: 2, LEFT of nose cone -->
+          <rect x="298" y="600" width="28" height="26" rx="4" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <circle cx="312" cy="613" r="6" fill="none" stroke="#2b3547" stroke-width="2"/>
+          <rect x="298" y="646" width="28" height="26" rx="4" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <circle cx="312" cy="659" r="6" fill="none" stroke="#2b3547" stroke-width="2"/>
+          <!-- hoist cylinders: RIGHT of nose cone -->
+          <rect x="440" y="596" width="22" height="60" rx="10" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <rect x="468" y="596" width="22" height="60" rx="10" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <!-- ================= REAR ================= -->
+          <rect x="214" y="730" width="332" height="46" rx="6" fill="#e7e2d4" stroke="#2b3547" stroke-width="3"/>
+          <!-- rear duals: T3/T4 left, T5/T6 right -->
+          <rect x="151" y="676" width="73" height="258" rx="26" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <rect x="234" y="676" width="73" height="258" rx="26" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <rect x="453" y="676" width="73" height="258" rx="26" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <rect x="536" y="676" width="73" height="258" rx="26" fill="#efe9db" stroke="#2b3547" stroke-width="4"/>
+          <line x1="157" y1="742" x2="218" y2="742" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="157" y1="868" x2="218" y2="868" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="542" y1="742" x2="603" y2="742" stroke="#2b3547" stroke-width="1.5"/>
+          <line x1="542" y1="868" x2="603" y2="868" stroke="#2b3547" stroke-width="1.5"/>
+          <!-- rear hydrair struts -->
+          <circle cx="252" cy="800" r="17" fill="#e0dac9" stroke="#2b3547" stroke-width="3"/>
+          <circle cx="508" cy="800" r="17" fill="#e0dac9" stroke="#2b3547" stroke-width="3"/>
+          <!-- rear lights -->
+          <line x1="380" y1="758" x2="380" y2="944" stroke="#2b3547" stroke-width="2"/>
+          <rect x="322" y="944" width="34" height="17" rx="3" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <rect x="404" y="944" width="34" height="17" rx="3" fill="#efe9db" stroke="#2b3547" stroke-width="2.5"/>
+          <line x1="356" y1="952" x2="404" y2="952" stroke="#2b3547" stroke-width="2"/>
+          <g id="tirenums">
+            <circle cx="146" cy="285" r="23" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
+            <text x="146" y="293" text-anchor="middle" font-size="23" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T1</text>
+            <circle cx="614" cy="285" r="23" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
+            <text x="614" y="293" text-anchor="middle" font-size="23" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T2</text>
+            <circle cx="187" cy="706" r="23" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
+            <text x="187" y="714" text-anchor="middle" font-size="23" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T3</text>
+            <circle cx="270" cy="706" r="23" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
+            <text x="270" y="714" text-anchor="middle" font-size="23" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T4</text>
+            <circle cx="489" cy="706" r="23" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
+            <text x="489" y="714" text-anchor="middle" font-size="23" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T5</text>
+            <circle cx="572" cy="706" r="23" fill="#2b3547" stroke="#f6f2e8" stroke-width="3"/>
+            <text x="572" y="714" text-anchor="middle" font-size="23" font-weight="800" fill="#f6f2e8" font-family="ui-sans-serif,system-ui,sans-serif">T6</text>
+          </g>
+          <g id="markers"></g>
+        </g>
+      </svg>
+      <div class="zoomctl">
+        <button onclick="zoomBtn(1.3)" title="Zoom in">+</button>
+        <button onclick="zoomBtn(1/1.3)" title="Zoom out">&minus;</button>
+        <button class="rz" onclick="zoomReset()" title="Reset view">&#10530;</button>
+      </div>
+    </div>
+    <div class="hint"><span id="dhint">&#128161; Follow each numbered arrow to the part. Scroll/pinch to zoom, drag to pan.</span><a onclick="resetProgress()">Reset progress</a></div>
+    <div class="hint"><div class="progress"><span id="pfill" style="width:0%"></span></div><span id="ptext" style="font-family:ui-monospace,monospace">0/27 mastered</span></div>
+  </section>
+  <section class="card" id="panel-test">
+    <div class="rowline"><h3>&#9997;&#65039; What is each blank?</h3><span id="score" class="tag">0/5</span></div>
+    <div class="lead">Follow each numbered arrow to the part it points at, then type what it is. Close enough counts.</div>
+    <div id="blanks"></div>
+    <div class="actions"><button id="check" class="btn amber" onclick="checkAnswers()">Check answers</button>
+      <button id="next" class="btn green" style="display:none" onclick="newRound()">Next 5 &rarr;</button></div>
+  </section>
+  <section class="card" id="panel-study" style="display:none">
+    <div class="rowline"><h3>&#128214; Every component</h3><span class="tag" id="parts-tag">27 parts</span></div>
+    <div class="lead">Every part plus tire positions T1–T6. Tap a part here or on the diagram to highlight it, then zoom in.</div>
+    <div id="studylist" class="studylist"></div>
+  </section>
+</main>
+<script>
+const componentsData = [{"num": 1, "id": "lunch_bag", "name": "Leave lunch bag on the bottom step", "cat": "Safety & Procedure", "insp": "Put your lunch bag on the bottom step before the walkaround \u2014 a reminder the circle check is underway.", "ax": 70, "ay": 86, "tx": 226, "ty": 76, "accept": ["lunch"]}, {"num": 2, "id": "dipstick", "name": "Engine Oil Dip Stick", "cat": "Engine Bay", "insp": "Pull the dip stick and confirm engine oil is within the safe range before start-up.", "ax": 70, "ay": 170, "tx": 304, "ty": 210, "accept": ["dipstick", "dip stick"]}, {"num": 3, "id": "engine_debris", "name": "Debris in Engine & Turbo Area", "cat": "Fire Safety", "insp": "Clear debris/combustible material from the engine and turbo area \u2014 hot surfaces are a fire risk.", "ax": 690, "ay": 150, "tx": 462, "ty": 196, "accept": ["debris"]}, {"num": 4, "id": "overhead_leaks", "name": "Leaks Overhead & Turbo Area", "cat": "Engine Bay", "insp": "Look overhead through the engine/turbo for oil, fuel or coolant leaks and weeping hoses.", "ax": 70, "ay": 234, "tx": 304, "ty": 250, "accept": ["overhead", "over head", "head and turbo", "turbo area"]}, {"num": 5, "id": "suspensions_keepers", "name": "Suspensions & Keepers", "cat": "Suspension", "insp": "Inspect suspension mounts and keeper pins/bolts for security, fit and wear.", "ax": 70, "ay": 300, "tx": 196, "ty": 338, "accept": ["suspension", "keeper"]}, {"num": 6, "id": "steering", "name": "Steering", "cat": "Steering", "insp": "Check steering linkage, cylinders and connections for leaks, cracks and loose hardware.", "ax": 70, "ay": 420, "tx": 244, "ty": 412, "accept": ["steering"]}, {"num": 7, "id": "front_hydrair", "name": "Front Hydrair Suspension", "cat": "Suspension", "insp": "Check the front Hydrair strut \u2014 ride height/charge, no oil leaks, rod undamaged.", "ax": 690, "ay": 320, "tx": 580, "ty": 356, "accept": ["front hydrair", "front susp", "hydrair"]}, {"num": 8, "id": "horse_collar", "name": "Horse Collar & Steering Cross Over", "cat": "Steering", "insp": "Inspect the horse collar and steering cross-over for cracks, security and leaks.", "ax": 690, "ay": 240, "tx": 452, "ty": 344, "accept": ["horse collar", "horse", "collar"]}, {"num": 9, "id": "lugs_sidewall", "name": "Lugs & Sidewall", "cat": "Tires & Wheels", "insp": "Check wheel lugs/nuts are present and tight; inspect the sidewall for cuts, bulges or damage.", "ax": 70, "ay": 430, "tx": 146, "ty": 363, "accept": ["lug", "sidewall"], "tips": [[101, 300]]}, {"num": 10, "id": "brake_cooling_lines", "name": "Brake Lines & Cooling Lines", "cat": "Brakes", "insp": "Inspect brake lines and cooling lines for chafing, leaks and secure routing.", "ax": 70, "ay": 500, "tx": 336, "ty": 470, "accept": ["brake line", "cooling line", "brake and cooling"]}, {"num": 11, "id": "steering_accumulators", "name": "Steering Accumulators", "cat": "Steering", "insp": "Check the two steering accumulators (left side) for correct charge, mounting security and leaks.", "ax": 70, "ay": 560, "tx": 246, "ty": 410, "accept": ["steering accum", "steer accum"], "tips": [[246, 452]]}, {"num": 12, "id": "brake_accumulators", "name": "Brake Accumulators", "cat": "Brakes", "insp": "Check the two brake accumulators (right side) for correct charge, mounting security and leaks.", "ax": 690, "ay": 396, "tx": 516, "ty": 390, "accept": ["brake accum"], "tips": [[516, 432]]}, {"num": 13, "id": "hoist_circuit_pump", "name": "Hoist Circuit Pump", "cat": "Hydraulics", "insp": "Inspect the hoist circuit pump for leaks, security and hose condition.", "ax": 120, "ay": 700, "tx": 344, "ty": 516, "accept": ["hoist pump", "hoist circuit pump"]}, {"num": 14, "id": "steering_brake_pump", "name": "Steering & Brake Circuit Pump", "cat": "Hydraulics", "insp": "Inspect the steering & brake circuit pump for leaks, security and hose condition.", "ax": 120, "ay": 770, "tx": 344, "ty": 568, "accept": ["steering and brake pump", "steering & brake", "brake circuit pump", "steering brake pump", "brake pump"]}, {"num": 15, "id": "traction_alternator", "name": "Traction Alternator", "cat": "Electrical", "insp": "Inspect the traction alternator area for debris, leaks and secure connections.", "ax": 690, "ay": 462, "tx": 418, "ty": 432, "accept": ["traction alternator", "alternator"]}, {"num": 16, "id": "hoist_circuit_filters", "name": "Hoist Circuit Filters", "cat": "Filters", "insp": "Check the two hoist circuit filters (upper of the three on the right) for leaks, condition and restriction indicators.", "ax": 690, "ay": 520, "tx": 500, "ty": 505, "accept": ["hoist filter", "hoist circuit filter"], "tips": [[500, 526]]}, {"num": 17, "id": "steering_circuit_filter", "name": "Steering Circuit Filter", "cat": "Filters", "insp": "Check the steering circuit filter \u2014 the lowest of the three filters on the right \u2014 for leaks and condition.", "ax": 690, "ay": 585, "tx": 500, "ty": 548, "accept": ["steering filter", "steering circuit filter"]}, {"num": 18, "id": "blower_tube", "name": "Blower Tube", "cat": "Engine Bay", "insp": "Inspect the blower tube for security, cracks and clear airflow.", "ax": 690, "ay": 650, "tx": 420, "ty": 560, "accept": ["blower"]}, {"num": 19, "id": "fuel_tank", "name": "Fuel Tank & Mounts", "cat": "Fuel System", "insp": "Inspect the fuel tank and mounts for leaks, secure mounting and cap condition.", "ax": 690, "ay": 712, "tx": 625, "ty": 570, "accept": ["fuel"]}, {"num": 20, "id": "hoist_cylinders", "name": "Hoist Cylinders", "cat": "Hydraulics", "insp": "Inspect the hoist cylinders (right of the nose cone) for leaks, rod damage and pin/mount security.", "ax": 690, "ay": 775, "tx": 492, "ty": 626, "accept": ["hoist cylinder", "cylinder"]}, {"num": 21, "id": "hydraulic_tank", "name": "Hydraulic Tank & Mounts", "cat": "Hydraulics", "insp": "Check the hydraulic tank and mounts \u2014 fluid level, secure mounting, no leaks at fittings.", "ax": 120, "ay": 626, "tx": 212, "ty": 567, "accept": ["hydraulic tank", "hyd tank", "hydraulic"]}, {"num": 22, "id": "nose_cone", "name": "Nose Cone", "cat": "Frame", "insp": "Inspect the nose cone / A-frame for cracks, security and leaks.", "ax": 380, "ay": 1004, "tx": 380, "ty": 665, "accept": ["nose cone", "nose"]}, {"num": 23, "id": "grease_flow", "name": "Check for Grease Flow", "cat": "Lubrication", "insp": "Check for grease flow at the two auto-lube points left of the nose cone.", "ax": 120, "ay": 842, "tx": 294, "ty": 613, "accept": ["grease"], "tips": [[294, 659]]}, {"num": 24, "id": "tires_condition", "name": "Check Tires for Condition", "cat": "Tires & Wheels", "insp": "Check tires overall \u2014 inflation, cuts, separation, and rim/wheel damage.", "ax": 70, "ay": 900, "tx": 149, "ty": 790, "accept": ["tire", "tyre"], "tips": [[232, 790], [451, 790], [534, 790]]}, {"num": 25, "id": "rear_hydrair", "name": "Rear Hydrair Leaks & Ride", "cat": "Suspension", "insp": "Inspect the rear Hydrair suspension for leaks and correct ride height / charge.", "ax": 690, "ay": 848, "tx": 527, "ty": 800, "accept": ["rear hydrair", "rear susp"]}, {"num": 26, "id": "rear_lights", "name": "Rear Lights", "cat": "Electrical", "insp": "Check the rear lights are intact and working.", "ax": 560, "ay": 1004, "tx": 440, "ty": 952, "accept": ["rear light", "lights"]}, {"num": 27, "id": "repeat_other_side", "name": "Repeat for Other Side", "cat": "Procedure", "insp": "Repeat the whole walkaround on the opposite side of the truck.", "ax": 690, "ay": 930, "tx": 640, "ty": 880, "accept": ["repeat", "other side"]}, {"num": 28, "id": "tire1", "name": "Tire 1 \u2014 Driver's Side Front", "cat": "Tire Positions", "insp": "Tire position 1 is the driver's side (left) front tire.", "ax": 70, "ay": 250, "tx": 120, "ty": 270, "accept": ["tire 1", "1", "driver front", "drivers front", "driver side front", "left front", "front left", "lf", "one", "tire one", "number one", "no one", "position 1", "position one"], "strict": true}, {"num": 29, "id": "tire2", "name": "Tire 2 \u2014 Passenger Side Front", "cat": "Tire Positions", "insp": "Tire position 2 is the passenger side (right) front tire.", "ax": 690, "ay": 250, "tx": 640, "ty": 270, "accept": ["tire 2", "2", "passenger front", "passenger side front", "right front", "front right", "rf", "two", "tire two", "number two", "no two", "position 2", "position two"], "strict": true}, {"num": 30, "id": "tire3", "name": "Tire 3 \u2014 Back Left Outer", "cat": "Tire Positions", "insp": "Tire position 3 is the outer tire on the back left (driver side) dual.", "ax": 70, "ay": 690, "tx": 187, "ty": 700, "accept": ["tire 3", "3", "back left outer", "rear left outer", "left rear outer", "outer left rear", "lro", "three", "tire three", "number three", "no three", "position 3", "position three"], "strict": true}, {"num": 31, "id": "tire4", "name": "Tire 4 \u2014 Back Left Inner", "cat": "Tire Positions", "insp": "Tire position 4 is the inner tire on the back left (driver side) dual.", "ax": 70, "ay": 975, "tx": 270, "ty": 910, "accept": ["tire 4", "4", "back left inner", "rear left inner", "left rear inner", "inner left rear", "lri", "four", "tire four", "number four", "no four", "position 4", "position four"], "strict": true}, {"num": 32, "id": "tire5", "name": "Tire 5 \u2014 Back Right Inner", "cat": "Tire Positions", "insp": "Tire position 5 is the inner tire on the back right (passenger side) dual.", "ax": 690, "ay": 975, "tx": 489, "ty": 910, "accept": ["tire 5", "5", "back right inner", "rear right inner", "right rear inner", "inner right rear", "rri", "five", "tire five", "number five", "no five", "position 5", "position five"], "strict": true}, {"num": 33, "id": "tire6", "name": "Tire 6 \u2014 Back Right Outer", "cat": "Tire Positions", "insp": "Tire position 6 is the outer tire on the back right (passenger side) dual.", "ax": 690, "ay": 690, "tx": 572, "ty": 700, "accept": ["tire 6", "6", "back right outer", "rear right outer", "right rear outer", "outer right rear", "rro", "six", "tire six", "number six", "no six", "position 6", "position six"], "strict": true}];
+const KEY='haulTruckSheet_v2';
+let progress={};
+function load(){try{progress=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){progress={}}
+  componentsData.forEach(c=>{if(!progress[c.id])progress[c.id]={box:0,lapses:0,reps:0,mastered:false}});}
+function save(){localStorage.setItem(KEY,JSON.stringify(progress))}
+function mastered(){return componentsData.filter(c=>progress[c.id].mastered).length}
+function missed(){return componentsData.filter(c=>progress[c.id].lapses>0&&!progress[c.id].mastered).length}
+function stateOf(c){const p=progress[c.id];if(p.mastered)return'mastered';if(p.lapses>0)return'missed';if(p.reps>0)return'learning';return'new'}
+function norm(s){return String(s).toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim()}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function isCorrect(ans,c){const na=norm(ans);if(!na)return false;
+  for(const kw of c.accept){const nk=norm(kw);if(!nk)continue;
+    if(c.strict){const re=new RegExp('(^|\\s)'+nk.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(\\s|$)');if(re.test(na))return true;}
+    else if(nk.length<=2){if(na===nk||na==='tire '+nk||na==='no '+nk)return true;}
+    else if(na.includes(nk))return true;}
+  if(c.strict)return false;
+  const stop=new Set(['the','and','for','over','your','check','leave','bottom','step','area','mounts','mount','on','of','to']);
+  const words=norm(c.name).split(' ').filter(w=>w.length>3&&!stop.has(w));let hit=0;words.forEach(w=>{if(na.includes(w))hit++});
+  return words.length>0&&hit>=Math.max(1,Math.ceil(words.length*0.5));}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function pickRound(n){const s=componentsData.map(c=>{const p=progress[c.id];let v=0;
+  if(p.lapses>0&&!p.mastered)v-=100;if(!p.reps&&!p.mastered)v-=40;if(p.mastered)v+=60;v+=p.box*5+Math.random()*8;return{c,v}});
+  s.sort((a,b)=>a.v-b.v);return s.slice(0,n).map(o=>o.c)}
+function updateStats(){document.getElementById('c-master').textContent=mastered();document.getElementById('c-missed').textContent=missed();
+  const m=mastered();const TOT=componentsData.length;document.getElementById('pfill').style.width=Math.round(m/TOT*100)+'%';document.getElementById('ptext').textContent=m+'/'+TOT+' mastered'}
+
+let mode='test',round=0,current=[],checked=false,selId=null;
+function setMode(m){mode=m;
+  document.getElementById('panel-test').style.display=m==='test'?'':'none';
+  document.getElementById('panel-study').style.display=m==='study'?'':'none';
+  document.getElementById('tb-test').className=m==='test'?'on':'';document.getElementById('tb-study').className=m==='study'?'on':'';
+  document.getElementById('dtitle').innerHTML=m==='test'?'&#128666; Top-down truck &mdash; blanks 1&ndash;5':'&#128666; Top-down truck &mdash; all '+componentsData.length+' parts';
+  document.getElementById('dhint').innerHTML=m==='test'?'&#128161; Follow each numbered arrow to the part. Scroll/pinch to zoom, drag to pan.':'&#128161; All arrows shown. Tap a number to highlight; zoom in for detail.';
+  document.getElementById('tirenums').style.display = (m==='study')?'':'none';
+  document.getElementById('parts-tag').textContent=componentsData.length+' parts';
+  if(m==='study')renderStudyList();renderMarkers();}
+
+function newRound(){round++;current=shuffle(pickRound(5));checked=false;
+  document.getElementById('rpill').textContent='Round '+round;document.getElementById('score').textContent='0/5';
+  document.getElementById('check').style.display='';document.getElementById('next').style.display='none';
+  renderBlanks();renderMarkers();const f=document.getElementById('ans-0');if(f){try{f.focus({preventScroll:true})}catch(e){}}}
+function renderBlanks(){const w=document.getElementById('blanks');w.innerHTML='';
+  current.forEach((c,i)=>{const row=document.createElement('div');row.className='blank';
+    const top=document.createElement('div');top.className='btop';
+    const qn=document.createElement('div');qn.className='qn';qn.id='qn-'+i;qn.textContent=(i+1);
+    const inp=document.createElement('input');inp.className='ans';inp.id='ans-'+i;inp.type='text';inp.autocomplete='off';inp.placeholder='Blank '+(i+1)+' is…';
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const nx=document.getElementById('ans-'+(i+1));nx?nx.focus():checkAnswers();}});
+    top.appendChild(qn);top.appendChild(inp);const fb=document.createElement('div');fb.id='fb-'+i;fb.style.display='none';
+    row.appendChild(top);row.appendChild(fb);w.appendChild(row);});}
+function checkAnswers(){if(checked)return;checked=true;let ok=0;
+  current.forEach((c,i)=>{const inp=document.getElementById('ans-'+i);inp.dataset.val=inp.value;inp.disabled=true;
+    const good=isCorrect(inp.value,c);inp.classList.add(good?'ok':'bad');document.getElementById('qn-'+i).classList.add(good?'ok':'bad');
+    const p=progress[c.id];p.reps++;if(good){p.box=Math.min(p.box+1,5);if(p.box>=3)p.mastered=true;ok++}else{p.box=0;p.lapses++;p.mastered=false}
+    const fb=document.getElementById('fb-'+i);fb.style.display='';
+    if(good){fb.className='fb ok';fb.innerHTML='✓ '+esc(c.name);}
+    else{fb.className='fb bad';fb.innerHTML='✗ <b>'+esc(c.name)+'</b><span class="iwr" onclick="iWasRight('+i+')">I was right</span><span class="insp">'+esc(c.insp)+'</span>';}});
+  save();updateStats();renderMarkers();document.getElementById('score').textContent=ok+'/5';
+  document.getElementById('check').style.display='none';document.getElementById('next').style.display='';}
+function iWasRight(i){const c=current[i],p=progress[c.id];if(p.lapses>0)p.lapses--;p.box=Math.min(p.box+1,5);if(p.box>=3)p.mastered=true;
+  const inp=document.getElementById('ans-'+i);inp.classList.remove('bad');inp.classList.add('ok');
+  document.getElementById('qn-'+i).classList.remove('bad');document.getElementById('qn-'+i).classList.add('ok');
+  document.getElementById('fb-'+i).className='fb ok';document.getElementById('fb-'+i).innerHTML='✓ '+esc(c.name);
+  save();updateStats();renderMarkers();let ok=0;current.forEach((_,j)=>{if(document.getElementById('qn-'+j).classList.contains('ok'))ok++});
+  document.getElementById('score').textContent=ok+'/5';}
+
+function renderStudyList(){const w=document.getElementById('studylist');w.innerHTML='';
+  componentsData.forEach(c=>{const el=document.createElement('div');el.className='item st-'+stateOf(c)+(c.id===selId?' sel':'');
+    el.onclick=()=>{selId=c.id;renderStudyList();renderMarkers();};
+    el.innerHTML='<div class="inum">'+c.num+'</div><div><div class="iname">'+esc(c.name)+'</div><div class="iinsp">'+esc(c.insp)+'</div></div>';
+    w.appendChild(el);});}
+
+function svgEl(t){return document.createElementNS('http://www.w3.org/2000/svg',t)}
+function drawArrow(g,x1,y1,x2,y2,col,wgt){
+  const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len;
+  const sx=x1+ux*19,sy=y1+uy*19,ex=x2-ux*3,ey=y2-uy*3;
+  const ln=svgEl('line');ln.setAttribute('x1',sx);ln.setAttribute('y1',sy);ln.setAttribute('x2',ex);ln.setAttribute('y2',ey);
+  ln.setAttribute('stroke',col);ln.setAttribute('stroke-width',wgt);ln.setAttribute('stroke-linecap','round');g.appendChild(ln);
+  const ah=11,aw=6,bx=x2-ux*ah,by=y2-uy*ah;
+  const p=svgEl('polygon');
+  p.setAttribute('points',x2+','+y2+' '+(bx-uy*aw)+','+(by+ux*aw)+' '+(bx+uy*aw)+','+(by-ux*aw));
+  p.setAttribute('fill',col);g.appendChild(p);}
+function renderMarkers(){const g=document.getElementById('markers');g.innerHTML='';
+  const show=mode==='test'?current:componentsData;
+  show.forEach((c,i)=>{
+    let fill='#f59e0b',tcol='#1a2233',acol='#963434',r=15,label=(mode==='test'?(i+1):c.num),wgt=2.6;
+    const st=stateOf(c);
+    if(mode==='study'){r=13;
+      fill = st==='mastered'?'#10b981': st==='missed'?'#ef4444': st==='learning'?'#f59e0b':'#64748b';
+      tcol = (st==='missed'||st==='new')?'#ffffff':'#1a2233';
+      if(c.id===selId){r=18;acol='#f59e0b';wgt=4;}
+    } else if(checked){
+      const good=isCorrect((document.getElementById('ans-'+i)||{}).dataset?.val||'',c);
+      fill=good?'#10b981':'#ef4444';tcol=good?'#04231a':'#fff';acol=good?'#10b981':'#ef4444';wgt=3.2;}
+    const grp=svgEl('g');grp.setAttribute('class','mk');
+    drawArrow(grp,c.ax,c.ay,c.tx,c.ty,acol,wgt);
+    if(c.t2)drawArrow(grp,c.ax,c.ay,c.t2[0],c.t2[1],acol,wgt);
+    if(c.tips)c.tips.forEach(t=>drawArrow(grp,c.ax,c.ay,t[0],t[1],acol,wgt));
+    const ci=svgEl('circle');ci.setAttribute('class','badge');ci.setAttribute('cx',c.ax);ci.setAttribute('cy',c.ay);ci.setAttribute('r',r);
+    ci.setAttribute('fill',fill);ci.setAttribute('stroke','#1a2233');ci.setAttribute('stroke-width',2.5);
+    const tx=svgEl('text');tx.setAttribute('x',c.ax);tx.setAttribute('y',c.ay+5);tx.setAttribute('text-anchor','middle');
+    tx.setAttribute('font-size',r>=15?15:13);tx.setAttribute('fill',tcol);tx.textContent=label;
+    grp.appendChild(ci);grp.appendChild(tx);
+    if(mode==='study'){grp.style.cursor='pointer';grp.addEventListener('click',()=>{selId=c.id;renderStudyList();renderMarkers();});}
+    g.appendChild(grp);});}
+
+const svg=document.getElementById('truck'),vp=document.getElementById('viewport');
+const VW=760,VH=1040,MINK=0.8,MAXK=10;
+let k=1,tx=0,ty=0;
+function applyT(){vp.setAttribute('transform','translate('+tx+' '+ty+') scale('+k+')');
+  svg.style.touchAction = (k>1.02)?'none':'pan-y';}
+function clientToSvg(cx,cy){const r=svg.getBoundingClientRect();return {x:(cx-r.left)/r.width*VW,y:(cy-r.top)/r.height*VH}}
+function clampPan(){if(k<=1){tx=(VW-VW*k)/2;ty=(VH-VH*k)/2;}else{tx=Math.min(0,Math.max(VW-VW*k,tx));ty=Math.min(0,Math.max(VH-VH*k,ty));}}
+function zoomAt(sx,sy,f){const nk=Math.max(MINK,Math.min(MAXK,k*f));const wx=(sx-tx)/k,wy=(sy-ty)/k;tx=sx-wx*nk;ty=sy-wy*nk;k=nk;clampPan();applyT()}
+function zoomBtn(f){zoomAt(VW/2,VH/2,f)}
+function zoomReset(){k=1;tx=0;ty=0;clampPan();applyT()}
+svg.addEventListener('wheel',e=>{e.preventDefault();const p=clientToSvg(e.clientX,e.clientY);zoomAt(p.x,p.y,e.deltaY<0?1.12:1/1.12)},{passive:false});
+let dragging=false,lx=0,ly=0,pointers=new Map(),pinchD=0;
+svg.addEventListener('pointerdown',e=>{svg.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pointers.size===1){if(k>1.02){dragging=true;lx=e.clientX;ly=e.clientY;svg.classList.add('drag')}}
+  else if(pointers.size===2){dragging=false;const p=[...pointers.values()];pinchD=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)}});
+svg.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pointers.size===2){const p=[...pointers.values()];const d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
+    if(pinchD>0){const mid=clientToSvg((p[0].x+p[1].x)/2,(p[0].y+p[1].y)/2);zoomAt(mid.x,mid.y,d/pinchD)}pinchD=d;return;}
+  if(dragging){const r=svg.getBoundingClientRect();tx+=(e.clientX-lx)/r.width*VW;ty+=(e.clientY-ly)/r.height*VH;lx=e.clientX;ly=e.clientY;clampPan();applyT()}});
+function endPtr(e){pointers.delete(e.pointerId);if(pointers.size<2)pinchD=0;if(pointers.size===0){dragging=false;svg.classList.remove('drag')}}
+svg.addEventListener('pointerup',endPtr);svg.addEventListener('pointercancel',endPtr);
+svg.addEventListener('dblclick',e=>{e.preventDefault();const p=clientToSvg(e.clientX,e.clientY);zoomAt(p.x,p.y,1.6)});
+
+function resetProgress(){if(!confirm('Reset all progress?'))return;localStorage.removeItem(KEY);progress={};load();save();updateStats();if(mode==='study')renderStudyList();newRound();}
+load();save();updateStats();newRound();setMode('test');applyT();
+window.scrollTo(0,0);
+window.addEventListener('load',()=>window.scrollTo(0,0));
+</script>
+</body>
+</html>
