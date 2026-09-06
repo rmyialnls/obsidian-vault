@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ink">#0E0F13</color>
+    <color name="accent">#1DB954</color>
+    <!-- Brand gold sampled from the TrackSnatch logo; also the adaptive-icon background. -->
+    <color name="brand_gold">#BD9B51</color>
+    <color name="ic_launcher_background">#BD9B51</color>
+</resources>

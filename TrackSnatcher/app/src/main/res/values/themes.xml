@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme. Compose renders the actual UI; this covers the window
+         background shown during launch and the status/navigation bar treatment. -->
+    <style name="Theme.TrackSnatcher" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/ink</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+</resources>

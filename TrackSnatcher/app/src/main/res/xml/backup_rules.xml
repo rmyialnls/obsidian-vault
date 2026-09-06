@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Exclude OAuth tokens from cloud backup. They live in EncryptedSharedPreferences whose
+  master key is device-bound and non-exportable, so a restored copy would be undecryptable
+  anyway — the user simply re-links their service.
+-->
+<full-backup-content>
+    <exclude domain="sharedpref" path="ts_auth_tokens.xml" />
+</full-backup-content>
