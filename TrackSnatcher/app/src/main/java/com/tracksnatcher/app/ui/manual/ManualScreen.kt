@@ -14,6 +14,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.NearMe
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,6 +47,8 @@ import com.tracksnatcher.app.domain.model.Track
 fun ManualScreen(
     onBack: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenSession: () -> Unit,
+    onOpenNearby: () -> Unit,
     viewModel: ManualViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -67,6 +71,12 @@ fun ManualScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = onOpenSession) {
+                        Icon(Icons.Filled.Groups, contentDescription = "Session")
+                    }
+                    IconButton(onClick = onOpenNearby) {
+                        Icon(Icons.Filled.NearMe, contentDescription = "Nearby")
+                    }
                     IconButton(onClick = onOpenSettings) {
                         Icon(Icons.Filled.Settings, contentDescription = "Settings")
                     }

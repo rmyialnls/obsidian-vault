@@ -56,6 +56,12 @@ class FakePlaylistRepository @Inject constructor() : PlaylistRepository {
         return Result.success(Unit)
     }
 
+    override suspend fun removeTrackFromPlaylist(playlist: Playlist, track: Track): Result<Unit> {
+        delay(250)
+        addedTracks[playlist.id]?.remove(track.dedupeKey())
+        return Result.success(Unit)
+    }
+
     /** Playlist id -> (dedupe key -> added-at ms). Seeded so a duplicate is demoable. */
     private val addedTracks: MutableMap<String, MutableMap<String, Long>> = mutableMapOf(
         "pl_fav" to mutableMapOf(

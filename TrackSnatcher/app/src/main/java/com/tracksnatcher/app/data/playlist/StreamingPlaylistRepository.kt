@@ -4,6 +4,8 @@ import com.tracksnatcher.app.auth.google.GoogleAuthManager
 import com.tracksnatcher.app.auth.spotify.SpotifyAuthManager
 import com.tracksnatcher.app.data.remote.SpotifyAddTracksRequest
 import com.tracksnatcher.app.data.remote.SpotifyApi
+import com.tracksnatcher.app.data.remote.SpotifyRemoveTracksRequest
+import com.tracksnatcher.app.data.remote.SpotifyTrackUriRef
 import com.tracksnatcher.app.data.remote.YouTubeApi
 import com.tracksnatcher.app.data.remote.YouTubePlaylistItemDto
 import com.tracksnatcher.app.data.remote.YouTubeResourceIdDto
@@ -143,6 +145,19 @@ class StreamingPlaylistRepository @Inject constructor(
                     ),
                 )
                 MusicService.AMAZON_MUSIC -> throw AppError.Unknown() // handled via deep link, not here
+            }
+        }
+
+    override suspend fun removeTrackFromPlaylist(playlist: Playlist, track: Track): Result<Unit> =
+        safeCall(playlist.service) {
+            val providerId = track.providerId(playlist.service) ?: throw AppError.NoMatch
+            when (playlist.service) {
+                MusicService.SPOTIFY -> spotifyApi.removeTracks(
+                    playlistId = playlist.id,
+                    body = SpotifyRemoveTracksRequest(listOf(SpotifyTrackUriRef(providerId))),
+                )
+                // YouTube removal needs the playlistItem id (a lookup); Amazon has no API.
+                else -> throw AppError.Unknown()
             }
         }
 

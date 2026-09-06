@@ -15,7 +15,7 @@ object BillingProducts {
 
 /** Per-tier limits. Free is deliberately tight to drive conversion. */
 object TierLimits {
-    const val FREE_MONTHLY_SNATCH_CAP = 10
+    const val FREE_MONTHLY_SNATCH_CAP = 18
     const val FREE_QUICK_PLAYLISTS = 1
     const val PRO_QUICK_PLAYLISTS = 4
     /** Rolling reset window for the free monthly cap. */

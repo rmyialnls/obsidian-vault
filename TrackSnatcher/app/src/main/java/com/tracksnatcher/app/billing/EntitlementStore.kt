@@ -60,6 +60,14 @@ class EntitlementStore @Inject constructor(
         }
     }
 
+    /** Refund a snatch when the user undoes a wrong add — a failed/undone ID must not burn the cap. */
+    suspend fun refundSnatch() {
+        dataStore.edit { prefs ->
+            val used = prefs[KEY_USED] ?: 0
+            if (used > 0) prefs[KEY_USED] = used - 1
+        }
+    }
+
     suspend fun setTier(tier: SubscriptionTier) {
         dataStore.edit { it[KEY_TIER] = tier.name }
     }

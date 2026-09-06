@@ -121,6 +121,14 @@ class CaptureViewModel @Inject constructor(
         }
     }
 
+    /** One-tap Undo after a wrong add: remove the track and refund the snatch against the cap. */
+    fun undo(track: Track, playlist: Playlist) {
+        viewModelScope.launch {
+            playlistRepository.removeTrackFromPlaylist(playlist, track)
+            entitlementStore.refundSnatch()
+        }
+    }
+
     fun mikePermissionDenied() {
         _state.value = CaptureUiState.Error(AppError.MicPermissionDenied)
     }

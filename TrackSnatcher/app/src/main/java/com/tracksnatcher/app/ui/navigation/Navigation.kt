@@ -13,4 +13,10 @@ object Routes {
     const val MANUAL = "manual"
     const val SETTINGS = "settings"
     const val PAYWALL = "paywall"
+    const val SESSION = "session"
+    const val RECAP = "recap"
+    const val NEARBY = "nearby"
+
+    const val PERSON = "person/{userId}"
+    fun person(userId: String): String = "person/$userId"
 }

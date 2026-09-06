@@ -23,6 +23,7 @@ billing = "7.1.1"
 playServicesLocation = "21.3.0"
 coroutinesPlayServices = "1.9.0"
 coil = "2.7.0"
+zxing = "3.5.3"
 junit = "4.13.2"
 androidxJunit = "1.2.1"
 espresso = "3.6.1"
@@ -68,6 +69,7 @@ billing-ktx = { group = "com.android.billingclient", name = "billing-ktx", versi
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "coroutinesPlayServices" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }

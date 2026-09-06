@@ -12,6 +12,10 @@ import com.tracksnatcher.app.domain.repository.RecognitionRepository
 import com.tracksnatcher.app.domain.repository.SonicMemoryRepository
 import com.tracksnatcher.app.location.FusedLocationProvider
 import com.tracksnatcher.app.location.LocationProvider
+import com.tracksnatcher.app.people.FakePeopleRepository
+import com.tracksnatcher.app.people.PeopleRepository
+import com.tracksnatcher.app.session.FakeSessionRepository
+import com.tracksnatcher.app.session.SessionRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -52,4 +56,12 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindGenreSource(impl: FakeGenreSource): GenreSource
+
+    @Binds
+    @Singleton
+    abstract fun bindSessionRepository(impl: FakeSessionRepository): SessionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPeopleRepository(impl: FakePeopleRepository): PeopleRepository
 }

@@ -4,6 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.HTTP
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -52,7 +53,20 @@ interface SpotifyApi {
         @Path("playlist_id") playlistId: String,
         @Body body: SpotifyAddTracksRequest,
     ): SpotifySnapshotDto
+
+    /** DELETE https://api.spotify.com/v1/playlists/{playlist_id}/tracks — backs Undo. */
+    @HTTP(method = "DELETE", path = "v1/playlists/{playlist_id}/tracks", hasBody = true)
+    suspend fun removeTracks(
+        @Path("playlist_id") playlistId: String,
+        @Body body: SpotifyRemoveTracksRequest,
+    ): SpotifySnapshotDto
 }
+
+@Serializable
+data class SpotifyRemoveTracksRequest(val tracks: List<SpotifyTrackUriRef>)
+
+@Serializable
+data class SpotifyTrackUriRef(val uri: String)
 
 @Serializable
 data class SpotifyPlaylistTracksDto(val items: List<SpotifyPlaylistItemDto> = emptyList())

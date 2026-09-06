@@ -140,6 +140,36 @@ Gating, duplicate interception, auto-vibe routing, and memory capture are all wo
 place — `CaptureViewModel` — so every append path (quick-tap, voice/widget target, auto-vibe)
 goes through the same checks.
 
+## Sessions & the Napster layer (phase 3)
+
+The differentiator: file your own song first, but also share a room and raid libraries.
+
+- **Sessions (`session/`):** a QR-addressable room with one collaborative playlist (the
+  "tape"). Templates (Trip / Party / Wedding / Campfire / Custom) differ only in default
+  rules + copy. Host starts → QR + short code (ZXing-generated); guests scan or type the
+  code and join. Everyone adds what they want to hear (like karaoke for the room). Host
+  controls: auto-add vs approve queue, lock, end. The official streaming playlist survives
+  when the session ends. `SessionScreen`, seeded `FakeSessionRepository` (demo road trip).
+- **Snatch (`domain/usecase/SnatchTrackUseCase`):** copy a tape/library track onto *your*
+  playlist — but only through the already-have gate, and never auto-snatched from a session.
+  Enforces the free cap and routes to the paywall when it's hit.
+- **Recap (`SessionRecapScreen`):** replay a session another day — ordered tape, who added
+  each track, **who snatched it and into which playlist**, time/place; tap a person to open
+  their library; "Play this session" opens the official streaming playlist.
+- **Raid a library (`people/`, `PersonFolderScreen`):** a person is a *folder*, not a
+  profile wall — shareable playlists stacked, multi-select, "Snatch selected to [playlist]",
+  already-owned tracks greyed out. The only verbs on a person are look / snatch / open
+  Spotify. No DMs, comments, likes, or follower graph.
+- **Nearby (`NearbyScreen`):** a list of visible libraries around you (not a map of moving
+  people) — like opening computers on Napster.
+- **Visibility (Napster default):** you're **visible unless you hide**. `UserPrefsStore`
+  defaults `visibleNearby`/`visibleInSession` ON; one **Hide my snatches (ghost mode)**
+  toggle in Settings turns you invisible while widget/Auto/personal adds keep working.
+  Private playlists never leak — only playlists explicitly marked shareable are exposed;
+  the Spotify-profile link stays off until you opt in.
+- **Undo:** a wrong add is one tap to reverse (`removeTrackFromPlaylist`) and it **refunds**
+  the snatch against the free cap.
+
 ## Status
 
 Scaffold: architecture, both OAuth managers, the Listening → 4-button picker, and the full

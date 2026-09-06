@@ -32,6 +32,9 @@ interface PlaylistRepository {
 
     /** Append [track] to [playlist]. Idempotent where the underlying API allows it. */
     suspend fun addTrackToPlaylist(playlist: Playlist, track: Track): Result<Unit>
+
+    /** Remove [track] from [playlist] — backs the one-tap Undo after a wrong add. */
+    suspend fun removeTrackFromPlaylist(playlist: Playlist, track: Track): Result<Unit>
 }
 
 /** Local history of captured moments ("Sonic Memories"). */

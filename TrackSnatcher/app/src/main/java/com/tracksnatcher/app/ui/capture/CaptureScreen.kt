@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -72,7 +73,7 @@ import com.tracksnatcher.app.ui.theme.TileHues
 import com.tracksnatcher.app.ui.theme.TrackSnatcherTheme
 import kotlinx.coroutines.delay
 
-private const val SUCCESS_DISMISS_MS = 1_100L
+private const val SUCCESS_DISMISS_MS = 2_600L // leave time to tap Undo before auto-close
 
 @SuppressLint("MissingPermission") // mic permission is checked below; lint can't trace it via the VM
 @Composable
@@ -157,6 +158,10 @@ fun CaptureScreen(
                         track = current.track,
                         playlist = current.playlist,
                         memory = current.memory,
+                        onUndo = {
+                            viewModel.undo(current.track, current.playlist)
+                            (context as? Activity)?.finish()
+                        },
                         onDone = { (context as? Activity)?.finish() },
                     )
 
@@ -302,6 +307,7 @@ private fun AddedContent(
     track: Track,
     playlist: Playlist,
     memory: com.tracksnatcher.app.domain.model.SonicMemory?,
+    onUndo: () -> Unit,
     onDone: () -> Unit,
 ) {
     Column(
@@ -317,8 +323,16 @@ private fun AddedContent(
         Spacer(Modifier.height(16.dp))
         Text("Added to ${playlist.name}", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center)
 
+        // Fat Undo — a wrong add is one tap to reverse, and it refunds the snatch count.
+        Spacer(Modifier.height(6.dp))
+        TextButton(onClick = onUndo) {
+            Icon(Icons.Filled.Undo, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.size(6.dp))
+            Text("Wrong song? Undo")
+        }
+
         if (memory != null) {
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(14.dp))
             ShareableMemoryCard(memory = memory)
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = onDone) { Text("Done") }

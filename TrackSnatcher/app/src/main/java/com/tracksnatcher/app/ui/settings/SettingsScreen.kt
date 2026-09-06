@@ -36,6 +36,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val entitlements by viewModel.entitlements.collectAsStateWithLifecycle()
+    val prefs by viewModel.prefs.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -96,6 +97,47 @@ fun SettingsScreen(
                     },
                 )
             }
+
+            Spacer(Modifier.height(20.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(12.dp))
+            Text("Visibility", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
+            Text(
+                "You're visible unless you hide. Private playlists never leak — only playlists you mark shareable.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(12.dp))
+
+            SettingToggle(
+                title = "Hide my snatches (ghost mode)",
+                subtitle = "Go invisible to Nearby and sessions. Widget, Auto, and your own adds still work.",
+                checked = prefs.hideSnatches,
+                onCheckedChange = viewModel::setHideSnatches,
+            )
+            Spacer(Modifier.height(8.dp))
+            SettingToggle(
+                title = "Show my Spotify profile",
+                subtitle = "Let people you share with open your public Spotify profile.",
+                checked = prefs.showSpotifyProfile,
+                onCheckedChange = viewModel::setShowSpotifyProfile,
+            )
         }
+    }
+}
+
+@Composable
+private fun SettingToggle(
+    title: String,
+    subtitle: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.titleLarge)
+            Text(subtitle, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }

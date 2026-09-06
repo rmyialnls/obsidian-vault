@@ -125,6 +125,9 @@ dependencies {
     // Image loading (album artwork on the share card)
     implementation(libs.coil.compose)
 
+    // QR generation for Session join codes
+    implementation(libs.zxing.core)
+
     // OAuth via Chrome Custom Tabs
     implementation(libs.androidx.browser)
 
