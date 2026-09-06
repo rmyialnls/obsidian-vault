@@ -1,0 +1,16 @@
+# Copy to local.properties and fill in. local.properties is git-ignored.
+# These feed BuildConfig fields (see app/build.gradle.kts). CI may inject them as env vars.
+
+# Android SDK location (usually written automatically by Android Studio).
+sdk.dir=/path/to/Android/sdk
+
+# --- Spotify (PKCE public client) ---
+SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_REDIRECT_URI=tracksnatcher://spotify-callback
+
+# --- Google / YouTube Music (Android OAuth client, custom URI scheme) ---
+GOOGLE_CLIENT_ID=your_google_oauth_client_id
+GOOGLE_REDIRECT_URI=tracksnatcher://google-callback
+
+# --- Recognition backend (fronts AcoustID / MusicBrainz) ---
+RECOGNITION_BASE_URL=https://api.tracksnatcher.example/

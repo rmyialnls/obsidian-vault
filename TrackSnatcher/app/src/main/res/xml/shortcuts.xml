@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Google Assistant App Actions + static shortcut for the capture flow.
+
+  The capability binds a built-in intent to our in-app CAPTURE action. The optional
+  "playlist" parameter is passed straight through so a command like
+  "Hey Google, ask TrackSnatcher to add to my Country playlist" launches ambient
+  recognition already targeting that playlist (matched by name in CaptureViewModel).
+  Per-user playlist names are supplied dynamically at runtime by PlaylistShortcutPublisher.
+-->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <capability android:name="actions.intent.RECORD_AUDIO">
+        <intent
+            android:action="com.tracksnatcher.app.action.CAPTURE"
+            android:targetClass="com.tracksnatcher.app.MainActivity"
+            android:targetPackage="com.tracksnatcher.app">
+            <parameter
+                android:name="playlist"
+                android:key="com.tracksnatcher.app.extra.PLAYLIST_NAME" />
+        </intent>
+    </capability>
+
+    <shortcut
+        android:shortcutId="capture"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_capture_short"
+        android:shortcutLongLabel="@string/shortcut_capture_long">
+        <intent
+            android:action="com.tracksnatcher.app.action.CAPTURE"
+            android:targetClass="com.tracksnatcher.app.MainActivity"
+            android:targetPackage="com.tracksnatcher.app" />
+    </shortcut>
+</shortcuts>

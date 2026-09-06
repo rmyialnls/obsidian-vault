@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TrackSnatcher</string>
+    <string name="widget_label">TrackSnatcher — Listen</string>
+
+    <!-- App Actions / Assistant -->
+    <string name="shortcut_capture_short">Snatch a track</string>
+    <string name="shortcut_capture_long">Identify and save the current song</string>
+</resources>
