@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -27,8 +28,12 @@ class UserPrefsStore @Inject constructor(
             visibleInSession = p[KEY_VISIBLE_SESSION] ?: true,
             hideSnatches = p[KEY_HIDE_SNATCHES] ?: false,
             showSpotifyProfile = p[KEY_SHOW_SPOTIFY] ?: false,
+            lastDestinationId = p[KEY_LAST_DESTINATION],
         )
     }
+
+    /** Sticky destination: remembered once, becomes the primary tile — never asked every time. */
+    suspend fun setLastDestination(playlistId: String) = dataStore.edit { it[KEY_LAST_DESTINATION] = playlistId }
 
     suspend fun setHideSnatches(hidden: Boolean) = dataStore.edit { it[KEY_HIDE_SNATCHES] = hidden }
     suspend fun setVisibleNearby(visible: Boolean) = dataStore.edit { it[KEY_VISIBLE_NEARBY] = visible }
@@ -40,5 +45,6 @@ class UserPrefsStore @Inject constructor(
         val KEY_VISIBLE_SESSION = booleanPreferencesKey("visible_session")
         val KEY_HIDE_SNATCHES = booleanPreferencesKey("hide_snatches")
         val KEY_SHOW_SPOTIFY = booleanPreferencesKey("show_spotify")
+        val KEY_LAST_DESTINATION = stringPreferencesKey("last_destination")
     }
 }

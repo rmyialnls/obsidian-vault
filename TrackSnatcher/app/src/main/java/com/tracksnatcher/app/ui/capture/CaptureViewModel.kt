@@ -16,6 +16,7 @@ import com.tracksnatcher.app.domain.usecase.GetPinnedPlaylistsUseCase
 import com.tracksnatcher.app.domain.usecase.IdentifyTrackUseCase
 import com.tracksnatcher.app.domain.usecase.RecordSonicMemoryUseCase
 import com.tracksnatcher.app.domain.usecase.ResolveVibeTargetUseCase
+import com.tracksnatcher.app.people.UserPrefsStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -41,6 +42,7 @@ class CaptureViewModel @Inject constructor(
     private val resolveVibeTarget: ResolveVibeTargetUseCase,
     private val recordSonicMemory: RecordSonicMemoryUseCase,
     private val entitlementStore: EntitlementStore,
+    private val userPrefsStore: UserPrefsStore,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<CaptureUiState>(CaptureUiState.Idle)
@@ -57,7 +59,7 @@ class CaptureViewModel @Inject constructor(
 
     @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     fun startCapture() {
-        if (_state.value is CaptureUiState.Listening) return
+        if (_state.value is CaptureUiState.Listening || _state.value is CaptureUiState.Identifying) return
 
         viewModelScope.launch {
             // Gate 1: free-tier monthly cap.
@@ -70,11 +72,14 @@ class CaptureViewModel @Inject constructor(
             val audio = audioRecorder.record().getOrElse {
                 _state.value = CaptureUiState.Error(it.asAppError()); return@launch
             }
+            _state.value = CaptureUiState.Identifying
             val track = identifyTrack(audio).getOrElse {
                 _state.value = CaptureUiState.Error(it.asAppError()); return@launch
             }
 
-            val allPlaylists = getPinnedPlaylists().first()
+            // Sticky destination: the last-used playlist leads the grid (and is the primary tile).
+            val lastUsedId = userPrefsStore.prefs.first().lastDestinationId
+            val allPlaylists = getPinnedPlaylists().first().sortedByDescending { it.id == lastUsedId }
             val ent = entitlementStore.current()
             val grid = allPlaylists.take(ent.quickPlaylistLimit)
 
@@ -112,6 +117,7 @@ class CaptureViewModel @Inject constructor(
             addTrackToPlaylist(playlist, track)
                 .onSuccess {
                     entitlementStore.recordSnatch()
+                    userPrefsStore.setLastDestination(playlist.id)
                     val memory = runCatching {
                         recordSonicMemory(track, playlist.name, includeLocation = true)
                     }.getOrNull()

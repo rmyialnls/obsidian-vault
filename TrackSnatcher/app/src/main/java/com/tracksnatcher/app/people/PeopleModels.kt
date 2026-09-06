@@ -15,6 +15,8 @@ data class UserPrefs(
     val hideSnatches: Boolean = false,
     /** Off until the user connects Spotify and opts in. */
     val showSpotifyProfile: Boolean = false,
+    /** Last playlist a song was filed into — shown as the largest/primary quick-target tile. */
+    val lastDestinationId: String? = null,
 ) {
     val nearbyVisible: Boolean get() = visibleNearby && !hideSnatches
     val sessionVisible: Boolean get() = visibleInSession && !hideSnatches

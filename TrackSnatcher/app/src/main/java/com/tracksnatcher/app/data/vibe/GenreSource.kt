@@ -34,8 +34,10 @@ class FakeGenreSource @Inject constructor() : GenreSource {
 
 /**
  * Production genre source: resolves the artist via Spotify search, then reads its genres.
- * A future revision can enrich this with MusicBrainz tags for artists Spotify tags sparsely.
- * Not bound by default.
+ * A future revision can enrich this with MusicBrainz tags for artists Spotify tags sparsely —
+ * if so, query with `includes=["tags"]`, not `["genres"]` (MusicBrainz's genre include returns
+ * empty for most artists); fall through recording → release-group → artist tags before giving
+ * up. Not bound by default.
  */
 @Singleton
 class SpotifyGenreSource @Inject constructor(

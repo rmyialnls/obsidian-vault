@@ -18,6 +18,9 @@ sealed interface CaptureUiState {
 
     data object Listening : CaptureUiState
 
+    /** Audio captured; waiting on the recognition service. */
+    data object Identifying : CaptureUiState
+
     /** Free monthly snatch cap hit — prompt the paywall. */
     data object LimitReached : CaptureUiState
 

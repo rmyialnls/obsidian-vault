@@ -170,10 +170,44 @@ The differentiator: file your own song first, but also share a room and raid lib
 - **Undo:** a wrong add is one tap to reverse (`removeTrackFromPlaylist`) and it **refunds**
   the snatch against the free cap.
 
+## Branding
+
+The launcher icon and Settings header banner are generated from the TrackSnatch logo
+(`app/src/main/res/drawable-nodpi/ic_launcher_foreground.png` and `brand_banner.png`), with
+`#BD9B51` (the logo's gold) as the adaptive-icon background (`values/colors.xml`). Regenerate
+either PNG from a source image and drop it in `drawable-nodpi/` under the same filename to
+update the brand without touching any XML.
+
+## UX lessons carried over from SnatchTrack (legacy)
+
+This project is a clean-room rebuild on official Spotify/YouTube/AudD-or-ACRCloud APIs only —
+no yt-dlp, no scraping, no raw audio download or transfer pipeline. A few interaction-design
+and metadata lessons learned the hard way on an earlier, unrelated prototype were still worth
+keeping:
+
+- **Status words, not a progress bar.** The capture flow shows `Listening…` → `Identifying…`
+  (`CaptureUiState.Listening` / `.Identifying`) rather than a percentage — a bar that lies
+  about progress erodes trust fast.
+- **Sticky destination.** The last playlist a track was filed into is remembered
+  (`UserPrefs.lastDestinationId`) and leads the quick-target grid as the largest tile, so the
+  common case is a single tap instead of a re-pick every time.
+- **Never trust the YouTube channel name as the artist.** `YouTubeResultScorer` parses
+  "Artist - Title" from the video title first; only a channel ending in `" - Topic"` (YouTube's
+  auto-generated artist channel) is trusted as a bare fallback, and a `*VEVO` channel (a label
+  brand, not an artist) is never used. It also ranks official/studio uploads above live
+  covers, bootlegs, and remixes.
+- **MusicBrainz genre lookups use `tags`, not `genres`.** Noted in `GenreSource.kt` for
+  whoever wires in MusicBrainz enrichment: MusicBrainz's `includes=["genres"]` comes back
+  empty for most artists — query `includes=["tags"]` and fall through recording →
+  release-group → artist tags instead.
+
 ## Status
 
-Scaffold: architecture, both OAuth managers, the Listening → 4-button picker, and the full
-phase-2 monetization/curation surface are in place and demoable on dummy data
-(`FakePlaylistRepository`, `FakeGenreSource`). Not yet compiled in CI. Next: point
-`RECOGNITION_BASE_URL` at the live backend, flip the repository/genre bindings to the
-streaming implementations, and configure the Play Console products.
+Scaffold: architecture, both OAuth managers, the Listening → 4-button picker, the full
+phase-2 monetization/curation surface, and the phase-3 session/Napster layer are in place and
+demoable on dummy data (`FakePlaylistRepository`, `FakeGenreSource`, `FakeSessionRepository`,
+`FakePeopleRepository`). A GitHub Actions workflow (`.github/workflows/tracksnatcher-android.yml`)
+builds the debug APK and runs unit tests on every push touching this directory, but the code
+has not otherwise been compiled in this environment. Next: point `RECOGNITION_BASE_URL` at the
+live backend, flip the repository/genre bindings to the streaming implementations, and
+configure the Play Console products.

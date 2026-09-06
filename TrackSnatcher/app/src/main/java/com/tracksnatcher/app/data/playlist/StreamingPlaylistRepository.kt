@@ -9,6 +9,7 @@ import com.tracksnatcher.app.data.remote.SpotifyTrackUriRef
 import com.tracksnatcher.app.data.remote.YouTubeApi
 import com.tracksnatcher.app.data.remote.YouTubePlaylistItemDto
 import com.tracksnatcher.app.data.remote.YouTubeResourceIdDto
+import com.tracksnatcher.app.data.remote.YouTubeResultScorer
 import com.tracksnatcher.app.data.remote.YouTubeSnippetDto
 import com.tracksnatcher.app.domain.model.AppError
 import com.tracksnatcher.app.domain.model.DuplicateMatch
@@ -89,16 +90,21 @@ class StreamingPlaylistRepository @Inject constructor(
                         providerIds = mapOf(MusicService.SPOTIFY to dto.uri),
                     )
                 }
-                MusicService.YOUTUBE_MUSIC -> youTubeApi.searchVideos(query).items.mapNotNull { item ->
-                    val videoId = item.id.videoId ?: return@mapNotNull null
-                    Track(
-                        recognitionId = videoId,
-                        title = item.snippet.title,
-                        artist = item.snippet.channelTitle.orEmpty(),
-                        artworkUrl = item.snippet.thumbnails?.default?.url,
-                        providerIds = mapOf(MusicService.YOUTUBE_MUSIC to videoId),
-                    )
-                }
+                MusicService.YOUTUBE_MUSIC -> youTubeApi.searchVideos(query).items
+                    .mapNotNull { item ->
+                        val videoId = item.id.videoId ?: return@mapNotNull null
+                        val parsed = YouTubeResultScorer.parse(item.snippet.title, item.snippet.channelTitle)
+                        val score = YouTubeResultScorer.score(item.snippet.title, item.snippet.channelTitle)
+                        score to Track(
+                            recognitionId = videoId,
+                            title = parsed.title,
+                            artist = parsed.artist, // never the channel/uploader name
+                            artworkUrl = item.snippet.thumbnails?.default?.url,
+                            providerIds = mapOf(MusicService.YOUTUBE_MUSIC to videoId),
+                        )
+                    }
+                    .sortedByDescending { it.first } // official/studio first, live/cover last
+                    .map { it.second }
                 MusicService.AMAZON_MUSIC -> emptyList()
             }
         }

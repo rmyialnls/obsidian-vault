@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -117,7 +118,11 @@ fun CaptureScreen(
     ) {
         AnimatedContent(targetState = state, label = "capture-state") { current ->
             when (current) {
-                CaptureUiState.Idle, CaptureUiState.Listening -> ListeningContent()
+                CaptureUiState.Idle, CaptureUiState.Listening ->
+                    ListeningContent(label = "Listening…", hint = "Point at the music for a few seconds")
+
+                CaptureUiState.Identifying ->
+                    ListeningContent(label = "Identifying…", hint = "Got it — finding the song")
 
                 CaptureUiState.LimitReached ->
                     LimitReachedContent(onUpgrade = onOpenPaywall, onClose = { (context as? Activity)?.finish() })
@@ -174,7 +179,7 @@ fun CaptureScreen(
 // --- Step 1: Listening ---------------------------------------------------------------
 
 @Composable
-private fun ListeningContent() {
+private fun ListeningContent(label: String, hint: String) {
     val transition = rememberInfiniteTransition(label = "pulse")
     val scale by transition.animateFloat(
         initialValue = 0.85f,
@@ -194,10 +199,10 @@ private fun ListeningContent() {
             Icon(Icons.Filled.GraphicEq, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(56.dp))
         }
         Spacer(Modifier.height(28.dp))
-        Text("Listening…", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground)
+        Text(label, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground)
         Spacer(Modifier.height(6.dp))
         Text(
-            "Point at the music for a few seconds",
+            hint,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -250,8 +255,17 @@ private fun MatchedContent(
             contentPadding = PaddingValues(vertical = 4.dp),
             modifier = Modifier.fillMaxWidth(),
         ) {
-            itemsIndexed(playlists, key = { _, p -> p.id }) { index, playlist ->
-                PlaylistTile(playlist, TileHues[index % TileHues.size], onClick = { onPick(playlist) })
+            itemsIndexed(
+                items = playlists,
+                key = { _, p -> p.id },
+                span = { index, _ -> GridItemSpan(if (index == 0 && playlists.size > 1) 2 else 1) },
+            ) { index, playlist ->
+                PlaylistTile(
+                    playlist = playlist,
+                    hue = TileHues[index % TileHues.size],
+                    primary = index == 0 && playlists.size > 1,
+                    onClick = { onPick(playlist) },
+                )
             }
         }
         Spacer(Modifier.height(12.dp))
@@ -271,11 +285,11 @@ private fun MatchedContent(
 }
 
 @Composable
-private fun PlaylistTile(playlist: Playlist, hue: Color, onClick: () -> Unit) {
+private fun PlaylistTile(playlist: Playlist, hue: Color, primary: Boolean, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(1.4f)
+            .aspectRatio(if (primary) 2.6f else 1.4f)
             .clip(RoundedCornerShape(20.dp))
             .background(hue.copy(alpha = 0.22f))
             .clickable(onClick = onClick)
@@ -283,6 +297,9 @@ private fun PlaylistTile(playlist: Playlist, hue: Color, onClick: () -> Unit) {
         contentAlignment = Alignment.BottomStart,
     ) {
         Column {
+            if (primary) {
+                Text("LAST USED", style = MaterialTheme.typography.labelLarge, color = hue)
+            }
             Text(playlist.name, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
             Text("${playlist.trackCount} tracks", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
