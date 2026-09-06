@@ -257,11 +257,20 @@
 <script>
 const componentsData = [{"num": 1, "id": "lunch_bag", "name": "Leave lunch bag on the bottom step", "cat": "Safety & Procedure", "insp": "Put your lunch bag on the bottom step before the walkaround \u2014 a reminder the circle check is underway.", "ax": 70, "ay": 86, "tx": 226, "ty": 76, "accept": ["lunch"]}, {"num": 2, "id": "dipstick", "name": "Engine Oil Dip Stick", "cat": "Engine Bay", "insp": "Pull the dip stick and confirm engine oil is within the safe range before start-up.", "ax": 70, "ay": 170, "tx": 304, "ty": 210, "accept": ["dipstick", "dip stick"]}, {"num": 3, "id": "engine_debris", "name": "Debris in Engine & Turbo Area", "cat": "Fire Safety", "insp": "Clear debris/combustible material from the engine and turbo area \u2014 hot surfaces are a fire risk.", "ax": 690, "ay": 150, "tx": 462, "ty": 196, "accept": ["debris"]}, {"num": 4, "id": "overhead_leaks", "name": "Leaks Overhead & Turbo Area", "cat": "Engine Bay", "insp": "Look overhead through the engine/turbo for oil, fuel or coolant leaks and weeping hoses.", "ax": 70, "ay": 234, "tx": 304, "ty": 250, "accept": ["overhead", "over head", "head and turbo", "turbo area"]}, {"num": 5, "id": "suspensions_keepers", "name": "Suspensions & Keepers", "cat": "Suspension", "insp": "Inspect suspension mounts and keeper pins/bolts for security, fit and wear.", "ax": 70, "ay": 300, "tx": 196, "ty": 338, "accept": ["suspension", "keeper"]}, {"num": 6, "id": "steering", "name": "Steering", "cat": "Steering", "insp": "Check steering linkage, cylinders and connections for leaks, cracks and loose hardware.", "ax": 70, "ay": 420, "tx": 244, "ty": 412, "accept": ["steering"]}, {"num": 7, "id": "front_hydrair", "name": "Front Hydrair Suspension", "cat": "Suspension", "insp": "Check the front Hydrair strut \u2014 ride height/charge, no oil leaks, rod undamaged.", "ax": 690, "ay": 320, "tx": 580, "ty": 356, "accept": ["front hydrair", "front susp", "hydrair"]}, {"num": 8, "id": "horse_collar", "name": "Horse Collar & Steering Cross Over", "cat": "Steering", "insp": "Inspect the horse collar and steering cross-over for cracks, security and leaks.", "ax": 690, "ay": 240, "tx": 452, "ty": 344, "accept": ["horse collar", "horse", "collar"]}, {"num": 9, "id": "lugs_sidewall", "name": "Lugs & Sidewall", "cat": "Tires & Wheels", "insp": "Check wheel lugs/nuts are present and tight; inspect the sidewall for cuts, bulges or damage.", "ax": 70, "ay": 430, "tx": 146, "ty": 363, "accept": ["lug", "sidewall"], "tips": [[101, 300]]}, {"num": 10, "id": "brake_cooling_lines", "name": "Brake Lines & Cooling Lines", "cat": "Brakes", "insp": "Inspect brake lines and cooling lines for chafing, leaks and secure routing.", "ax": 70, "ay": 500, "tx": 336, "ty": 470, "accept": ["brake line", "cooling line", "brake and cooling"]}, {"num": 11, "id": "steering_accumulators", "name": "Steering Accumulators", "cat": "Steering", "insp": "Check the two steering accumulators (left side) for correct charge, mounting security and leaks.", "ax": 70, "ay": 560, "tx": 246, "ty": 410, "accept": ["steering accum", "steer accum"], "tips": [[246, 452]]}, {"num": 12, "id": "brake_accumulators", "name": "Brake Accumulators", "cat": "Brakes", "insp": "Check the two brake accumulators (right side) for correct charge, mounting security and leaks.", "ax": 690, "ay": 396, "tx": 516, "ty": 390, "accept": ["brake accum"], "tips": [[516, 432]]}, {"num": 13, "id": "hoist_circuit_pump", "name": "Hoist Circuit Pump", "cat": "Hydraulics", "insp": "Inspect the hoist circuit pump for leaks, security and hose condition.", "ax": 120, "ay": 700, "tx": 344, "ty": 516, "accept": ["hoist pump", "hoist circuit pump"]}, {"num": 14, "id": "steering_brake_pump", "name": "Steering & Brake Circuit Pump", "cat": "Hydraulics", "insp": "Inspect the steering & brake circuit pump for leaks, security and hose condition.", "ax": 120, "ay": 770, "tx": 344, "ty": 568, "accept": ["steering and brake pump", "steering & brake", "brake circuit pump", "steering brake pump", "brake pump"]}, {"num": 15, "id": "traction_alternator", "name": "Traction Alternator", "cat": "Electrical", "insp": "Inspect the traction alternator area for debris, leaks and secure connections.", "ax": 690, "ay": 462, "tx": 418, "ty": 432, "accept": ["traction alternator", "alternator"]}, {"num": 16, "id": "hoist_circuit_filters", "name": "Hoist Circuit Filters", "cat": "Filters", "insp": "Check the two hoist circuit filters (upper of the three on the right) for leaks, condition and restriction indicators.", "ax": 690, "ay": 520, "tx": 500, "ty": 505, "accept": ["hoist filter", "hoist circuit filter"], "tips": [[500, 526]]}, {"num": 17, "id": "steering_circuit_filter", "name": "Steering Circuit Filter", "cat": "Filters", "insp": "Check the steering circuit filter \u2014 the lowest of the three filters on the right \u2014 for leaks and condition.", "ax": 690, "ay": 585, "tx": 500, "ty": 548, "accept": ["steering filter", "steering circuit filter"]}, {"num": 18, "id": "blower_tube", "name": "Blower Tube", "cat": "Engine Bay", "insp": "Inspect the blower tube for security, cracks and clear airflow.", "ax": 690, "ay": 650, "tx": 420, "ty": 560, "accept": ["blower"]}, {"num": 19, "id": "fuel_tank", "name": "Fuel Tank & Mounts", "cat": "Fuel System", "insp": "Inspect the fuel tank and mounts for leaks, secure mounting and cap condition.", "ax": 690, "ay": 712, "tx": 625, "ty": 570, "accept": ["fuel"]}, {"num": 20, "id": "hoist_cylinders", "name": "Hoist Cylinders", "cat": "Hydraulics", "insp": "Inspect the hoist cylinders (right of the nose cone) for leaks, rod damage and pin/mount security.", "ax": 690, "ay": 775, "tx": 492, "ty": 626, "accept": ["hoist cylinder", "cylinder"]}, {"num": 21, "id": "hydraulic_tank", "name": "Hydraulic Tank & Mounts", "cat": "Hydraulics", "insp": "Check the hydraulic tank and mounts \u2014 fluid level, secure mounting, no leaks at fittings.", "ax": 120, "ay": 626, "tx": 212, "ty": 567, "accept": ["hydraulic tank", "hyd tank", "hydraulic"]}, {"num": 22, "id": "nose_cone", "name": "Nose Cone", "cat": "Frame", "insp": "Inspect the nose cone / A-frame for cracks, security and leaks.", "ax": 380, "ay": 1004, "tx": 380, "ty": 665, "accept": ["nose cone", "nose"]}, {"num": 23, "id": "grease_flow", "name": "Check for Grease Flow", "cat": "Lubrication", "insp": "Check for grease flow at the two auto-lube points left of the nose cone.", "ax": 120, "ay": 842, "tx": 294, "ty": 613, "accept": ["grease"], "tips": [[294, 659]]}, {"num": 24, "id": "tires_condition", "name": "Check Tires for Condition", "cat": "Tires & Wheels", "insp": "Check tires overall \u2014 inflation, cuts, separation, and rim/wheel damage.", "ax": 70, "ay": 900, "tx": 149, "ty": 790, "accept": ["tire", "tyre"], "tips": [[232, 790], [451, 790], [534, 790]]}, {"num": 25, "id": "rear_hydrair", "name": "Rear Hydrair Leaks & Ride", "cat": "Suspension", "insp": "Inspect the rear Hydrair suspension for leaks and correct ride height / charge.", "ax": 690, "ay": 848, "tx": 527, "ty": 800, "accept": ["rear hydrair", "rear susp"]}, {"num": 26, "id": "rear_lights", "name": "Rear Lights", "cat": "Electrical", "insp": "Check the rear lights are intact and working.", "ax": 560, "ay": 1004, "tx": 440, "ty": 952, "accept": ["rear light", "lights"]}, {"num": 27, "id": "repeat_other_side", "name": "Repeat for Other Side", "cat": "Procedure", "insp": "Repeat the whole walkaround on the opposite side of the truck.", "ax": 690, "ay": 930, "tx": 640, "ty": 880, "accept": ["repeat", "other side"]}, {"num": 28, "id": "tire1", "name": "Tire 1 \u2014 Driver's Side Front", "cat": "Tire Positions", "insp": "Tire position 1 is the driver's side (left) front tire.", "ax": 70, "ay": 250, "tx": 120, "ty": 270, "accept": ["tire 1", "1", "driver front", "drivers front", "driver side front", "left front", "front left", "lf", "one", "tire one", "number one", "no one", "position 1", "position one"], "strict": true}, {"num": 29, "id": "tire2", "name": "Tire 2 \u2014 Passenger Side Front", "cat": "Tire Positions", "insp": "Tire position 2 is the passenger side (right) front tire.", "ax": 690, "ay": 250, "tx": 640, "ty": 270, "accept": ["tire 2", "2", "passenger front", "passenger side front", "right front", "front right", "rf", "two", "tire two", "number two", "no two", "position 2", "position two"], "strict": true}, {"num": 30, "id": "tire3", "name": "Tire 3 \u2014 Back Left Outer", "cat": "Tire Positions", "insp": "Tire position 3 is the outer tire on the back left (driver side) dual.", "ax": 70, "ay": 690, "tx": 187, "ty": 700, "accept": ["tire 3", "3", "back left outer", "rear left outer", "left rear outer", "outer left rear", "lro", "three", "tire three", "number three", "no three", "position 3", "position three"], "strict": true}, {"num": 31, "id": "tire4", "name": "Tire 4 \u2014 Back Left Inner", "cat": "Tire Positions", "insp": "Tire position 4 is the inner tire on the back left (driver side) dual.", "ax": 70, "ay": 975, "tx": 270, "ty": 910, "accept": ["tire 4", "4", "back left inner", "rear left inner", "left rear inner", "inner left rear", "lri", "four", "tire four", "number four", "no four", "position 4", "position four"], "strict": true}, {"num": 32, "id": "tire5", "name": "Tire 5 \u2014 Back Right Inner", "cat": "Tire Positions", "insp": "Tire position 5 is the inner tire on the back right (passenger side) dual.", "ax": 690, "ay": 975, "tx": 489, "ty": 910, "accept": ["tire 5", "5", "back right inner", "rear right inner", "right rear inner", "inner right rear", "rri", "five", "tire five", "number five", "no five", "position 5", "position five"], "strict": true}, {"num": 33, "id": "tire6", "name": "Tire 6 \u2014 Back Right Outer", "cat": "Tire Positions", "insp": "Tire position 6 is the outer tire on the back right (passenger side) dual.", "ax": 690, "ay": 690, "tx": 572, "ty": 700, "accept": ["tire 6", "6", "back right outer", "rear right outer", "right rear outer", "outer right rear", "rro", "six", "tire six", "number six", "no six", "position 6", "position six"], "strict": true}];
 const KEY='haulTruckSheet_v2';
+const RKEY='haulTruckSheet_round_v2';
+const STEPS=[1,2,4,9,20,45];           // how many rounds to wait after each correct answer
+let roundNo=parseInt(localStorage.getItem(RKEY)||'0',10)||0;
 let progress={};
 function load(){try{progress=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){progress={}}
-  componentsData.forEach(c=>{if(!progress[c.id])progress[c.id]={box:0,lapses:0,reps:0,mastered:false}});}
+  componentsData.forEach(c=>{const p=progress[c.id];
+    if(!p)progress[c.id]={box:0,lapses:0,reps:0,mastered:false,due:0};
+    else if(p.due===undefined)p.due=0;});}
 function save(){localStorage.setItem(KEY,JSON.stringify(progress))}
 function mastered(){return componentsData.filter(c=>progress[c.id].mastered).length}
+function schedule(p,good){p.reps++;
+  if(good){p.box=Math.min((p.box||0)+1,STEPS.length-1);p.due=roundNo+STEPS[p.box];p.mastered=p.box>=4;}
+  else {p.box=0;p.lapses++;p.mastered=false;p.due=roundNo+1;}
+  return good?STEPS[p.box]:1;}
 function missed(){return componentsData.filter(c=>progress[c.id].lapses>0&&!progress[c.id].mastered).length}
 function stateOf(c){const p=progress[c.id];if(p.mastered)return'mastered';if(p.lapses>0)return'missed';if(p.reps>0)return'learning';return'new'}
 function norm(s){return String(s).toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim()}
@@ -276,13 +285,22 @@ function isCorrect(ans,c){const na=norm(ans);if(!na)return false;
   const words=norm(c.name).split(' ').filter(w=>w.length>3&&!stop.has(w));let hit=0;words.forEach(w=>{if(na.includes(w))hit++});
   return words.length>0&&hit>=Math.max(1,Math.ceil(words.length*0.5));}
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function pickRound(n){const s=componentsData.map(c=>{const p=progress[c.id];let v=0;
-  if(p.lapses>0&&!p.mastered)v-=100;if(!p.reps&&!p.mastered)v-=40;if(p.mastered)v+=60;v+=p.box*5+Math.random()*8;return{c,v}});
-  s.sort((a,b)=>a.v-b.v);return s.slice(0,n).map(o=>o.c)}
+function pickRound(n){
+  const cand=shuffle(componentsData).map(c=>{const p=progress[c.id];return {c,p,over:roundNo-(p.due||0)};});
+  cand.sort((a,b)=>{
+    const ad=a.over>=0, bd=b.over>=0;
+    if(ad!==bd)return ad?-1:1;                         // anything due comes first
+    if(ad){                                            // both due: most overdue, then most missed, then least seen
+      if(b.over!==a.over)return b.over-a.over;
+      if(b.p.lapses!==a.p.lapses)return b.p.lapses-a.p.lapses;
+      return a.p.reps-b.p.reps;}
+    return b.over-a.over;                              // nothing due: whatever comes up soonest
+  });
+  return cand.slice(0,n).map(o=>o.c);}
 function updateStats(){document.getElementById('c-master').textContent=mastered();document.getElementById('c-missed').textContent=missed();
   const m=mastered();const TOT=componentsData.length;document.getElementById('pfill').style.width=Math.round(m/TOT*100)+'%';document.getElementById('ptext').textContent=m+'/'+TOT+' mastered'}
 
-let mode='test',round=0,current=[],checked=false,selId=null;
+let mode='test',current=[],checked=false,selId=null;
 function setMode(m){mode=m;
   document.getElementById('panel-test').style.display=m==='test'?'':'none';
   document.getElementById('panel-study').style.display=m==='study'?'':'none';
@@ -293,8 +311,9 @@ function setMode(m){mode=m;
   document.getElementById('parts-tag').textContent=componentsData.length+' parts';
   if(m==='study')renderStudyList();renderMarkers();}
 
-function newRound(){round++;current=shuffle(pickRound(5));checked=false;
-  document.getElementById('rpill').textContent='Round '+round;document.getElementById('score').textContent='0/5';
+function newRound(){roundNo++;localStorage.setItem(RKEY,roundNo);
+  current=shuffle(pickRound(5));checked=false;
+  document.getElementById('rpill').textContent='Round '+roundNo;document.getElementById('score').textContent='0/5';
   document.getElementById('check').style.display='';document.getElementById('next').style.display='none';
   renderBlanks();renderMarkers();const f=document.getElementById('ans-0');if(f){try{f.focus({preventScroll:true})}catch(e){}}}
 function renderBlanks(){const w=document.getElementById('blanks');w.innerHTML='';
@@ -308,13 +327,15 @@ function renderBlanks(){const w=document.getElementById('blanks');w.innerHTML=''
 function checkAnswers(){if(checked)return;checked=true;let ok=0;
   current.forEach((c,i)=>{const inp=document.getElementById('ans-'+i);inp.dataset.val=inp.value;inp.disabled=true;
     const good=isCorrect(inp.value,c);inp.classList.add(good?'ok':'bad');document.getElementById('qn-'+i).classList.add(good?'ok':'bad');
-    const p=progress[c.id];p.reps++;if(good){p.box=Math.min(p.box+1,5);if(p.box>=3)p.mastered=true;ok++}else{p.box=0;p.lapses++;p.mastered=false}
+    const p=progress[c.id];const wait=schedule(p,good);if(good)ok++;
     const fb=document.getElementById('fb-'+i);fb.style.display='';
-    if(good){fb.className='fb ok';fb.innerHTML='✓ '+esc(c.name);}
+    if(good){fb.className='fb ok';fb.innerHTML='✓ '+esc(c.name)+
+      '<span class="insp">'+(p.mastered?'Mastered — ':'')+'back in '+wait+(wait===1?' round':' rounds')+'</span>';}
     else{fb.className='fb bad';fb.innerHTML='✗ <b>'+esc(c.name)+'</b><span class="iwr" onclick="iWasRight('+i+')">I was right</span><span class="insp">'+esc(c.insp)+'</span>';}});
   save();updateStats();renderMarkers();document.getElementById('score').textContent=ok+'/5';
   document.getElementById('check').style.display='none';document.getElementById('next').style.display='';}
-function iWasRight(i){const c=current[i],p=progress[c.id];if(p.lapses>0)p.lapses--;p.box=Math.min(p.box+1,5);if(p.box>=3)p.mastered=true;
+function iWasRight(i){const c=current[i],p=progress[c.id];if(p.lapses>0)p.lapses--;
+  p.box=Math.min((p.box||0)+1,STEPS.length-1);p.due=roundNo+STEPS[p.box];p.mastered=p.box>=4;
   const inp=document.getElementById('ans-'+i);inp.classList.remove('bad');inp.classList.add('ok');
   document.getElementById('qn-'+i).classList.remove('bad');document.getElementById('qn-'+i).classList.add('ok');
   document.getElementById('fb-'+i).className='fb ok';document.getElementById('fb-'+i).innerHTML='✓ '+esc(c.name);
@@ -384,7 +405,8 @@ function endPtr(e){pointers.delete(e.pointerId);if(pointers.size<2)pinchD=0;if(p
 svg.addEventListener('pointerup',endPtr);svg.addEventListener('pointercancel',endPtr);
 svg.addEventListener('dblclick',e=>{e.preventDefault();const p=clientToSvg(e.clientX,e.clientY);zoomAt(p.x,p.y,1.6)});
 
-function resetProgress(){if(!confirm('Reset all progress?'))return;localStorage.removeItem(KEY);progress={};load();save();updateStats();if(mode==='study')renderStudyList();newRound();}
+function resetProgress(){if(!confirm('Reset all progress?'))return;localStorage.removeItem(KEY);localStorage.removeItem(RKEY);
+  roundNo=0;progress={};load();save();updateStats();if(mode==='study')renderStudyList();newRound();}
 load();save();updateStats();newRound();setMode('test');applyT();
 window.scrollTo(0,0);
 window.addEventListener('load',()=>window.scrollTo(0,0));
