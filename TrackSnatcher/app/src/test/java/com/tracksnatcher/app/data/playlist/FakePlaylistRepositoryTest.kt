@@ -2,6 +2,7 @@ package com.tracksnatcher.app.data.playlist
 
 import app.cash.turbine.test
 import com.tracksnatcher.app.domain.model.MusicService
+import com.tracksnatcher.app.domain.model.Playlist
 import com.tracksnatcher.app.domain.model.Track
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -30,8 +31,12 @@ class FakePlaylistRepositoryTest {
 
     @Test
     fun `adding a track to a playlist succeeds`() = runTest {
-        val playlist = repository.observePinnedPlaylists().test {
-            awaitItem().first().also { cancelAndIgnoreRemainingEvents() }
+        // Flow.test { } (Turbine) returns Unit, not the block's last expression, so the
+        // playlist must be captured into a local rather than assigned from the call itself.
+        lateinit var playlist: Playlist
+        repository.observePinnedPlaylists().test {
+            playlist = awaitItem().first()
+            cancelAndIgnoreRemainingEvents()
         }
         val result = repository.addTrackToPlaylist(playlist, Track("r", "Song", "Artist"))
         assertTrue(result.isSuccess)
