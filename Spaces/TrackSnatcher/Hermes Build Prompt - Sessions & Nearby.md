@@ -4,94 +4,114 @@ project: TrackSnatcher (HermesListen)
 modules: [shared-sessions, nearby-discovery]
 ---
 
-# TrackSnatcher: Hermes build prompt (DJ Sessions + Nearby "Napster Mode")
+# TrackSnatcher APK: Hermes build prompt (DJ Sessions + Nearby "Napster Mode")
 
-> Paste everything from **PROMPT FOR HERMES** down into the Hermes agent. The prompt comes first, then the full reference code Hermes should drop into the existing TrackSnatcher repo.
+> Paste everything from **PROMPT FOR HERMES** down into the Hermes agent. The prompt comes first, then the reference code: the backend, then the Kotlin + Jetpack Compose code for the APK.
 
 ---
 
 ## PROMPT FOR HERMES
 
 ### Role
-You are the lead full-stack systems architect and developer for **TrackSnatcher (HermesListen)**. The existing system already does:
-- Live audio identification (Termux mic capture → AudD API → MusicBrainz enrichment)
+You are the lead Android + backend developer for **TrackSnatcher (HermesListen)**. TrackSnatcher is an **Android APK written in Kotlin + Jetpack Compose**. The existing system already does:
+- Live audio identification (mic capture → AudD API → MusicBrainz enrichment)
 - Automated downloading (`/download -MP3`) and YouTube playlist appends through Node-RED flows
 
-You are adding two modules on top of that:
-1. **Shared Session / Event DJ Mode.** The host starts a session, guests scan a QR code (or type a 6-digit PIN) and add tracks to a shared live queue.
-2. **Nearby Discovery ("Camp / Bar Napster Mode").** Users who opt in can see other TrackSnatcher users close by, browse their public Snatched Library, and one-tap **Snatch** any track.
+You are adding two modules to the APK:
+1. **Shared Session / Event DJ Mode.**
+   - The host starts a session (Road Trip, Campfire, Wedding Recital) and the app shows a QR code and a 6-digit PIN.
+   - Guests scan the QR with the app (or with the phone camera, which opens the APK through the `tracksnatcher://join?s=TOKEN` deep link) or type the PIN, then add tracks to a shared live queue.
+   - Every track shows who added it. Tapping that person opens their profile: YouTube/Spotify links and their Snatched Library.
+   - Snatches are tracked as lineage ("Snatched by B from A").
+2. **Nearby Discovery ("Camp / Bar Napster Mode").**
+   - Users who opt in see other TrackSnatcher users close by: Bluetooth LE for people in the same room, plus a ~150 m server-side area match.
+   - They can browse a nearby user's public Snatched Library and one-tap **Snatch** a track. Snatching copies it to their library and triggers `/download -MP3` and/or the YouTube playlist append.
+
+A small Node backend (included below) holds the shared state, so phones can see each other's sessions, queues and libraries. It runs on a server, or in Termux on the host's phone for offline hotspot sessions. **The APK talks to it over REST + WebSocket.** Grok is called only from the backend, so the xAI key never ships inside the APK.
 
 ### Brains: Grok (xAI)
-**Grok is the reasoning engine for every AI decision in these modules.** Use the xAI API (OpenAI-compatible) at `https://api.x.ai/v1/chat/completions` with `XAI_API_KEY` from the environment. The model goes in `XAI_MODEL` (default `grok-4`). Do not hard-code any other LLM provider.
+**Grok is the reasoning engine for every AI decision in these modules.** Use the xAI API (OpenAI-compatible) at `https://api.x.ai/v1/chat/completions` with `XAI_API_KEY` from the backend environment. The model goes in `XAI_MODEL` (default `grok-4`). Do not hard-code any other LLM provider.
 
 Grok is responsible for:
-1. **Intent parsing.** Turn free text or chat commands ("queue some Zeppelin", "snatch what Jake just added", "/download -MP3 that last one") into a strict JSON action.
+1. **Intent parsing.** Turn chat commands ("queue some Zeppelin", "snatch what Jake just added", "/download -MP3 that last one") into a strict JSON action.
 2. **Metadata cleanup.** Normalize messy guest searches and AudD results into `{artist, title}` before the MusicBrainz lookup.
-3. **Session DJ.** Given the current queue, the session vibe ("Campfire", "Road Trip", "Wedding Recital") and who has contributed, suggest the next tracks and a fair play order so one guest can't take over the queue.
-4. **Vibe check.** Flag tracks that clash with the session vibe (the host decides; Grok never auto-removes anything).
+3. **Session DJ.** Given the queue, the session vibe and the contributors, suggest the next tracks and a fair play order so one guest can't take over the queue.
+4. **Vibe check.** Flag tracks that clash with the session vibe. The host decides; Grok never auto-removes anything.
 
 Rules for Grok calls:
-- Always request JSON and validate it. On a parse failure or timeout, fall back to deterministic behaviour (plain FIFO queue, raw query to MusicBrainz). The app must keep working with Grok offline.
+- Always request JSON and validate it.
+- On a parse failure or timeout, fall back to deterministic behaviour: round-robin queue order, raw query to MusicBrainz. The app must keep working with Grok offline.
 - Never send Grok location, device files, auth tokens or emails. Send only track metadata, display names and the vibe string.
 - Use a 12 s timeout and cache identical normalization prompts for 10 minutes.
 
 ### UI: keep the current breathing background and colors
-All new screens (Host Session, Guest Join / Live Queue, Contributor Profile, Nearby) **keep the current breathing background and colors exactly as they are on the existing TrackSnatcher screens.** Reuse the existing stylesheet and background as-is. Don't change, recolor or recreate them.
+All new screens (Host Session, Join Session / Live Queue, Contributor Profile, Nearby) **keep the current breathing background and colors exactly as they are on the existing TrackSnatcher screens.**
+- Each new screen is wrapped in the app's **existing** breathing background composable, through the `background` parameter of `socialGraph()`.
+- Colors come from the app's existing `MaterialTheme`.
+- Don't change, recolor or recreate the background or the theme.
 
 ### Deliverables
-Produce and commit, in this order:
-1. **System architecture**: data flow between the mobile client (Termux/web), the TrackSnatcher Node backend, Grok, MusicBrainz, Node-RED (`/download -MP3`, YouTube playlist append) and Spotify/YouTube profile links.
-2. **Data models**: `users` (UserProfiles), `sessions`, `session_members`, `tracks`, `session_tracks`, `library`, `track_snatches` (lineage), `presence`, `friends`.
-3. **API contracts**: REST plus WebSocket endpoints for QR pairing, real-time queue updates, profiles, snatching and proximity broadcasts.
-4. **Implementation**: integrate the reference code below into the existing repo. Reuse the existing AudD, MusicBrainz and Node-RED modules where they already exist instead of duplicating them.
-5. **Roadmap**: ordered tasks (below). Check each one off in the PR description as you finish it.
+1. Add the `com.tracksnatcher.social` Kotlin package below to the APK. Rename the package to match the app's own package, and wire `socialGraph()` into the existing `NavHost`.
+2. Add the Gradle dependencies, the manifest permissions and the deep link below.
+3. Deploy the backend below. Reuse the existing AudD, MusicBrainz and Node-RED modules where they already exist instead of duplicating them.
+4. Add entry points in the existing UI:
+   - "Start session" → `SocialRoutes.HOST`
+   - "Join session" → `SocialRoutes.join()`
+   - "Nearby" → `SocialRoutes.NEARBY`
+   - After an AudD identify, an "Add to session?" action that calls `POST /api/sessions/:id/queue` with `{identified: {...}}`.
+5. Work through the roadmap below in order and check each item off in the PR description.
 
 ### Architecture overview
 ```
-┌───────────────┐   QR / PIN    ┌──────────────────────────────────────────┐
-│ Host phone    │──────────────▶│  TrackSnatcher backend (Node, Express)   │
-│ (Termux/web)  │◀──── WS ─────▶│  ├─ REST /api/*                          │
-└───────────────┘               │  ├─ WS   /ws  (session rooms, presence)  │
-┌───────────────┐   scan QR     │  ├─ SQLite (better-sqlite3)              │
-│ Guest phones  │──────────────▶│  ├─ grok.js ──────▶ xAI Grok API         │
-│ (browser)     │◀──── WS ─────▶│  ├─ resolver.js ──▶ MusicBrainz          │
-└───────────────┘               │  ├─ pipeline.js ──▶ Node-RED             │
-┌───────────────┐  beacon       │  │      ├─ /download -MP3 flow           │
-│ Nearby users  │──(geohash)───▶│  │      └─ YouTube playlist append flow  │
-│ BLE / mDNS    │──(eph. id)───▶│  └─ mdns.js (LAN advertise for offline)  │
-└───────────────┘               └──────────────────────────────────────────┘
+┌─────────────────────┐   QR / PIN / deep link   ┌──────────────────────────────────────────┐
+│ Host phone (APK)    │─────────────────────────▶│  TrackSnatcher backend (Node, Express)   │
+│ Compose + OkHttp    │◀────────── WS ──────────▶│  ├─ REST /api/*                          │
+└─────────────────────┘                          │  ├─ WS   /ws  (session rooms)            │
+┌─────────────────────┐   scan QR (ZXing)        │  ├─ SQLite (better-sqlite3)              │
+│ Guest phones (APK)  │─────────────────────────▶│  ├─ grok.js ──────▶ xAI Grok API         │
+│                     │◀────────── WS ──────────▶│  ├─ resolver.js ──▶ MusicBrainz          │
+└─────────────────────┘                          │  ├─ pipeline.js ──▶ Node-RED             │
+┌─────────────────────┐  BLE ephemeral ids       │  │      ├─ /download -MP3 flow           │
+│ Nearby phones (APK) │◀──── (phone to phone) ──▶│  │      └─ YouTube playlist append flow  │
+│                     │── geohash beacon ───────▶│  └─ mdns.js (LAN advertise for offline)  │
+└─────────────────────┘                          └──────────────────────────────────────────┘
 ```
-- **Session flow:** the host runs `POST /api/sessions` and gets back a token, a PIN and a QR. A guest scans the QR, which opens `/join.html?s=TOKEN`, then calls `POST /api/sessions/join` and gets a guest token. The WS subscribes the guest to the room. A guest adds a track: Grok normalizes the query, MusicBrainz resolves it, the track is inserted into `session_tracks` with `added_by`, the WS broadcasts `queue.updated`, and Node-RED appends it to the host's YouTube playlist.
-- **Snatch flow:** `POST /api/snatch {track_id, from_user_id, context}` copies the track into the caller's `library`, writes a `track_snatches` lineage row, and triggers Node-RED `/download -MP3` and/or the YouTube append. A `snatch.created` event goes out to the session and to the source user.
-- **Proximity flow (hybrid, layered):**
-  1. **Server geohash clustering (default, works everywhere).** The client sends lat/lon once per minute. The server converts it to a 7-character geohash (about 150 m), stores only the hash and **throws away the coordinates**. `/api/nearby` matches the same cell plus its 8 neighbours and never returns the geohash itself.
-  2. **BLE (native app / Termux:API).** The server issues rotating 16-byte ephemeral IDs that change every 15 min. The device advertises the ephemeral ID, scans for others and resolves the ones it sees through `/api/presence/resolve`. A device MAC or user ID never goes over the air.
-  3. **mDNS on the LAN (offline campfire).** The host's backend advertises `_tracksnatcher._tcp` so guests on the same Wi-Fi or hotspot can join with no internet.
-- **Privacy:** `ghost` = invisible everywhere and beacons are ignored. `friends` = visible only to mutual friends. `public` = visible to anyone nearby. Only track metadata and streaming URLs are ever shared. No file paths, no coordinates.
+- **Session flow:**
+  1. The host app calls `POST /api/sessions` and draws the returned `join_url` (`tracksnatcher://join?s=TOKEN`) as a QR code with ZXing.
+  2. A guest scans it (in-app scanner, or the phone camera, which opens the deep link) and the app calls `POST /api/sessions/join`, which returns a guest token.
+  3. The app opens the WebSocket for live queue updates.
+  4. When a guest adds a track: Grok normalizes the query, MusicBrainz resolves it, the row is inserted with `added_by`, the WS broadcasts `queue.updated`, and Node-RED appends it to the host's YouTube playlist.
+- **Snatch flow:** `POST /api/snatch {track_id, from_user_id, context}` does four things:
+  1. Copies the track into the caller's library.
+  2. Writes a lineage row.
+  3. Triggers Node-RED `/download -MP3` and/or the YouTube append.
+  4. Broadcasts `snatch.created` ("Snatched by B from A").
+- **Nearby flow:**
+  1. **Bluetooth LE.** The app gets a rotating 16-byte ephemeral id from `/api/presence/ble-token`. It advertises that id as manufacturer data (company id `0xFFFF`, `"TS"` prefix) and scans for other phones' ids. Every 30 s it resolves the heard ids through `/api/presence/resolve`. No user id, name or MAC address goes over the air.
+  2. **Area match.** The app sends coarse location every 30 s. The server keeps only a 7-character geohash (~150 m), **throws away the coordinates**, and `/api/presence/nearby` returns users in the same cell and the 8 cells around it.
+  3. Results are merged; Bluetooth hits rank first and are labelled "right here".
+- **Privacy:** `ghost` = invisible, beacons ignored, BLE stopped. `friends` = visible only to mutual friends. `public` = visible to anyone nearby. Only track metadata and streaming URLs are ever shared. No file paths, no coordinates.
 
 ### Implementation roadmap (do in order)
-1. Add the dependencies and env vars (`XAI_API_KEY`, `XAI_MODEL`, `NODE_RED_URL`, `PUBLIC_URL`, `DB_PATH`).
-2. Apply `schema.sql` and add a migration runner (`src/db.js`).
-3. Add token auth (`src/auth.js`): register device users, issue guest tokens.
-4. Add `src/grok.js` with JSON-mode calls, timeout, cache and fallbacks. Unit-test the fallback path with Grok disabled.
-5. Add `src/resolver.js`: Grok normalize → MusicBrainz → upsert `tracks`. Reuse the existing MusicBrainz module if there is one.
-6. Add `src/pipeline.js` and wire it to the existing Node-RED `/download -MP3` and YouTube append flows.
-7. Sessions REST: create, QR, join by token or PIN, queue add/list/reorder, now-playing, end.
-8. WebSocket rooms (`src/realtime.js`): `queue.updated`, `member.joined`, `now_playing`, `snatch.created`, `session.ended`.
-9. Profiles plus a public library endpoint, with visibility enforcement.
-10. Snatch endpoint plus lineage, including the "Snatched by B from A" label.
-11. Grok DJ: `/api/sessions/:id/dj/suggest` and fair-order reorder (host approves).
-12. Presence: geohash beacon, `/api/nearby`, BLE ephemeral IDs + resolve, mDNS advertise.
-13. Build the host, join/queue, profile and nearby screens on the existing stylesheet, keeping the current breathing background and colors.
-14. Hook AudD identify results into session queues (identify → "Add to session?").
-15. Hardening: rate limits, input caps, session expiry (12 h), ghost-mode tests.
-16. Hook the existing `/download -MP3` chat command into Grok intent parsing.
+1. Backend: dependencies + env vars (`XAI_API_KEY`, `XAI_MODEL`, `NODE_RED_URL`, `DB_PATH`), schema, token auth.
+2. Backend: `grok.js` with JSON-mode calls, timeout, cache and fallbacks. Test the fallback path with Grok disabled.
+3. Backend: `resolver.js` (Grok → MusicBrainz) and `pipeline.js` wired to the existing Node-RED flows.
+4. Backend: sessions, profiles, snatch + lineage, presence, WebSocket rooms, Grok DJ, mDNS.
+5. APK: Gradle deps, manifest permissions + `tracksnatcher://join` deep link, `SOCIAL_BASE_URL` build config.
+6. APK: `SocialApi` (OkHttp + kotlinx.serialization) and the `SocialApi.configure()` call.
+7. APK: Host and Join screens (QR draw + ZXing scan), live queue over WebSocket, Grok DJ button.
+8. APK: Profile screen (Snatched Library + Snatch + YouTube/Spotify links).
+9. APK: Nearby screen (permissions, visibility chips, BLE + area discovery).
+10. APK: wire `socialGraph()` into the existing NavHost with the **existing breathing background** passed as `background`, then add the entry points.
+11. APK: "Add to session?" after an AudD identify; route the existing `/download -MP3` command through `POST /api/agent/command`.
+12. Hardening: rate limits, input caps, 12 h session expiry, ghost-mode test on two phones, denied-permission paths.
 
 ---
 
 ## REFERENCE CODE
 
-Stack: Node 18+ (native `fetch`), Express 4, `ws`, `better-sqlite3`, `qrcode`, `ngeohash`, `bonjour-service`. Runs on a server or directly in Termux (`pkg install nodejs`).
+### Backend
+Stack: Node 18+ (native `fetch`), Express 4, `ws`, `better-sqlite3`, `ngeohash`, `bonjour-service`. Runs on a server or directly in Termux (`pkg install nodejs`).
 
 #### `package.json`
 ```json
@@ -112,7 +132,6 @@ Stack: Node 18+ (native `fetch`), Express 4, `ws`, `better-sqlite3`, `qrcode`, `
     "express": "^4.21.0",
     "express-rate-limit": "^7.4.0",
     "ngeohash": "^0.6.3",
-    "qrcode": "^1.5.4",
     "ws": "^8.18.0"
   }
 }
@@ -121,7 +140,6 @@ Stack: Node 18+ (native `fetch`), Express 4, `ws`, `better-sqlite3`, `qrcode`, `
 #### `.env.example`
 ```bash
 PORT=8787
-PUBLIC_URL=http://192.168.43.1:8787   # what guests' phones can reach (hotspot IP, LAN IP, or domain)
 DB_PATH=./data/tracksnatcher.db
 
 # Grok = the brains
@@ -592,7 +610,6 @@ module.exports = { attach, toSession, toUser };
 ```js
 const express = require('express');
 const crypto = require('crypto');
-const QRCode = require('qrcode');
 const { db, id, now } = require('../db');
 const { createUser, requireAuth, userFromToken } = require('../auth');
 const { resolveTrack } = require('../resolver');
@@ -601,12 +618,11 @@ const grok = require('../grok');
 const rt = require('../realtime');
 
 const r = express.Router();
-const PUBLIC_URL = () => process.env.PUBLIC_URL || `http://localhost:${process.env.PORT || 8787}`;
 const SESSION_TTL = 12 * 3600;
 
 const getSession = (sid) => db.prepare("SELECT * FROM sessions WHERE id = ? AND status = 'active' AND expires_at > ?").get(sid, now());
 const isMember = (sid, uid) => db.prepare('SELECT role FROM session_members WHERE session_id = ? AND user_id = ?').get(sid, uid);
-const joinUrl = (s) => `${PUBLIC_URL()}/join.html?s=${s.join_token}`;
+const joinUrl = (s) => `tracksnatcher://join?s=${s.join_token}`; // APK deep link; the app draws it as a QR
 
 function queueFor(sessionId) {
   return db.prepare(`
@@ -642,14 +658,7 @@ r.post('/', requireAuth, (req, res) => {
                 VALUES (@id,@host_id,@title,@vibe,@join_token,@join_pin,@yt_playlist_id,@expires_at)`).run(s);
     db.prepare("INSERT INTO session_members (session_id,user_id,role) VALUES (?,?,'host')").run(s.id, req.user.id);
   })();
-  res.status(201).json({ session: s, join_url: joinUrl(s), qr_url: `/api/sessions/${s.id}/qr.png` });
-});
-
-// QR code PNG (members only; the token in it is the invite)
-r.get('/:id/qr.png', requireAuth, async (req, res) => {
-  const s = getSession(req.params.id);
-  if (!s || !isMember(s.id, req.user.id)) return res.sendStatus(404);
-  res.type('png').send(await QRCode.toBuffer(joinUrl(s), { width: 512, margin: 1 }));
+  res.status(201).json({ session: s, join_url: joinUrl(s) });
 });
 
 // Guest: join by QR token or PIN. Works with or without an existing account.
@@ -1046,7 +1055,7 @@ function advertise(port) {
   try {
     const { Bonjour } = require('bonjour-service');
     bonjour = new Bonjour();
-    bonjour.publish({ name: `TrackSnatcher-${process.pid}`, type: 'tracksnatcher', port, txt: { v: '1', path: '/join.html' } });
+    bonjour.publish({ name: `TrackSnatcher-${process.pid}`, type: 'tracksnatcher', port, txt: { v: '1' } });
     console.log(`[mdns] advertising _tracksnatcher._tcp on ${port}`);
   } catch (err) {
     console.warn('[mdns] disabled:', err.message); // Termux without multicast is fine
@@ -1061,7 +1070,6 @@ module.exports = { advertise, stop };
 ```js
 require('dotenv').config();
 const http = require('http');
-const path = require('path');
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const realtime = require('./realtime');
@@ -1079,8 +1087,6 @@ app.use('/api/snatch', require('./routes/snatch'));
 app.use('/api/presence', require('./routes/presence'));
 app.use('/api/agent', require('./routes/agent'));
 app.get('/api/health', (_req, res) => res.json({ ok: true, grok: require('./grok').enabled }));
-
-app.use(express.static(path.join(__dirname, '..', 'public')));
 
 const server = http.createServer(app);
 realtime.attach(server);
@@ -1102,8 +1108,7 @@ process.on('SIGINT', () => { mdns.stop(); process.exit(0); });
 | GET | `/api/users/:id` | auth | Contributor card (tap on `added_by`) |
 | GET | `/api/users/:id/library` | auth | Napster-style public Snatched Library |
 | POST | `/api/users/:id/friend` | auth | Friend request (mutual = friends) |
-| POST | `/api/sessions` | auth | Host starts a session → token, PIN, QR URL |
-| GET | `/api/sessions/:id/qr.png` | member | QR code PNG |
+| POST | `/api/sessions` | auth | Host starts a session → PIN + `join_url` deep link (the app draws the QR) |
 | POST | `/api/sessions/join` | anyone | Join by `{token}` (QR) or `{pin}` → guest token |
 | GET | `/api/sessions/:id` | member | Session, members, queue |
 | POST | `/api/sessions/:id/queue` | member | Add `{query}` / `{track_id}` / `{identified}` |
@@ -1125,369 +1130,1479 @@ process.on('SIGINT', () => { mdns.stop(); process.exit(0); });
 
 ---
 
-### Screens
-Each screen loads the **existing TrackSnatcher stylesheet first**, so it keeps the current breathing background and colors. `social.css` only adds layout for the new components and inherits every color.
+### Android APK (Kotlin + Jetpack Compose)
+Package `com.tracksnatcher.social`; rename it to the app's own package. The screens don't draw any background of their own. `socialGraph()` wraps each one in the app's **existing** breathing background, and all colors come from the app's existing `MaterialTheme`.
 
-#### `public/css/social.css`
-```css
-/* Layout only. Colors and the background come from the existing TrackSnatcher stylesheet. */
-.wrap { max-width: 560px; margin: 0 auto; padding: 16px; box-sizing: border-box; }
-.card { border: 1px solid color-mix(in srgb, currentColor 18%, transparent); border-radius: 18px;
-  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); padding: 16px; margin-bottom: 14px; }
-h1 { font-size: 1.6rem; margin: 8px 0 4px; }
-.dim { opacity: .72; font-size: .9rem; }
-.row { display: flex; gap: 10px; align-items: center; }
-.stack > * + * { margin-top: 8px; }
-input { width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 12px; font: inherit; }
-.track { display: flex; gap: 12px; align-items: center; padding: 10px 0;
-  border-bottom: 1px solid color-mix(in srgb, currentColor 14%, transparent); }
-.track:last-child { border-bottom: 0; }
-.track .meta { flex: 1; min-width: 0; }
-.track .title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.track.playing .title::before { content: "▶ "; }
-.avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex: none; }
-.art { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; flex: none; }
-.chip { font-size: .75rem; padding: 2px 8px; border-radius: 999px; cursor: pointer; opacity: .8;
-  border: 1px solid color-mix(in srgb, currentColor 30%, transparent); }
-.selected { outline: 2px solid currentColor; }
-.toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); max-width: calc(100% - 32px); }
-.qr { width: 150px; height: 150px; border-radius: 12px; background: #fff; }
-.pin { font-size: 2rem; font-weight: 800; letter-spacing: .15em; }
+#### `app/build.gradle.kts` (add to the existing file)
+```kotlin
+plugins {
+    // add next to the existing Kotlin plugin, same Kotlin version as the app
+    id("org.jetbrains.kotlin.plugin.serialization") version "<app's Kotlin version>"
+}
+
+android {
+    buildFeatures { buildConfig = true }
+    defaultConfig {
+        // Address of the TrackSnatcher social backend (LAN/hotspot IP or domain)
+        buildConfigField("String", "SOCIAL_BASE_URL", "\"http://192.168.43.1:8787\"")
+    }
+}
+
+dependencies {
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.google.zxing:core:3.5.3")                       // draw the QR
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")       // scan the QR
+    implementation("io.coil-kt:coil-compose:2.6.0")                       // artwork + avatars
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
+    implementation("androidx.navigation:navigation-compose:2.7.7")        // skip if already present
+}
 ```
 
-#### `public/js/api.js`
-```js
-window.TS = {
-  get token() { try { return localStorage.getItem('ts_token'); } catch { return null; } },
-  set token(v) { try { localStorage.setItem('ts_token', v); } catch {} },
-  async api(path, opts = {}) {
-    const res = await fetch('/api' + path, {
-      ...opts,
-      headers: { 'Content-Type': 'application/json', ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}) },
-      body: opts.body ? JSON.stringify(opts.body) : undefined,
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw Object.assign(new Error(data.error || res.statusText), { status: res.status });
-    return data;
-  },
-  socket(sessionId, onEvent) {
-    const proto = location.protocol === 'https:' ? 'wss' : 'ws';
-    let ws, retry = 1000;
-    const open = () => {
-      ws = new WebSocket(`${proto}://${location.host}/ws?token=${encodeURIComponent(this.token)}${sessionId ? `&session=${sessionId}` : ''}`);
-      ws.onmessage = (e) => onEvent(JSON.parse(e.data));
-      ws.onopen = () => (retry = 1000);
-      ws.onclose = (e) => { if (e.code < 4400) setTimeout(open, (retry = Math.min(retry * 2, 15000))); };
-    };
-    open();
-    return () => ws.close();
-  },
-  esc: (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])),
-  toast(msg) {
-    const t = document.createElement('div'); t.className = 'card toast'; t.textContent = msg;
-    document.body.append(t); setTimeout(() => t.remove(), 2600);
-  },
-  trackRow(t, { onSnatch, onProfile } = {}) {
-    const el = document.createElement('div');
-    el.className = 'track' + (t.status === 'playing' ? ' playing' : '');
-    el.innerHTML = `
-      ${t.artwork_url ? `<img class="art" src="${TS.esc(t.artwork_url)}" alt="">` : ''}
-      <div class="meta">
-        <div class="title">${TS.esc(t.title)}</div>
-        <div class="dim">${TS.esc(t.artist)}${t.vibe_flag ? ` · ⚠ ${TS.esc(t.vibe_flag)}` : ''}</div>
-        ${t.added_by_name ? `<span class="chip" data-profile>added by ${TS.esc(t.added_by_name)}</span>` : ''}
-        ${t.snatched_from_name ? `<span class="chip">snatched from ${TS.esc(t.snatched_from_name)}</span>` : ''}
-      </div>
-      ${onSnatch && !t.in_my_library ? '<button data-snatch>Snatch</button>' : ''}`;
-    el.querySelector('[data-snatch]')?.addEventListener('click', () => onSnatch(t));
-    el.querySelector('[data-profile]')?.addEventListener('click', () => onProfile?.(t.added_by));
-    return el;
-  },
-};
+#### `app/src/main/AndroidManifest.xml` (add to the existing file)
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- BLE: Android 12+ -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+    <!-- BLE: Android 11 and below -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="30" />
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+    <!-- usesCleartextTraffic only if the backend is plain http on the LAN/hotspot -->
+    <application android:usesCleartextTraffic="true">
+        <activity android:name=".MainActivity">
+            <!-- QR codes contain tracksnatcher://join?s=TOKEN, so the phone camera opens the app -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="tracksnatcher" android:host="join" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
 ```
 
-#### `public/host.html`: Host session screen
-```html
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Host Session</title>
-  <!-- HERMES: existing TrackSnatcher stylesheet (current breathing background + colors). Use its real path. -->
-  <link rel="stylesheet" href="/css/app.css">
-  <link rel="stylesheet" href="/css/social.css">
-</head>
-<body>
-  <main class="wrap">
-    <section class="card" id="setup">
-      <h1>Start a session</h1>
-      <p class="dim">Road trip, campfire, party: guests scan to add songs.</p>
-      <input id="name" placeholder="Your name" style="margin-bottom:8px">
-      <input id="title" placeholder="Session name (e.g. Road Trip)" style="margin-bottom:8px">
-      <input id="vibe" placeholder="Vibe (Campfire, Wedding Recital…)" style="margin-bottom:8px">
-      <input id="pl" placeholder="Shared YouTube playlist ID (optional)" style="margin-bottom:12px">
-      <button id="start">Start session</button>
-    </section>
-
-    <section class="card" id="live" hidden>
-      <div class="row" style="justify-content:space-between">
-        <div><h1 id="s-title"></h1><div class="dim" id="s-vibe"></div></div>
-        <button id="end">End</button>
-      </div>
-      <div class="row" style="margin-top:12px;align-items:flex-start">
-        <img id="qr" class="qr" alt="Join QR code">
-        <div><div class="dim">or enter PIN</div><div id="pin" class="pin"></div>
-          <div class="dim" id="members"></div></div>
-      </div>
-    </section>
-
-    <section class="card" id="queue-card" hidden>
-      <div class="row" style="justify-content:space-between">
-        <strong>Queue</strong>
-        <div class="row"><button id="dj">✨ Grok DJ</button><button id="next">Next ▶</button></div>
-      </div>
-      <div class="row" style="margin:10px 0"><input id="q" placeholder="Add a song…"><button id="add">Add</button></div>
-      <div id="dj-out" class="dim"></div>
-      <div id="queue"></div>
-    </section>
-  </main>
-
-  <script src="/js/api.js"></script>
-  <script>
-    const $ = (id) => document.getElementById(id);
-    let session, queue = [];
-
-    $('start').onclick = async () => {
-      if (!TS.token) TS.token = (await TS.api('/users', { method: 'POST', body: { display_name: $('name').value || 'Host' } })).token;
-      const out = await TS.api('/sessions', { method: 'POST', body: { title: $('title').value || 'Session', vibe: $('vibe').value || 'Party', yt_playlist_id: $('pl').value || null } });
-      session = out.session;
-      const qr = await fetch(out.qr_url, { headers: { Authorization: `Bearer ${TS.token}` } });
-      $('qr').src = URL.createObjectURL(await qr.blob());
-      $('s-title').textContent = session.title; $('s-vibe').textContent = session.vibe; $('pin').textContent = session.join_pin;
-      $('setup').hidden = true; $('live').hidden = false; $('queue-card').hidden = false;
-      TS.socket(session.id, onEvent);
-      refresh();
-    };
-
-    function onEvent(m) {
-      if (m.type === 'queue.updated') render(m.data.queue);
-      if (m.type === 'member.joined') { TS.toast(`${m.data.display_name} joined`); refresh(); }
-      if (m.type === 'snatch.created') TS.toast(m.data.label);
-    }
-    async function refresh() {
-      const d = await TS.api(`/sessions/${session.id}`);
-      $('members').textContent = `${d.members.length} in session`;
-      render(d.queue);
-    }
-    function render(q) {
-      queue = q; $('queue').replaceChildren(...q.map((t) => TS.trackRow(t, { onProfile: (id) => location.href = `/profile.html?u=${id}` })));
-    }
-    $('add').onclick = async () => { const v = $('q').value.trim(); if (!v) return; $('q').value = '';
-      try { await TS.api(`/sessions/${session.id}/queue`, { method: 'POST', body: { query: v } }); } catch (e) { TS.toast(e.message); } };
-    $('next').onclick = async () => { const n = queue.find((t) => t.status === 'queued'); if (n) await TS.api(`/sessions/${session.id}/now-playing`, { method: 'POST', body: { session_track_id: n.id } }); };
-    $('dj').onclick = async () => {
-      $('dj-out').textContent = 'Grok is listening to the room…';
-      const d = await TS.api(`/sessions/${session.id}/dj/suggest`, { method: 'POST' });
-      $('dj-out').innerHTML = (d.suggestions || []).map((s) => `• ${TS.esc(s.artist)} – ${TS.esc(s.title)} <span class="dim">${TS.esc(s.why || '')}</span>`).join('<br>') || 'Fair order ready.';
-      if (confirm('Apply Grok\'s fair play order?')) await TS.api(`/sessions/${session.id}/queue/order`, { method: 'PUT', body: { order: d.order } });
-    };
-    $('end').onclick = async () => { if (confirm('End session?')) { await TS.api(`/sessions/${session.id}/end`, { method: 'POST' }); location.reload(); } };
-  </script>
-</body>
-</html>
+#### Wire into the existing `NavHost`
+```kotlin
+NavHost(navController, startDestination = /* existing */) {
+    // ...existing destinations...
+    socialGraph(
+        navController = navController,
+        serverUrl = BuildConfig.SOCIAL_BASE_URL,
+        displayName = currentUserName,                                  // the name the user already has in the app
+        background = { content -> BreathingBackground { content() } },  // HERMES: the app's EXISTING breathing background composable, unchanged
+    )
+}
+// Entry points from existing screens:
+// navController.navigate(SocialRoutes.HOST)    // Start session
+// navController.navigate(SocialRoutes.join())  // Join session
+// navController.navigate(SocialRoutes.NEARBY)  // Nearby
 ```
 
-#### `public/join.html`: Guest join + live queue
-```html
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Join Session</title>
-  <!-- HERMES: existing TrackSnatcher stylesheet (current breathing background + colors). Use its real path. -->
-  <link rel="stylesheet" href="/css/app.css">
-  <link rel="stylesheet" href="/css/social.css">
-</head>
-<body>
-  <main class="wrap">
-    <section class="card" id="gate">
-      <h1>Join the session</h1>
-      <p class="dim">Add songs to the shared queue. No account needed.</p>
-      <input id="name" placeholder="Your name" style="margin-bottom:8px">
-      <input id="pin" inputmode="numeric" maxlength="6" placeholder="6-digit PIN" style="margin-bottom:12px">
-      <button id="join">Join</button>
-    </section>
+#### `app/src/main/java/com/tracksnatcher/social/data/Models.kt`
+```kotlin
+package com.tracksnatcher.social.data
 
-    <section class="card" id="room" hidden>
-      <h1 id="s-title"></h1><div class="dim" id="s-vibe"></div>
-      <div class="row" style="margin-top:12px"><input id="q" placeholder="Search a song to queue…"><button id="add">Queue</button></div>
-    </section>
-    <section class="card" id="queue-card" hidden><strong>Up next</strong><div id="queue"></div></section>
-  </main>
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
-  <script src="/js/api.js"></script>
-  <script>
-    const $ = (id) => document.getElementById(id);
-    const qrToken = new URLSearchParams(location.search).get('s');
-    if (qrToken) $('pin').hidden = true;
-    let session, me;
+@Serializable
+data class User(
+    val id: String,
+    @SerialName("display_name") val displayName: String,
+    @SerialName("avatar_url") val avatarUrl: String? = null,
+    @SerialName("youtube_url") val youtubeUrl: String? = null,
+    @SerialName("spotify_url") val spotifyUrl: String? = null,
+    val visibility: String? = null,
+)
 
-    $('join').onclick = async () => {
-      try {
-        const out = await TS.api('/sessions/join', { method: 'POST', body: { token: qrToken, pin: $('pin').value, display_name: $('name').value || 'Guest' } });
-        if (out.token) TS.token = out.token;
-        session = out.session; me = out.user;
-        $('s-title').textContent = session.title; $('s-vibe').textContent = session.vibe;
-        $('gate').hidden = true; $('room').hidden = false; $('queue-card').hidden = false;
-        render(out.queue);
-        TS.socket(session.id, (m) => {
-          if (m.type === 'queue.updated') render(m.data.queue);
-          if (m.type === 'snatch.created') TS.toast(m.data.label);
-          if (m.type === 'session.ended') TS.toast('Session ended');
-        });
-      } catch (e) { TS.toast(e.message); }
-    };
-    function render(q) {
-      $('queue').replaceChildren(...q.map((t) => TS.trackRow(t, {
-        onProfile: (id) => location.href = `/profile.html?u=${id}&s=${session.id}`,
-        onSnatch: t.added_by !== me.id ? snatch : null,
-      })));
-    }
-    async function snatch(t) {
-      const d = await TS.api('/snatch', { method: 'POST', body: { track_id: t.track_id, from_user_id: t.added_by, context: 'session', session_id: session.id } });
-      TS.toast(d.label);
-    }
-    $('add').onclick = async () => { const v = $('q').value.trim(); if (!v) return; $('q').value = '';
-      try { await TS.api(`/sessions/${session.id}/queue`, { method: 'POST', body: { query: v } }); TS.toast('Queued!'); } catch (e) { TS.toast(e.message); } };
-  </script>
-</body>
-</html>
+@Serializable
+data class AuthResponse(val user: User, val token: String)
+
+@Serializable
+data class Session(
+    val id: String,
+    val title: String,
+    val vibe: String,
+    @SerialName("host_id") val hostId: String,
+    @SerialName("join_pin") val joinPin: String? = null,
+)
+
+@Serializable
+data class CreateSessionResponse(val session: Session, @SerialName("join_url") val joinUrl: String)
+
+@Serializable
+data class QueueItem(
+    val id: String,
+    val status: String,
+    @SerialName("vibe_flag") val vibeFlag: String? = null,
+    @SerialName("track_id") val trackId: String,
+    val title: String,
+    val artist: String,
+    @SerialName("artwork_url") val artworkUrl: String? = null,
+    @SerialName("added_by") val addedBy: String,
+    @SerialName("added_by_name") val addedByName: String,
+    @SerialName("added_by_avatar") val addedByAvatar: String? = null,
+)
+
+@Serializable
+data class JoinResponse(
+    val token: String? = null,
+    val user: User,
+    val session: Session,
+    val queue: List<QueueItem> = emptyList(),
+)
+
+@Serializable
+data class Member(
+    val id: String,
+    @SerialName("display_name") val displayName: String,
+    @SerialName("avatar_url") val avatarUrl: String? = null,
+    val role: String,
+)
+
+@Serializable
+data class SessionDetail(val session: Session, val members: List<Member>, val queue: List<QueueItem>)
+
+@Serializable
+data class QueueResponse(val queue: List<QueueItem>)
+
+@Serializable
+data class Suggestion(val artist: String? = null, val title: String? = null, val why: String? = null)
+
+@Serializable
+data class DjResponse(val order: List<String> = emptyList(), val suggestions: List<Suggestion> = emptyList())
+
+@Serializable
+data class Profile(
+    val id: String,
+    @SerialName("display_name") val displayName: String,
+    @SerialName("avatar_url") val avatarUrl: String? = null,
+    @SerialName("youtube_url") val youtubeUrl: String? = null,
+    @SerialName("spotify_url") val spotifyUrl: String? = null,
+    @SerialName("library_count") val libraryCount: Int = 0,
+    @SerialName("snatched_from_count") val snatchedFromCount: Int = 0,
+    @SerialName("is_friend") val isFriend: Boolean = false,
+)
+
+@Serializable
+data class LibraryTrack(
+    val id: String,
+    val title: String,
+    val artist: String,
+    val album: String? = null,
+    @SerialName("artwork_url") val artworkUrl: String? = null,
+    @SerialName("snatched_from_name") val snatchedFromName: String? = null,
+    @SerialName("in_my_library") val inMyLibrary: Int = 0, // SQLite EXISTS -> 0/1
+)
+
+@Serializable
+data class LibraryResponse(val tracks: List<LibraryTrack>)
+
+@Serializable
+data class SnatchResponse(val label: String)
+
+@Serializable
+data class RecentTrack(
+    val id: String,
+    val title: String,
+    val artist: String,
+    @SerialName("artwork_url") val artworkUrl: String? = null,
+)
+
+@Serializable
+data class NearbyUser(
+    val id: String,
+    @SerialName("display_name") val displayName: String,
+    @SerialName("avatar_url") val avatarUrl: String? = null,
+    @SerialName("library_count") val libraryCount: Int = 0,
+    val recent: List<RecentTrack> = emptyList(),
+)
+
+@Serializable
+data class NearbyResponse(val users: List<NearbyUser>)
+
+@Serializable
+data class BleToken(
+    @SerialName("eph_id") val ephId: String? = null,
+    @SerialName("expires_at") val expiresAt: Long = 0,
+    val ghost: Boolean = false,
+)
+
+@Serializable
+data class WsEvent(val type: String, val data: JsonElement? = null)
 ```
 
-#### `public/profile.html`: Contributor profile + library browse
-```html
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Contributor Profile</title>
-  <!-- HERMES: existing TrackSnatcher stylesheet (current breathing background + colors). Use its real path. -->
-  <link rel="stylesheet" href="/css/app.css">
-  <link rel="stylesheet" href="/css/social.css">
-</head>
-<body>
-  <main class="wrap">
-    <section class="card">
-      <div class="row"><img id="av" class="avatar" style="width:56px;height:56px" alt="">
-        <div><h1 id="name"></h1><div class="dim" id="stats"></div></div></div>
-      <div class="row" style="margin-top:12px;flex-wrap:wrap" id="links"></div>
-    </section>
-    <section class="card"><strong>Snatched Library</strong><div id="lib"></div></section>
-  </main>
-  <script src="/js/api.js"></script>
-  <script>
-    const p = new URLSearchParams(location.search), uid = p.get('u'), sid = p.get('s');
-    (async () => {
-      try {
-        const u = await TS.api(`/users/${uid}`);
-        document.getElementById('name').textContent = u.display_name;
-        if (u.avatar_url) document.getElementById('av').src = u.avatar_url;
-        document.getElementById('stats').textContent = `${u.library_count} tracks · snatched from ${u.snatched_from_count}×`;
-        const links = document.getElementById('links');
-        if (u.youtube_url) links.insertAdjacentHTML('beforeend', `<a class="btn" target="_blank" rel="noopener" href="${TS.esc(u.youtube_url)}">YouTube</a>`);
-        if (u.spotify_url) links.insertAdjacentHTML('beforeend', `<a class="btn" target="_blank" rel="noopener" href="${TS.esc(u.spotify_url)}">Spotify</a>`);
-        const lib = await TS.api(`/users/${uid}/library`);
-        document.getElementById('lib').replaceChildren(...lib.tracks.map((t) => TS.trackRow(t, {
-          onSnatch: async (tr) => {
-            const d = await TS.api('/snatch', { method: 'POST', body: { track_id: tr.id, from_user_id: uid, context: sid ? 'session' : 'profile', session_id: sid } });
-            TS.toast(d.label);
-          },
-        })));
-      } catch (e) { TS.toast(e.status === 404 ? 'This profile is private' : e.message); }
-    })();
-  </script>
-</body>
-</html>
-```
+#### `app/src/main/java/com/tracksnatcher/social/data/SocialApi.kt`: REST + WebSocket client
+```kotlin
+package com.tracksnatcher.social.data
 
-#### `public/nearby.html`: Nearby radar ("Camp / Bar Napster Mode")
-```html
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Nearby Snatchers</title>
-  <!-- HERMES: existing TrackSnatcher stylesheet (current breathing background + colors). Use its real path. -->
-  <link rel="stylesheet" href="/css/app.css">
-  <link rel="stylesheet" href="/css/social.css">
-</head>
-<body>
-  <main class="wrap">
-    <section class="card">
-      <h1>Nearby</h1>
-      <p class="dim">See what people around you have snatched. Your exact location is never shared.</p>
-      <div class="row" role="radiogroup" aria-label="Visibility">
-        <button data-vis="ghost">👻 Ghost</button>
-        <button data-vis="friends">Friends</button>
-        <button data-vis="public">Public</button>
-      </div>
-    </section>
-    <section class="card"><div id="list" class="dim">Scanning…</div></section>
-  </main>
-  <script src="/js/api.js"></script>
-  <script>
-    const list = document.getElementById('list');
-    let timer;
+import android.content.Context
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.retryWhen
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.add
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
+import java.net.URLEncoder
+import java.util.concurrent.TimeUnit
 
-    async function setVis(v) {
-      const me = await TS.api('/users/me', { method: 'PATCH', body: { visibility: v } });
-      document.querySelectorAll('[data-vis]').forEach((b) => b.classList.toggle('selected', b.dataset.vis === me.visibility));
-      clearInterval(timer);
-      if (v === 'ghost') { await TS.api('/presence', { method: 'DELETE' }); list.textContent = 'Ghost mode: you are invisible and not scanning.'; return; }
-      tick(); timer = setInterval(tick, 60000);
-    }
-    document.querySelectorAll('[data-vis]').forEach((b) => b.onclick = () => setVis(b.dataset.vis));
+/** Talks to the TrackSnatcher social backend (REST + WebSocket). One instance per app. */
+class SocialApi private constructor(context: Context, private val baseUrl: String) {
 
-    function tick() {
-      navigator.geolocation.getCurrentPosition(async ({ coords }) => {
-        await TS.api('/presence/beacon', { method: 'POST', body: { lat: coords.latitude, lon: coords.longitude } });
-        const { users } = await TS.api('/presence/nearby');
-        if (!users.length) { list.textContent = 'Nobody nearby yet.'; return; }
-        list.replaceChildren(...users.map((u) => {
-          const el = document.createElement('div'); el.className = 'track';
-          el.innerHTML = `<img class="avatar" src="${TS.esc(u.avatar_url || '')}" alt="">
-            <div class="meta"><div class="title">${TS.esc(u.display_name)}</div>
-            <div class="dim">${u.library_count} tracks · ${u.recent.map((t) => TS.esc(t.title)).join(', ')}</div></div>
-            <button>Browse</button>`;
-          el.querySelector('button').onclick = () => location.href = `/profile.html?u=${u.id}`;
-          return el;
-        }));
-      }, () => list.textContent = 'Location permission is needed for Nearby (only a ~150 m area code is kept).', { enableHighAccuracy: false, maximumAge: 60000 });
+    class ApiException(val code: Int, message: String) : Exception(message)
+
+    private val prefs = context.getSharedPreferences("tracksnatcher_social", Context.MODE_PRIVATE)
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS) // Grok DJ calls can take a few seconds
+        .pingInterval(25, TimeUnit.SECONDS)
+        .build()
+    private val jsonType = "application/json".toMediaType()
+
+    val json = Json { ignoreUnknownKeys = true }
+
+    var token: String?
+        get() = prefs.getString("token", null)
+        private set(value) = prefs.edit().putString("token", value).apply()
+
+    private suspend fun raw(method: String, path: String, body: JsonObject? = null): String = withContext(Dispatchers.IO) {
+        val requestBody = when {
+            body != null -> body.toString().toRequestBody(jsonType)
+            method == "GET" || method == "DELETE" -> null
+            else -> "{}".toRequestBody(jsonType)
+        }
+        val request = Request.Builder()
+            .url("$baseUrl/api$path")
+            .method(method, requestBody)
+            .apply { token?.let { header("Authorization", "Bearer $it") } }
+            .build()
+        client.newCall(request).execute().use { res ->
+            val text = res.body?.string().orEmpty()
+            if (!res.isSuccessful) {
+                val error = runCatching { json.parseToJsonElement(text).jsonObject["error"]?.jsonPrimitive?.contentOrNull }.getOrNull()
+                throw ApiException(res.code, error ?: "HTTP ${res.code}")
+            }
+            text
+        }
     }
 
-    (async () => {
-      if (!TS.token) TS.token = (await TS.api('/users', { method: 'POST', body: { display_name: prompt('Display name?') || 'Snatcher' } })).token;
-      const me = await TS.api('/users/me');
-      setVis(me.visibility);
-    })();
-  </script>
-</body>
-</html>
+    private suspend inline fun <reified T> call(method: String, path: String, body: JsonObject? = null): T =
+        json.decodeFromString(raw(method, path, body))
+
+    // ---- users / profiles ----
+    /** Registers this device once, using the name the user already has in the app. */
+    suspend fun ensureUser(displayName: String): String {
+        token?.let { return it }
+        val out: AuthResponse = call("POST", "/users", buildJsonObject { put("display_name", displayName) })
+        token = out.token
+        return out.token
+    }
+
+    suspend fun me(): User = call("GET", "/users/me")
+    suspend fun setVisibility(visibility: String): User =
+        call("PATCH", "/users/me", buildJsonObject { put("visibility", visibility) })
+    suspend fun profile(userId: String): Profile = call("GET", "/users/$userId")
+    suspend fun library(userId: String): LibraryResponse = call("GET", "/users/$userId/library")
+
+    // ---- sessions ----
+    suspend fun createSession(title: String, vibe: String, playlistId: String?): CreateSessionResponse =
+        call("POST", "/sessions", buildJsonObject {
+            put("title", title); put("vibe", vibe); put("yt_playlist_id", playlistId)
+        })
+
+    suspend fun joinSession(qrToken: String?, pin: String?, displayName: String): JoinResponse {
+        val out: JoinResponse = call("POST", "/sessions/join", buildJsonObject {
+            put("token", qrToken); put("pin", pin); put("display_name", displayName)
+        })
+        out.token?.let { token = it } // new guest account
+        return out
+    }
+
+    suspend fun session(sessionId: String): SessionDetail = call("GET", "/sessions/$sessionId")
+    suspend fun addToQueue(sessionId: String, query: String) {
+        raw("POST", "/sessions/$sessionId/queue", buildJsonObject { put("query", query) })
+    }
+    suspend fun setOrder(sessionId: String, order: List<String>) {
+        raw("PUT", "/sessions/$sessionId/queue/order", buildJsonObject { putJsonArray("order") { order.forEach { add(it) } } })
+    }
+    suspend fun nowPlaying(sessionId: String, sessionTrackId: String) {
+        raw("POST", "/sessions/$sessionId/now-playing", buildJsonObject { put("session_track_id", sessionTrackId) })
+    }
+    suspend fun djSuggest(sessionId: String): DjResponse = call("POST", "/sessions/$sessionId/dj/suggest")
+    suspend fun endSession(sessionId: String) { raw("POST", "/sessions/$sessionId/end") }
+
+    // ---- snatch ----
+    suspend fun snatch(trackId: String, fromUserId: String?, context: String, sessionId: String?): SnatchResponse =
+        call("POST", "/snatch", buildJsonObject {
+            put("track_id", trackId); put("from_user_id", fromUserId); put("context", context); put("session_id", sessionId)
+        })
+
+    // ---- nearby ----
+    suspend fun beacon(lat: Double, lon: Double) {
+        raw("POST", "/presence/beacon", buildJsonObject { put("lat", lat); put("lon", lon) })
+    }
+    suspend fun nearby(): NearbyResponse = call("GET", "/presence/nearby")
+    suspend fun bleToken(): BleToken = call("POST", "/presence/ble-token")
+    suspend fun resolveBle(ephIds: List<String>): NearbyResponse =
+        call("POST", "/presence/resolve", buildJsonObject { putJsonArray("eph_ids") { ephIds.forEach { add(it) } } })
+    suspend fun goDark() { raw("DELETE", "/presence") }
+
+    /** Live session events. Reconnects with backoff until the collector is cancelled. */
+    fun events(sessionId: String): Flow<WsEvent> = callbackFlow {
+        val url = "$baseUrl/ws?token=${URLEncoder.encode(token.orEmpty(), "UTF-8")}&session=$sessionId"
+        val socket = client.newWebSocket(Request.Builder().url(url).build(), object : WebSocketListener() {
+            override fun onMessage(webSocket: WebSocket, text: String) {
+                runCatching { json.decodeFromString<WsEvent>(text) }.onSuccess { trySend(it) }
+            }
+            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+                this@callbackFlow.close(t)
+            }
+            override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+                this@callbackFlow.close()
+            }
+        })
+        awaitClose { socket.close(1000, null) }
+    }.retryWhen { _, attempt ->
+        delay(minOf(15_000L, 1_000L shl attempt.toInt().coerceAtMost(4)))
+        true
+    }
+
+    companion object {
+        @Volatile private var instance: SocialApi? = null
+        @Volatile private var baseUrl: String = ""
+
+        /** Call once (socialGraph does it) with the backend address, e.g. BuildConfig.SOCIAL_BASE_URL. */
+        fun configure(serverUrl: String) { baseUrl = serverUrl.trimEnd('/') }
+
+        fun get(context: Context): SocialApi = instance ?: synchronized(this) {
+            instance ?: SocialApi(context.applicationContext, baseUrl).also { instance = it }
+        }
+    }
+}
 ```
 
-### BLE layer (native app / Termux:API): integration notes for Hermes
-Browsers can't advertise over BLE, so this part lives in the native Android client (or a small Kotlin helper that the Termux client calls):
-1. Call `POST /api/presence/ble-token` and get `{eph_id, service_uuid}`. Rotate whenever `expires_at` passes.
-2. Advertise `service_uuid` with `eph_id` (16 bytes) as service data. Use `AdvertiseSettings.ADVERTISE_MODE_LOW_POWER`, and send no device name.
-3. Scan with a `ScanFilter` on `service_uuid`. Collect the `eph_id`s you hear, de-duplicate them, and every 30 s send them to `POST /api/presence/resolve`.
-4. In ghost mode, stop advertising **and** scanning.
-5. Merge the BLE results with the `/api/presence/nearby` results by user `id`. BLE hits rank first because they're physically closest.
+#### `app/src/main/java/com/tracksnatcher/social/SessionViewModel.kt`
+```kotlin
+package com.tracksnatcher.social
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.tracksnatcher.social.data.QueueItem
+import com.tracksnatcher.social.data.QueueResponse
+import com.tracksnatcher.social.data.Session
+import com.tracksnatcher.social.data.SocialApi
+import com.tracksnatcher.social.data.WsEvent
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonPrimitive
+
+data class SessionUiState(
+    val session: Session? = null,
+    val joinUrl: String? = null,
+    val isHost: Boolean = false,
+    val myId: String? = null,
+    val queue: List<QueueItem> = emptyList(),
+    val memberCount: Int = 0,
+    val djText: String? = null,
+    val pendingOrder: List<String>? = null,
+    val busy: Boolean = false,
+    val ended: Boolean = false,
+)
+
+/** Shared by the host and guest screens: one live session, its queue and its WebSocket. */
+class SessionViewModel(app: Application) : AndroidViewModel(app) {
+    private val api = SocialApi.get(app)
+    private val _state = MutableStateFlow(SessionUiState())
+    val state: StateFlow<SessionUiState> = _state.asStateFlow()
+    private val _toasts = MutableSharedFlow<String>(extraBufferCapacity = 8)
+    val toasts: SharedFlow<String> = _toasts
+    private var events: Job? = null
+
+    private val sessionId get() = _state.value.session?.id
+
+    private fun launchSafe(block: suspend () -> Unit) = viewModelScope.launch {
+        _state.update { it.copy(busy = true) }
+        try {
+            block()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            _toasts.tryEmit(e.message ?: "Something went wrong")
+        } finally {
+            _state.update { it.copy(busy = false) }
+        }
+    }
+
+    fun startSession(displayName: String, title: String, vibe: String, playlistId: String) = launchSafe {
+        api.ensureUser(displayName)
+        val out = api.createSession(title.ifBlank { "Session" }, vibe.ifBlank { "Party" }, playlistId.ifBlank { null })
+        _state.value = SessionUiState(session = out.session, joinUrl = out.joinUrl, isHost = true, myId = out.session.hostId)
+        listen(out.session.id)
+        refresh()
+    }
+
+    fun join(qrToken: String?, pin: String, displayName: String) = launchSafe {
+        val out = api.joinSession(qrToken, if (qrToken == null) pin.trim() else null, displayName.ifBlank { "Guest" })
+        _state.value = SessionUiState(session = out.session, myId = out.user.id, queue = out.queue)
+        listen(out.session.id)
+    }
+
+    fun add(query: String) = launchSafe {
+        val sid = sessionId ?: return@launchSafe
+        if (query.isBlank()) return@launchSafe
+        api.addToQueue(sid, query.trim())
+        if (!_state.value.isHost) _toasts.tryEmit("Queued!")
+    }
+
+    fun next() = launchSafe {
+        val sid = sessionId ?: return@launchSafe
+        val upNext = _state.value.queue.firstOrNull { it.status == "queued" } ?: return@launchSafe
+        api.nowPlaying(sid, upNext.id)
+    }
+
+    /** Grok DJ: fair order + suggestions. The host still has to tap "Apply". */
+    fun askDj() = launchSafe {
+        val sid = sessionId ?: return@launchSafe
+        _state.update { it.copy(djText = "Grok is listening to the room…") }
+        val out = api.djSuggest(sid)
+        val text = out.suggestions.joinToString("\n") { "• ${it.artist.orEmpty()} – ${it.title.orEmpty()}  ${it.why.orEmpty()}" }
+        _state.update { it.copy(djText = text.ifBlank { "Fair order ready." }, pendingOrder = out.order) }
+    }
+
+    fun applyDjOrder() = launchSafe {
+        val sid = sessionId ?: return@launchSafe
+        val order = _state.value.pendingOrder ?: return@launchSafe
+        api.setOrder(sid, order)
+        _state.update { it.copy(pendingOrder = null, djText = null) }
+    }
+
+    fun snatch(item: QueueItem) = launchSafe {
+        val out = api.snatch(item.trackId, item.addedBy, "session", sessionId)
+        _toasts.tryEmit(out.label)
+    }
+
+    fun end() = launchSafe {
+        val sid = sessionId ?: return@launchSafe
+        api.endSession(sid)
+        events?.cancel()
+        _state.value = SessionUiState()
+    }
+
+    private suspend fun refresh() {
+        val sid = sessionId ?: return
+        val detail = api.session(sid)
+        _state.update { it.copy(queue = detail.queue, memberCount = detail.members.size) }
+    }
+
+    private fun listen(sid: String) {
+        events?.cancel()
+        events = viewModelScope.launch {
+            api.events(sid).collect { handle(it) }
+        }
+    }
+
+    private suspend fun handle(event: WsEvent) {
+        when (event.type) {
+            "queue.updated" -> event.data?.let { data ->
+                val queue = api.json.decodeFromJsonElement(QueueResponse.serializer(), data).queue
+                _state.update { it.copy(queue = queue) }
+            }
+            "member.joined" -> {
+                event.data.str("display_name")?.let { _toasts.tryEmit("$it joined") }
+                runCatching { refresh() }
+            }
+            "snatch.created" -> event.data.str("label")?.let { _toasts.tryEmit(it) }
+            "session.ended" -> {
+                _toasts.tryEmit("Session ended")
+                _state.update { it.copy(ended = true) }
+                events?.cancel()
+            }
+        }
+    }
+
+    private fun JsonElement?.str(key: String) = (this as? JsonObject)?.get(key)?.jsonPrimitive?.contentOrNull
+}
+```
+
+#### `app/src/main/java/com/tracksnatcher/social/NearbyViewModel.kt`
+```kotlin
+package com.tracksnatcher.social
+
+import android.annotation.SuppressLint
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.tracksnatcher.social.ble.BleProximity
+import com.tracksnatcher.social.data.NearbyUser
+import com.tracksnatcher.social.data.SocialApi
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+
+data class NearbyUiState(
+    val ready: Boolean = false,
+    val visibility: String = "friends",
+    val users: List<NearbyUser> = emptyList(),
+    val inBluetoothRange: Set<String> = emptySet(),
+    val status: String? = "Scanning…",
+    val locationAllowed: Boolean = false,
+    val bluetoothAllowed: Boolean = false,
+)
+
+class NearbyViewModel(app: Application) : AndroidViewModel(app) {
+    private val api = SocialApi.get(app)
+    private val ble = BleProximity(app)
+    private val location = LocationServices.getFusedLocationProviderClient(app)
+    private val _state = MutableStateFlow(NearbyUiState())
+    val state: StateFlow<NearbyUiState> = _state.asStateFlow()
+    private var loop: Job? = null
+
+    fun init(displayName: String) = viewModelScope.launch {
+        try {
+            api.ensureUser(displayName)
+            val me = api.me()
+            _state.update { it.copy(ready = true, visibility = me.visibility ?: "friends") }
+            maybeStart()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            _state.update { it.copy(status = e.message) }
+        }
+    }
+
+    fun onPermissions(locationAllowed: Boolean, bluetoothAllowed: Boolean) {
+        _state.update { it.copy(locationAllowed = locationAllowed, bluetoothAllowed = bluetoothAllowed) }
+        maybeStart()
+    }
+
+    fun setVisibility(visibility: String) = viewModelScope.launch {
+        try {
+            val me = api.setVisibility(visibility)
+            _state.update { it.copy(visibility = me.visibility ?: visibility) }
+            if (visibility == "ghost") goDark() else maybeStart()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            _state.update { it.copy(status = e.message) }
+        }
+    }
+
+    private fun maybeStart() {
+        val s = _state.value
+        if (!s.ready || s.visibility == "ghost") return
+        if (!s.locationAllowed && !s.bluetoothAllowed) {
+            _state.update { it.copy(status = "Allow location or Bluetooth to find people nearby. Only a ~150 m area code is kept.") }
+            return
+        }
+        startLoop()
+    }
+
+    @SuppressLint("MissingPermission") // checked via locationAllowed
+    private fun startLoop() {
+        loop?.cancel()
+        loop = viewModelScope.launch {
+            var bleExpires = 0L
+            while (isActive) {
+                try {
+                    val s = _state.value
+                    if (s.bluetoothAllowed && System.currentTimeMillis() / 1000 >= bleExpires - 30) {
+                        val t = api.bleToken()
+                        if (!t.ghost && t.ephId != null && ble.start(t.ephId)) bleExpires = t.expiresAt
+                    }
+                    if (s.locationAllowed) {
+                        location.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null).await()
+                            ?.let { api.beacon(it.latitude, it.longitude) }
+                    }
+                    val heard = if (s.bluetoothAllowed) ble.recentIds() else emptyList()
+                    val close = if (heard.isNotEmpty()) api.resolveBle(heard).users else emptyList()
+                    val byArea = api.nearby().users
+                    val merged = (close + byArea).distinctBy { it.id } // Bluetooth hits first: physically closest
+                    _state.update {
+                        it.copy(users = merged, inBluetoothRange = close.map { u -> u.id }.toSet(),
+                            status = if (merged.isEmpty()) "Nobody nearby yet." else null)
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    _state.update { it.copy(status = e.message) }
+                }
+                delay(30_000)
+            }
+        }
+    }
+
+    private suspend fun goDark() {
+        loop?.cancel()
+        ble.stop()
+        api.goDark()
+        _state.update { it.copy(users = emptyList(), inBluetoothRange = emptySet(), status = "Ghost mode: you're invisible and not scanning.") }
+    }
+
+    override fun onCleared() {
+        ble.stop()
+    }
+}
+```
+
+#### `app/src/main/java/com/tracksnatcher/social/ble/BleProximity.kt`: Bluetooth LE discovery
+```kotlin
+package com.tracksnatcher.social.ble
+
+import android.annotation.SuppressLint
+import android.bluetooth.BluetoothManager
+import android.bluetooth.le.AdvertiseCallback
+import android.bluetooth.le.AdvertiseData
+import android.bluetooth.le.AdvertiseSettings
+import android.bluetooth.le.ScanCallback
+import android.bluetooth.le.ScanFilter
+import android.bluetooth.le.ScanResult
+import android.bluetooth.le.ScanSettings
+import android.content.Context
+import android.os.SystemClock
+import java.util.concurrent.ConcurrentHashMap
+
+/**
+ * Broadcasts this device's rotating ephemeral id (from /api/presence/ble-token) and collects the ids
+ * of other TrackSnatcher phones in Bluetooth range. No user id, name or MAC goes over the air.
+ * Payload: manufacturer data, company id 0xFFFF, "TS" magic + 16-byte ephemeral id (fits a legacy 31-byte ad).
+ */
+class BleProximity(context: Context) {
+
+    private val adapter = (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
+    private val heard = ConcurrentHashMap<String, Long>()
+    private var advertiseCallback: AdvertiseCallback? = null
+    private var scanCallback: ScanCallback? = null
+
+    @SuppressLint("MissingPermission") // caller requests BLUETOOTH_SCAN/ADVERTISE (31+) or FINE_LOCATION (<=30)
+    fun start(ephIdHex: String): Boolean {
+        stop()
+        val bt = adapter ?: return false
+        if (!bt.isEnabled) return false
+        return try {
+            bt.bluetoothLeAdvertiser?.let { advertiser ->
+                val settings = AdvertiseSettings.Builder()
+                    .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_POWER)
+                    .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_LOW)
+                    .setConnectable(false)
+                    .build()
+                val data = AdvertiseData.Builder()
+                    .setIncludeDeviceName(false)
+                    .setIncludeTxPowerLevel(false)
+                    .addManufacturerData(COMPANY_ID, MAGIC + hexToBytes(ephIdHex))
+                    .build()
+                val cb = object : AdvertiseCallback() {}
+                advertiser.startAdvertising(settings, data, cb)
+                advertiseCallback = cb
+            }
+            bt.bluetoothLeScanner?.let { scanner ->
+                val filter = ScanFilter.Builder().setManufacturerData(COMPANY_ID, MAGIC, byteArrayOf(-1, -1)).build()
+                val settings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_POWER).build()
+                val cb = object : ScanCallback() {
+                    override fun onScanResult(callbackType: Int, result: ScanResult) {
+                        val bytes = result.scanRecord?.getManufacturerSpecificData(COMPANY_ID) ?: return
+                        if (bytes.size >= 18) heard[bytesToHex(bytes.copyOfRange(2, 18))] = SystemClock.elapsedRealtime()
+                    }
+                }
+                scanner.startScan(listOf(filter), settings, cb)
+                scanCallback = cb
+            }
+            true
+        } catch (e: SecurityException) {
+            false // permission revoked; geohash discovery still works
+        }
+    }
+
+    /** Ephemeral ids heard in the last 2 minutes. */
+    fun recentIds(): List<String> {
+        val cutoff = SystemClock.elapsedRealtime() - 120_000
+        heard.entries.removeIf { it.value < cutoff }
+        return heard.keys.take(50)
+    }
+
+    @SuppressLint("MissingPermission")
+    fun stop() {
+        try {
+            advertiseCallback?.let { adapter?.bluetoothLeAdvertiser?.stopAdvertising(it) }
+            scanCallback?.let { adapter?.bluetoothLeScanner?.stopScan(it) }
+        } catch (_: SecurityException) {
+        } catch (_: IllegalStateException) { // Bluetooth turned off
+        }
+        advertiseCallback = null
+        scanCallback = null
+        heard.clear()
+    }
+
+    private companion object {
+        const val COMPANY_ID = 0xFFFF
+        val MAGIC = byteArrayOf('T'.code.toByte(), 'S'.code.toByte())
+
+        fun hexToBytes(hex: String) = ByteArray(hex.length / 2) { hex.substring(it * 2, it * 2 + 2).toInt(16).toByte() }
+        fun bytesToHex(bytes: ByteArray) = bytes.joinToString("") { "%02x".format(it) }
+    }
+}
+```
+
+#### `app/src/main/java/com/tracksnatcher/social/ui/Components.kt`
+```kotlin
+package com.tracksnatcher.social.ui
+
+import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import kotlinx.coroutines.flow.Flow
+
+/**
+ * Translucent card so the app's existing breathing background shows through.
+ * Colors come from the app's current MaterialTheme; nothing here sets its own palette.
+ */
+@Composable
+fun GlassCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.55f),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.14f)),
+    ) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp), content = content)
+    }
+}
+
+@Composable
+fun Avatar(url: String?, size: Dp = 32.dp) {
+    AsyncImage(
+        model = url,
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.size(size).clip(CircleShape).background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
+    )
+}
+
+@Composable
+fun TrackRow(
+    title: String,
+    artist: String,
+    artworkUrl: String?,
+    playing: Boolean = false,
+    vibeFlag: String? = null,
+    addedBy: String? = null,
+    snatchedFrom: String? = null,
+    onAddedByClick: (() -> Unit)? = null,
+    onSnatch: (() -> Unit)? = null,
+) {
+    Row(
+        Modifier.fillMaxWidth().padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        if (artworkUrl != null) {
+            AsyncImage(
+                model = artworkUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.size(44.dp).clip(RoundedCornerShape(8.dp)),
+            )
+        }
+        Column(Modifier.weight(1f)) {
+            Text(
+                (if (playing) "▶ " else "") + title,
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                artist + (vibeFlag?.let { " · ⚠ $it" } ?: ""),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                if (addedBy != null) {
+                    AssistChip(onClick = { onAddedByClick?.invoke() }, label = { Text("added by $addedBy", style = MaterialTheme.typography.labelSmall) })
+                }
+                if (snatchedFrom != null) {
+                    AssistChip(onClick = {}, label = { Text("snatched from $snatchedFrom", style = MaterialTheme.typography.labelSmall) })
+                }
+            }
+        }
+        if (onSnatch != null) Button(onClick = onSnatch) { Text("Snatch") }
+    }
+}
+
+@Composable
+fun ToastEffect(messages: Flow<String>) {
+    val context = LocalContext.current
+    LaunchedEffect(messages) {
+        messages.collect { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() }
+    }
+}
+```
+
+#### `app/src/main/java/com/tracksnatcher/social/ui/Qr.kt`
+```kotlin
+package com.tracksnatcher.social.ui
+
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.net.Uri
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.EncodeHintType
+import com.google.zxing.qrcode.QRCodeWriter
+
+/** Renders the session join link (tracksnatcher://join?s=TOKEN) as a QR bitmap. */
+fun qrBitmap(text: String, size: Int = 512): Bitmap {
+    val matrix = QRCodeWriter().encode(text, BarcodeFormat.QR_CODE, size, size, mapOf(EncodeHintType.MARGIN to 1))
+    val pixels = IntArray(size * size) { i -> if (matrix[i % size, i / size]) Color.BLACK else Color.WHITE }
+    return Bitmap.createBitmap(pixels, size, size, Bitmap.Config.RGB_565)
+}
+
+/** Pulls the session token out of a scanned QR (deep link or raw token). */
+fun joinTokenFrom(scanned: String): String? =
+    if (scanned.startsWith("tracksnatcher://")) Uri.parse(scanned).getQueryParameter("s")
+    else scanned.takeIf { it.matches(Regex("^[A-Za-z0-9_-]{16}$")) }
+```
+
+#### `app/src/main/java/com/tracksnatcher/social/ui/HostSessionScreen.kt`: DJ Session (host)
+```kotlin
+package com.tracksnatcher.social.ui
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.tracksnatcher.social.SessionViewModel
+
+/** Host: start a session, show QR + PIN, run the shared queue, ask Grok to DJ. */
+@Composable
+fun HostSessionScreen(
+    displayName: String,
+    onOpenProfile: (userId: String) -> Unit,
+    vm: SessionViewModel = viewModel(),
+) {
+    val state by vm.state.collectAsState()
+    ToastEffect(vm.toasts)
+    val session = state.session
+    var confirmEnd by remember { mutableStateOf(false) }
+
+    LazyColumn(
+        Modifier.fillMaxSize().systemBarsPadding(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        if (session == null) {
+            item {
+                var title by rememberSaveable { mutableStateOf("") }
+                var vibe by rememberSaveable { mutableStateOf("") }
+                var playlist by rememberSaveable { mutableStateOf("") }
+                GlassCard {
+                    Text("Start a session", style = MaterialTheme.typography.headlineSmall)
+                    Text("Road trip, campfire, party: guests scan to add songs.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    OutlinedTextField(title, { title = it }, Modifier.fillMaxWidth(), label = { Text("Session name") }, singleLine = true)
+                    OutlinedTextField(vibe, { vibe = it }, Modifier.fillMaxWidth(), label = { Text("Vibe (Campfire, Wedding Recital…)") }, singleLine = true)
+                    OutlinedTextField(playlist, { playlist = it }, Modifier.fillMaxWidth(), label = { Text("Shared YouTube playlist ID (optional)") }, singleLine = true)
+                    Button(onClick = { vm.startSession(displayName, title, vibe, playlist) }, enabled = !state.busy) { Text("Start session") }
+                }
+            }
+        } else {
+            item {
+                GlassCard {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f)) {
+                            Text(session.title, style = MaterialTheme.typography.headlineSmall)
+                            Text(session.vibe, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                        OutlinedButton(onClick = { confirmEnd = true }) { Text("End") }
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        state.joinUrl?.let { url ->
+                            val qr = remember(url) { qrBitmap(url).asImageBitmap() }
+                            Image(qr, contentDescription = "Join QR code", modifier = Modifier.size(150.dp).clip(RoundedCornerShape(12.dp)))
+                        }
+                        Column {
+                            Text("or enter PIN", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(session.joinPin.orEmpty(), fontSize = 32.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = 4.sp)
+                            Text("${state.memberCount} in session", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                }
+            }
+            item {
+                var query by rememberSaveable { mutableStateOf("") }
+                GlassCard {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Text("Queue", style = MaterialTheme.typography.titleMedium)
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedButton(onClick = vm::askDj, enabled = !state.busy) { Text("✨ Grok DJ") }
+                            Button(onClick = vm::next, enabled = !state.busy) { Text("Next ▶") }
+                        }
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(query, { query = it }, Modifier.weight(1f), label = { Text("Add a song…") }, singleLine = true)
+                        Button(onClick = { vm.add(query); query = "" }, enabled = query.isNotBlank()) { Text("Add") }
+                    }
+                    state.djText?.let { Text(it, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                    if (state.pendingOrder != null) {
+                        Button(onClick = vm::applyDjOrder) { Text("Apply Grok's fair play order") }
+                    }
+                    state.queue.forEach { t ->
+                        TrackRow(
+                            title = t.title, artist = t.artist, artworkUrl = t.artworkUrl,
+                            playing = t.status == "playing", vibeFlag = t.vibeFlag,
+                            addedBy = t.addedByName, onAddedByClick = { onOpenProfile(t.addedBy) },
+                        )
+                    }
+                    if (state.queue.isEmpty()) Text("Nothing queued yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+    }
+
+    if (confirmEnd) {
+        AlertDialog(
+            onDismissRequest = { confirmEnd = false },
+            title = { Text("End session?") },
+            text = { Text("Guests won't be able to add songs anymore.") },
+            confirmButton = { TextButton(onClick = { confirmEnd = false; vm.end() }) { Text("End") } },
+            dismissButton = { TextButton(onClick = { confirmEnd = false }) { Text("Cancel") } },
+        )
+    }
+}
+```
+
+#### `app/src/main/java/com/tracksnatcher/social/ui/JoinSessionScreen.kt`: DJ Session (guest join + live queue)
+```kotlin
+package com.tracksnatcher.social.ui
+
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
+import com.tracksnatcher.social.SessionViewModel
+
+/**
+ * Guest: join by scanning the host's QR (or opening the tracksnatcher://join deep link) or typing the PIN,
+ * then add songs and snatch anything other people queued.
+ */
+@Composable
+fun JoinSessionScreen(
+    deepLinkToken: String?,
+    displayName: String,
+    onOpenProfile: (userId: String, sessionId: String) -> Unit,
+    vm: SessionViewModel = viewModel(),
+) {
+    val state by vm.state.collectAsState()
+    ToastEffect(vm.toasts)
+    var name by rememberSaveable { mutableStateOf(displayName) }
+    var pin by rememberSaveable { mutableStateOf("") }
+    val scanner = rememberLauncherForActivityResult(ScanContract()) { result ->
+        result.contents?.let { joinTokenFrom(it) }?.let { vm.join(it, "", name) }
+    }
+
+    // Opened from the QR deep link: join straight away.
+    LaunchedEffect(deepLinkToken) {
+        if (deepLinkToken != null && state.session == null) vm.join(deepLinkToken, "", displayName)
+    }
+
+    val session = state.session
+    LazyColumn(
+        Modifier.fillMaxSize().systemBarsPadding(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        if (session == null) {
+            item {
+                GlassCard {
+                    Text("Join the session", style = MaterialTheme.typography.headlineSmall)
+                    Text("Scan the host's QR code or type their PIN.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    OutlinedTextField(name, { name = it }, Modifier.fillMaxWidth(), label = { Text("Your name") }, singleLine = true)
+                    OutlinedButton(
+                        onClick = { scanner.launch(ScanOptions().setPrompt("Scan the host's QR code").setBeepEnabled(false).setOrientationLocked(false)) },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text("📷 Scan QR code") }
+                    OutlinedTextField(
+                        pin, { if (it.length <= 6 && it.all(Char::isDigit)) pin = it }, Modifier.fillMaxWidth(),
+                        label = { Text("or 6-digit PIN") }, singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                    )
+                    Button(onClick = { vm.join(null, pin, name) }, enabled = pin.length == 6 && !state.busy) { Text("Join") }
+                }
+            }
+        } else {
+            item {
+                var query by rememberSaveable { mutableStateOf("") }
+                GlassCard {
+                    Text(session.title, style = MaterialTheme.typography.headlineSmall)
+                    Text(if (state.ended) "Session ended" else session.vibe, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(query, { query = it }, Modifier.weight(1f), label = { Text("Search a song to queue…") }, singleLine = true)
+                        Button(onClick = { vm.add(query); query = "" }, enabled = query.isNotBlank() && !state.ended) { Text("Queue") }
+                    }
+                }
+            }
+            item {
+                GlassCard {
+                    Text("Up next", style = MaterialTheme.typography.titleMedium)
+                    state.queue.forEach { t ->
+                        TrackRow(
+                            title = t.title, artist = t.artist, artworkUrl = t.artworkUrl,
+                            playing = t.status == "playing", vibeFlag = t.vibeFlag,
+                            addedBy = t.addedByName, onAddedByClick = { onOpenProfile(t.addedBy, session.id) },
+                            onSnatch = if (t.addedBy != state.myId) ({ vm.snatch(t) }) else null,
+                        )
+                    }
+                    if (state.queue.isEmpty()) Text("Nothing queued yet. Add the first song!", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+    }
+}
+```
+
+#### `app/src/main/java/com/tracksnatcher/social/ui/NearbyScreen.kt`: Nearby "Napster Mode"
+```kotlin
+package com.tracksnatcher.social.ui
+
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.tracksnatcher.social.NearbyViewModel
+
+private val PERMISSIONS = buildList {
+    add(Manifest.permission.ACCESS_COARSE_LOCATION)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        add(Manifest.permission.BLUETOOTH_SCAN)
+        add(Manifest.permission.BLUETOOTH_ADVERTISE)
+    } else {
+        add(Manifest.permission.ACCESS_FINE_LOCATION) // BLE scanning needs it on Android 11 and below
+    }
+}.toTypedArray()
+
+/** Camp / Bar "Napster Mode": who's around you and what they've snatched. */
+@Composable
+fun NearbyScreen(
+    displayName: String,
+    onOpenProfile: (userId: String) -> Unit,
+    vm: NearbyViewModel = viewModel(),
+) {
+    val state by vm.state.collectAsState()
+    val permissions = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
+        val location = granted[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        val bluetooth = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            granted[Manifest.permission.BLUETOOTH_SCAN] == true && granted[Manifest.permission.BLUETOOTH_ADVERTISE] == true
+        } else {
+            granted[Manifest.permission.ACCESS_FINE_LOCATION] == true
+        }
+        vm.onPermissions(location, bluetooth)
+    }
+    LaunchedEffect(Unit) {
+        vm.init(displayName)
+        permissions.launch(PERMISSIONS)
+    }
+
+    LazyColumn(
+        Modifier.fillMaxSize().systemBarsPadding(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        item {
+            GlassCard {
+                Text("Nearby", style = MaterialTheme.typography.headlineSmall)
+                Text("See what people around you have snatched. Your exact location is never shared.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf("ghost" to "👻 Ghost", "friends" to "Friends", "public" to "Public").forEach { (value, label) ->
+                        FilterChip(selected = state.visibility == value, onClick = { vm.setVisibility(value) }, label = { Text(label) })
+                    }
+                }
+            }
+        }
+        item {
+            GlassCard {
+                state.status?.let { Text(it, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                state.users.forEach { u ->
+                    Row(
+                        Modifier.fillMaxWidth().padding(vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        Avatar(u.avatarUrl, 40.dp)
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                u.displayName + if (u.id in state.inBluetoothRange) "  · right here" else "",
+                                style = MaterialTheme.typography.titleSmall,
+                            )
+                            Text(
+                                "${u.libraryCount} tracks · " + u.recent.joinToString(", ") { it.title },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                        Button(onClick = { onOpenProfile(u.id) }) { Text("Browse") }
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+#### `app/src/main/java/com/tracksnatcher/social/ui/ProfileScreen.kt`: contributor profile + Snatched Library
+```kotlin
+package com.tracksnatcher.social.ui
+
+import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.unit.dp
+import com.tracksnatcher.social.data.LibraryTrack
+import com.tracksnatcher.social.data.Profile
+import com.tracksnatcher.social.data.SocialApi
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
+
+/** Contributor profile + their public Snatched Library (Napster-style browse) with one-tap Snatch. */
+@Composable
+fun ProfileScreen(userId: String, sessionId: String?) {
+    val context = LocalContext.current
+    val api = remember { SocialApi.get(context) }
+    val uriHandler = LocalUriHandler.current
+    val scope = rememberCoroutineScope()
+    var profile by remember { mutableStateOf<Profile?>(null) }
+    var tracks by remember { mutableStateOf<List<LibraryTrack>>(emptyList()) }
+    var error by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(userId) {
+        try {
+            profile = api.profile(userId)
+            tracks = api.library(userId).tracks
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: SocialApi.ApiException) {
+            error = if (e.code == 404) "This profile is private" else e.message
+        } catch (e: Exception) {
+            error = e.message
+        }
+    }
+
+    fun snatch(t: LibraryTrack) = scope.launch {
+        try {
+            val out = api.snatch(t.id, userId, if (sessionId != null) "session" else "profile", sessionId)
+            tracks = tracks.map { if (it.id == t.id) it.copy(inMyLibrary = 1) else it }
+            Toast.makeText(context, out.label, Toast.LENGTH_SHORT).show()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LazyColumn(
+        Modifier.fillMaxSize().systemBarsPadding(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        item {
+            GlassCard {
+                val p = profile
+                if (p == null) {
+                    Text(error ?: "Loading…", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                } else {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Avatar(p.avatarUrl, 56.dp)
+                        Column {
+                            Text(p.displayName, style = MaterialTheme.typography.headlineSmall)
+                            Text("${p.libraryCount} tracks · snatched from ${p.snatchedFromCount}×", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        p.youtubeUrl?.let { url -> Button(onClick = { uriHandler.openUri(url) }) { Text("YouTube") } }
+                        p.spotifyUrl?.let { url -> Button(onClick = { uriHandler.openUri(url) }) { Text("Spotify") } }
+                    }
+                }
+            }
+        }
+        if (profile != null) {
+            item {
+                GlassCard {
+                    Text("Snatched Library", style = MaterialTheme.typography.titleMedium)
+                    tracks.forEach { t ->
+                        TrackRow(
+                            title = t.title, artist = t.artist, artworkUrl = t.artworkUrl,
+                            snatchedFrom = t.snatchedFromName,
+                            onSnatch = if (t.inMyLibrary == 0) ({ snatch(t) }) else null,
+                        )
+                    }
+                    if (tracks.isEmpty()) Text("No public tracks yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+    }
+}
+```
+
+#### `app/src/main/java/com/tracksnatcher/social/SocialNav.kt`: navigation + breathing background hookup
+```kotlin
+package com.tracksnatcher.social
+
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
+import com.tracksnatcher.social.data.SocialApi
+import com.tracksnatcher.social.ui.HostSessionScreen
+import com.tracksnatcher.social.ui.JoinSessionScreen
+import com.tracksnatcher.social.ui.NearbyScreen
+import com.tracksnatcher.social.ui.ProfileScreen
+
+object SocialRoutes {
+    const val HOST = "social/host"
+    const val JOIN = "social/join?s={s}"
+    const val NEARBY = "social/nearby"
+    const val PROFILE = "social/profile/{userId}?s={sessionId}"
+
+    fun join() = "social/join"
+    fun profile(userId: String, sessionId: String? = null) =
+        "social/profile/$userId" + (sessionId?.let { "?s=$it" } ?: "")
+}
+
+/**
+ * Add inside the app's existing NavHost:
+ *
+ *   socialGraph(
+ *       navController,
+ *       serverUrl = BuildConfig.SOCIAL_BASE_URL,
+ *       displayName = <the user's current name in the app>,
+ *       background = { content -> BreathingBackground { content() } }, // the app's EXISTING breathing background, unchanged
+ *   )
+ */
+fun NavGraphBuilder.socialGraph(
+    navController: NavController,
+    serverUrl: String,
+    displayName: String,
+    background: @Composable (content: @Composable () -> Unit) -> Unit,
+) {
+    SocialApi.configure(serverUrl)
+
+    composable(SocialRoutes.HOST) {
+        background {
+            HostSessionScreen(displayName, onOpenProfile = { navController.navigate(SocialRoutes.profile(it)) })
+        }
+    }
+    composable(
+        SocialRoutes.JOIN,
+        arguments = listOf(navArgument("s") { type = NavType.StringType; nullable = true; defaultValue = null }),
+        deepLinks = listOf(navDeepLink { uriPattern = "tracksnatcher://join?s={s}" }),
+    ) { entry ->
+        background {
+            JoinSessionScreen(
+                deepLinkToken = entry.arguments?.getString("s"),
+                displayName = displayName,
+                onOpenProfile = { userId, sessionId -> navController.navigate(SocialRoutes.profile(userId, sessionId)) },
+            )
+        }
+    }
+    composable(SocialRoutes.NEARBY) {
+        background {
+            NearbyScreen(displayName, onOpenProfile = { navController.navigate(SocialRoutes.profile(it)) })
+        }
+    }
+    composable(
+        SocialRoutes.PROFILE,
+        arguments = listOf(
+            navArgument("userId") { type = NavType.StringType },
+            navArgument("sessionId") { type = NavType.StringType; nullable = true; defaultValue = null },
+        ),
+    ) { entry ->
+        background {
+            ProfileScreen(userId = entry.arguments?.getString("userId").orEmpty(), sessionId = entry.arguments?.getString("sessionId"))
+        }
+    }
+}
+```
 
 ### Acceptance checklist
-- [ ] Host starts a session → QR + PIN show up; a guest scans and is in the queue in under 5 s with no signup.
-- [ ] Every queue row shows `added_by`; tapping it opens the profile with YouTube/Spotify links.
+- [ ] Host starts a session → QR + PIN show up; a guest scans with the app (or the phone camera opens the deep link) and is in the queue in under 5 s with no signup.
+- [ ] Every queue row shows who added it; tapping it opens their profile with YouTube/Spotify links.
 - [ ] A guest snatches a host track → everyone in the session sees "Snatched by B from A" and the MP3 job hits Node-RED.
 - [ ] Grok DJ returns a fair order; with `GROK_ENABLED=false` it falls back to round-robin and nothing breaks.
-- [ ] Ghost mode → absent from `/nearby` and `/resolve`, and beacons are ignored.
-- [ ] No API response ever contains lat/lon or a geohash.
+- [ ] Two phones in the same room see each other on Nearby with "right here" (Bluetooth); Ghost mode hides you and stops advertising.
+- [ ] Denying location or Bluetooth still leaves the other discovery method working.
+- [ ] No API response ever contains lat/lon or a geohash, and the xAI key is not in the APK.
 - [ ] New screens keep the current breathing background and colors, unchanged.
