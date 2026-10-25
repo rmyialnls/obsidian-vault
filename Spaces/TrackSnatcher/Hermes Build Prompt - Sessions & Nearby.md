@@ -77,14 +77,14 @@ Produce and commit, in this order:
 5. Add `src/resolver.js`: Grok normalize → MusicBrainz → upsert `tracks`. Reuse the existing MusicBrainz module if there is one.
 6. Add `src/pipeline.js` and wire it to the existing Node-RED `/download -MP3` and YouTube append flows.
 7. Sessions REST: create, QR, join by token or PIN, queue add/list/reorder, now-playing, end.
-8. WebSocket rooms (`src/realtime.js`): `queue.updated`, `member.joined`, `now_playing`, `snatch.created`, `pulse`.
+8. WebSocket rooms (`src/realtime.js`): `queue.updated`, `member.joined`, `now_playing`, `snatch.created`, `session.ended`.
 9. Profiles plus a public library endpoint, with visibility enforcement.
 10. Snatch endpoint plus lineage, including the "Snatched by B from A" label.
 11. Grok DJ: `/api/sessions/:id/dj/suggest` and fair-order reorder (host approves).
 12. Presence: geohash beacon, `/api/nearby`, BLE ephemeral IDs + resolve, mDNS advertise.
 13. Build the host, join/queue, profile and nearby screens on the existing stylesheet, keeping the current breathing background and colors.
 14. Hook AudD identify results into session queues (identify → "Add to session?").
-15. Hardening: rate limits, input caps, session expiry (12 h), ghost-mode tests, reduced-motion check.
+15. Hardening: rate limits, input caps, session expiry (12 h), ghost-mode tests.
 16. Hook the existing `/download -MP3` chat command into Grok intent parsing.
 
 ---
