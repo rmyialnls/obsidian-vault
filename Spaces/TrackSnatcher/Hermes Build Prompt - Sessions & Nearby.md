@@ -1486,7 +1486,7 @@ Browsers can't advertise over BLE, so this part lives in the native Android clie
 ### Acceptance checklist
 - [ ] Host starts a session → QR + PIN show up; a guest scans and is in the queue in under 5 s with no signup.
 - [ ] Every queue row shows `added_by`; tapping it opens the profile with YouTube/Spotify links.
-- [ ] A guest snatches a host track → everyone in the session sees "Snatched by B from A", the MP3 job hits Node-RED, and the background pulses.
+- [ ] A guest snatches a host track → everyone in the session sees "Snatched by B from A" and the MP3 job hits Node-RED.
 - [ ] Grok DJ returns a fair order; with `GROK_ENABLED=false` it falls back to round-robin and nothing breaks.
 - [ ] Ghost mode → absent from `/nearby` and `/resolve`, and beacons are ignored.
 - [ ] No API response ever contains lat/lon or a geohash.
