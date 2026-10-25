@@ -35,17 +35,8 @@ Rules for Grok calls:
 - Never send Grok location, device files, auth tokens or emails. Send only track metadata, display names and the vibe string.
 - Use a 12 s timeout and cache identical normalization prompts for 10 minutes.
 
-### UI requirement: match the existing screens' breathing color backgrounds
-Every new screen (Host Session, Guest Join, Live Queue, Contributor Profile, Nearby Radar, Napster Library Browse) **must use the same animated breathing gradient background as the existing TrackSnatcher screens.**
-1. **First, open the existing screens' stylesheet(s)** and find the current breathing background: colors, gradient stops, animation duration and easing. Copy those exact values into the `--breath-*` tokens in `public/css/breathing.css` below. The values in this file are placeholders; the existing screens are the source of truth.
-2. The breathing effect is a slow (~8 s) inhale/exhale loop: drifting radial-gradient blobs plus a gentle scale/brightness pulse on a full-screen fixed layer behind the content. Content cards sit on top as translucent "glass" panels (`backdrop-filter: blur`).
-3. Each screen gets its own palette variant through `data-screen` on `<body>`, but it uses the same timing and structure so the app feels like one system:
-   - `host`, `join` and `queue`: the session palette
-   - `nearby` and `library`: the discovery palette
-   - `profile`: the contributor's accent palette
-4. **Live sync:** while a track is playing, the breathing rate speeds up slightly (`data-live="true"`). When a new track lands in the queue, fire a single "pulse" (`.breath-pulse`) so everyone in the room sees the background react.
-5. Respect `prefers-reduced-motion` (static gradient, no animation) and keep text contrast at WCAG AA or better over the brightest part of the gradient.
-6. Use one shared `breathing.css` + `breathing.js`. Never duplicate the animation per screen.
+### UI: keep the current breathing background and colors
+All new screens (Host Session, Guest Join / Live Queue, Contributor Profile, Nearby) **keep the current breathing background and colors exactly as they are on the existing TrackSnatcher screens.** Reuse the existing stylesheet and background as-is. Don't change, recolor or recreate them.
 
 ### Deliverables
 Produce and commit, in this order:
@@ -91,7 +82,7 @@ Produce and commit, in this order:
 10. Snatch endpoint plus lineage, including the "Snatched by B from A" label.
 11. Grok DJ: `/api/sessions/:id/dj/suggest` and fair-order reorder (host approves).
 12. Presence: geohash beacon, `/api/nearby`, BLE ephemeral IDs + resolve, mDNS advertise.
-13. **Breathing background:** copy the existing screens' palette into `breathing.css`, then build the host/join/queue, profile, nearby and library screens on it. Add the live-sync pulse.
+13. Build the host, join/queue, profile and nearby screens on the existing stylesheet, keeping the current breathing background and colors.
 14. Hook AudD identify results into session queues (identify → "Add to session?").
 15. Hardening: rate limits, input caps, session expiry (12 h), ghost-mode tests, reduced-motion check.
 16. Hook the existing `/download -MP3` chat command into Grok intent parsing.
@@ -719,7 +710,6 @@ r.post('/:id/queue', requireAuth, async (req, res) => {
                 VALUES (@id,@session_id,@track_id,@added_by,@position,@source)`).run(row);
 
     pipeline.appendToPlaylist(s.yt_playlist_id, track); // fire-and-forget into the shared YT playlist
-    rt.toSession(s.id, 'pulse', { reason: 'track.added', by: req.user.display_name });
     broadcastQueue(s.id);
     res.status(201).json({ session_track: row, track });
   } catch (err) {
@@ -1131,129 +1121,38 @@ process.on('SIGINT', () => { mdns.stop(); process.exit(0); });
 | POST | `/api/agent/command` | auth | **Grok** intent parsing for chat / `/download -MP3` |
 
 **WebSocket** `GET /ws?token=…&session=…` sends server→client events `{type, data, ts}`:
-`queue.updated {queue}` · `member.joined {id, display_name, avatar_url}` · `now_playing {track}` · `snatch.created {snatch, track, label}` · `pulse {reason, by}` (drives the breathing background) · `session.ended {id}`.
+`queue.updated {queue}` · `member.joined {id, display_name, avatar_url}` · `now_playing {track}` · `snatch.created {snatch, track, label}` · `session.ended {id}`.
 
 ---
 
-### Breathing background (shared by all screens)
+### Screens
+Each screen loads the **existing TrackSnatcher stylesheet first**, so it keeps the current breathing background and colors. `social.css` only adds layout for the new components and inherits every color.
 
-#### `public/css/breathing.css`
+#### `public/css/social.css`
 ```css
-/* ==========================================================================
-   TrackSnatcher breathing background, shared by ALL screens.
-   HERMES: replace every --breath-* value below with the exact values from the
-   existing screens' stylesheet so the new screens match them pixel-for-pixel.
-   ========================================================================== */
-@property --breath-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
-
-:root {
-  --breath-duration: 8s;                 /* inhale + exhale */
-  --breath-ease: cubic-bezier(.45, 0, .55, 1);
-  --breath-scale: 1.08;                  /* how far it "inhales" */
-  --breath-bright: 1.15;
-
-  /* session palette (host / join / queue) */
-  --breath-a: #ff3cac;
-  --breath-b: #784ba0;
-  --breath-c: #2b86c5;
-  --breath-base: #0b0614;
-
-  --ink: #f7f4ff;
-  --ink-dim: rgba(247, 244, 255, .72);
-  --glass: rgba(12, 8, 24, .55);
-  --glass-border: rgba(255, 255, 255, .14);
-  --accent: var(--breath-a);
-  --radius: 18px;
-}
-
-/* discovery palette (nearby / library) */
-body[data-screen="nearby"], body[data-screen="library"] {
-  --breath-a: #00f5a0; --breath-b: #00d9f5; --breath-c: #6a5cff; --breath-base: #04110f;
-}
-/* contributor palette, overridable per user via inline --breath-a */
-body[data-screen="profile"] {
-  --breath-a: #ffb347; --breath-b: #ff5e62; --breath-c: #a445b2; --breath-base: #120708;
-}
-
-html { background: var(--breath-base); }
-/* body stays transparent so the fixed .breath-bg layer shows through behind content */
-body { margin: 0; min-height: 100vh; background: transparent; color: var(--ink);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-
-.breath-bg { position: fixed; inset: -10%; z-index: -1; overflow: hidden; background: var(--breath-base); }
-.breath-bg::before, .breath-bg::after {
-  content: ""; position: absolute; inset: 0;
-  background:
-    radial-gradient(40% 45% at 20% 25%, var(--breath-a) 0%, transparent 70%),
-    radial-gradient(45% 40% at 80% 30%, var(--breath-b) 0%, transparent 70%),
-    radial-gradient(50% 50% at 50% 85%, var(--breath-c) 0%, transparent 70%);
-  filter: blur(40px) saturate(1.2);
-  animation: breathe var(--breath-duration) var(--breath-ease) infinite,
-             drift calc(var(--breath-duration) * 4) linear infinite;
-}
-.breath-bg::after { mix-blend-mode: screen; opacity: .55; animation-delay: calc(var(--breath-duration) / -2), 0s;
-  animation-direction: normal, reverse; }
-
-@keyframes breathe {
-  0%, 100% { transform: scale(1) rotate(var(--breath-angle)); opacity: .75; filter: blur(40px) brightness(1); }
-  50%      { transform: scale(var(--breath-scale)) rotate(var(--breath-angle)); opacity: 1;
-             filter: blur(48px) brightness(var(--breath-bright)); }
-}
-@keyframes drift { to { --breath-angle: 360deg; } }
-
-/* faster breathing while music is live */
-body[data-live="true"] { --breath-duration: 5.5s; }
-
-/* single pulse when someone adds / snatches a track */
-.breath-bg.breath-pulse::before { animation: pulse .9s ease-out 1, drift calc(var(--breath-duration) * 4) linear infinite; }
-@keyframes pulse { 0% { transform: scale(1); } 35% { transform: scale(1.18); filter: blur(30px) brightness(1.4); } 100% { transform: scale(1); } }
-
-@media (prefers-reduced-motion: reduce) {
-  .breath-bg::before, .breath-bg::after { animation: none !important; }
-}
-
-/* glass UI primitives shared by every screen */
+/* Layout only. Colors and the background come from the existing TrackSnatcher stylesheet. */
 .wrap { max-width: 560px; margin: 0 auto; padding: 16px; box-sizing: border-box; }
-.glass { background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius);
-  backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3); padding: 16px; margin-bottom: 14px; }
-h1 { font-size: 1.6rem; margin: 8px 0 4px; letter-spacing: -.02em; }
-.dim { color: var(--ink-dim); font-size: .9rem; }
-button, .btn { appearance: none; border: 0; border-radius: 999px; padding: 10px 16px; font: inherit; font-weight: 600;
-  background: var(--ink); color: var(--breath-base); cursor: pointer; text-decoration: none; display: inline-block; }
-button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--glass-border); }
-input { width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--glass-border);
-  background: rgba(0,0,0,.35); color: var(--ink); font: inherit; }
+.card { border: 1px solid color-mix(in srgb, currentColor 18%, transparent); border-radius: 18px;
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); padding: 16px; margin-bottom: 14px; }
+h1 { font-size: 1.6rem; margin: 8px 0 4px; }
+.dim { opacity: .72; font-size: .9rem; }
 .row { display: flex; gap: 10px; align-items: center; }
-.track { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--glass-border); }
+.stack > * + * { margin-top: 8px; }
+input { width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 12px; font: inherit; }
+.track { display: flex; gap: 12px; align-items: center; padding: 10px 0;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 14%, transparent); }
 .track:last-child { border-bottom: 0; }
 .track .meta { flex: 1; min-width: 0; }
 .track .title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.track.playing .title::before { content: "▶ "; color: var(--accent); }
-.avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; background: var(--glass-border); flex: none; }
-.chip { font-size: .75rem; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--glass-border); color: var(--ink-dim); cursor: pointer; }
+.track.playing .title::before { content: "▶ "; }
+.avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex: none; }
+.art { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; flex: none; }
+.chip { font-size: .75rem; padding: 2px 8px; border-radius: 999px; cursor: pointer; opacity: .8;
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent); }
+.selected { outline: 2px solid currentColor; }
 .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); max-width: calc(100% - 32px); }
-```
-
-#### `public/js/breathing.js`
-```js
-// Shared by every screen: mounts the background, exposes pulse() / setLive(), and wires WS events.
-(function () {
-  const bg = document.createElement('div');
-  bg.className = 'breath-bg';
-  bg.setAttribute('aria-hidden', 'true');
-  document.body.prepend(bg);
-
-  function pulse() {
-    bg.classList.remove('breath-pulse');
-    void bg.offsetWidth; // restart animation
-    bg.classList.add('breath-pulse');
-    setTimeout(() => bg.classList.remove('breath-pulse'), 950);
-  }
-  function setLive(on) { document.body.dataset.live = on ? 'true' : 'false'; }
-  function setAccent(hex) { if (/^#[0-9a-f]{6}$/i.test(hex)) document.body.style.setProperty('--breath-a', hex); }
-
-  window.Breath = { pulse, setLive, setAccent };
-})();
+.qr { width: 150px; height: 150px; border-radius: 12px; background: #fff; }
+.pin { font-size: 2rem; font-weight: 800; letter-spacing: .15em; }
 ```
 
 #### `public/js/api.js`
@@ -1276,7 +1175,7 @@ window.TS = {
     let ws, retry = 1000;
     const open = () => {
       ws = new WebSocket(`${proto}://${location.host}/ws?token=${encodeURIComponent(this.token)}${sessionId ? `&session=${sessionId}` : ''}`);
-      ws.onmessage = (e) => { const m = JSON.parse(e.data); if (m.type === 'pulse' || m.type === 'snatch.created') Breath.pulse(); onEvent(m); };
+      ws.onmessage = (e) => onEvent(JSON.parse(e.data));
       ws.onopen = () => (retry = 1000);
       ws.onclose = (e) => { if (e.code < 4400) setTimeout(open, (retry = Math.min(retry * 2, 15000))); };
     };
@@ -1285,18 +1184,18 @@ window.TS = {
   },
   esc: (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])),
   toast(msg) {
-    const t = document.createElement('div'); t.className = 'glass toast'; t.textContent = msg;
+    const t = document.createElement('div'); t.className = 'card toast'; t.textContent = msg;
     document.body.append(t); setTimeout(() => t.remove(), 2600);
   },
   trackRow(t, { onSnatch, onProfile } = {}) {
     const el = document.createElement('div');
     el.className = 'track' + (t.status === 'playing' ? ' playing' : '');
     el.innerHTML = `
-      ${t.artwork_url ? `<img class="avatar" style="border-radius:8px;width:44px;height:44px" src="${TS.esc(t.artwork_url)}" alt="">` : ''}
+      ${t.artwork_url ? `<img class="art" src="${TS.esc(t.artwork_url)}" alt="">` : ''}
       <div class="meta">
         <div class="title">${TS.esc(t.title)}</div>
         <div class="dim">${TS.esc(t.artist)}${t.vibe_flag ? ` · ⚠ ${TS.esc(t.vibe_flag)}` : ''}</div>
-        ${t.added_by_name ? `<span class="chip" data-profile>${t.added_by_avatar ? '' : '👤 '}added by ${TS.esc(t.added_by_name)}</span>` : ''}
+        ${t.added_by_name ? `<span class="chip" data-profile>added by ${TS.esc(t.added_by_name)}</span>` : ''}
         ${t.snatched_from_name ? `<span class="chip">snatched from ${TS.esc(t.snatched_from_name)}</span>` : ''}
       </div>
       ${onSnatch && !t.in_my_library ? '<button data-snatch>Snatch</button>' : ''}`;
@@ -1314,11 +1213,13 @@ window.TS = {
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Host Session</title>
-  <link rel="stylesheet" href="/css/breathing.css">
+  <!-- HERMES: existing TrackSnatcher stylesheet (current breathing background + colors). Use its real path. -->
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/social.css">
 </head>
-<body data-screen="host">
+<body>
   <main class="wrap">
-    <section class="glass" id="setup">
+    <section class="card" id="setup">
       <h1>Start a session</h1>
       <p class="dim">Road trip, campfire, party: guests scan to add songs.</p>
       <input id="name" placeholder="Your name" style="margin-bottom:8px">
@@ -1328,22 +1229,22 @@ window.TS = {
       <button id="start">Start session</button>
     </section>
 
-    <section class="glass" id="live" hidden>
+    <section class="card" id="live" hidden>
       <div class="row" style="justify-content:space-between">
         <div><h1 id="s-title"></h1><div class="dim" id="s-vibe"></div></div>
-        <button class="ghost" id="end">End</button>
+        <button id="end">End</button>
       </div>
       <div class="row" style="margin-top:12px;align-items:flex-start">
-        <img id="qr" alt="Join QR code" style="width:150px;height:150px;border-radius:12px;background:#fff">
-        <div><div class="dim">or enter PIN</div><div id="pin" style="font-size:2rem;font-weight:800;letter-spacing:.15em"></div>
+        <img id="qr" class="qr" alt="Join QR code">
+        <div><div class="dim">or enter PIN</div><div id="pin" class="pin"></div>
           <div class="dim" id="members"></div></div>
       </div>
     </section>
 
-    <section class="glass" id="queue-card" hidden>
+    <section class="card" id="queue-card" hidden>
       <div class="row" style="justify-content:space-between">
         <strong>Queue</strong>
-        <div class="row"><button class="ghost" id="dj">✨ Grok DJ</button><button id="next">Next ▶</button></div>
+        <div class="row"><button id="dj">✨ Grok DJ</button><button id="next">Next ▶</button></div>
       </div>
       <div class="row" style="margin:10px 0"><input id="q" placeholder="Add a song…"><button id="add">Add</button></div>
       <div id="dj-out" class="dim"></div>
@@ -1351,7 +1252,6 @@ window.TS = {
     </section>
   </main>
 
-  <script src="/js/breathing.js"></script>
   <script src="/js/api.js"></script>
   <script>
     const $ = (id) => document.getElementById(id);
@@ -1381,7 +1281,6 @@ window.TS = {
     }
     function render(q) {
       queue = q; $('queue').replaceChildren(...q.map((t) => TS.trackRow(t, { onProfile: (id) => location.href = `/profile.html?u=${id}` })));
-      Breath.setLive(q.some((t) => t.status === 'playing'));
     }
     $('add').onclick = async () => { const v = $('q').value.trim(); if (!v) return; $('q').value = '';
       try { await TS.api(`/sessions/${session.id}/queue`, { method: 'POST', body: { query: v } }); } catch (e) { TS.toast(e.message); } };
@@ -1405,11 +1304,13 @@ window.TS = {
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Join Session</title>
-  <link rel="stylesheet" href="/css/breathing.css">
+  <!-- HERMES: existing TrackSnatcher stylesheet (current breathing background + colors). Use its real path. -->
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/social.css">
 </head>
-<body data-screen="join">
+<body>
   <main class="wrap">
-    <section class="glass" id="gate">
+    <section class="card" id="gate">
       <h1>Join the session</h1>
       <p class="dim">Add songs to the shared queue. No account needed.</p>
       <input id="name" placeholder="Your name" style="margin-bottom:8px">
@@ -1417,14 +1318,13 @@ window.TS = {
       <button id="join">Join</button>
     </section>
 
-    <section class="glass" id="room" hidden>
+    <section class="card" id="room" hidden>
       <h1 id="s-title"></h1><div class="dim" id="s-vibe"></div>
       <div class="row" style="margin-top:12px"><input id="q" placeholder="Search a song to queue…"><button id="add">Queue</button></div>
     </section>
-    <section class="glass" id="queue-card" hidden><strong>Up next</strong><div id="queue"></div></section>
+    <section class="card" id="queue-card" hidden><strong>Up next</strong><div id="queue"></div></section>
   </main>
 
-  <script src="/js/breathing.js"></script>
   <script src="/js/api.js"></script>
   <script>
     const $ = (id) => document.getElementById(id);
@@ -1443,7 +1343,7 @@ window.TS = {
         TS.socket(session.id, (m) => {
           if (m.type === 'queue.updated') render(m.data.queue);
           if (m.type === 'snatch.created') TS.toast(m.data.label);
-          if (m.type === 'session.ended') { TS.toast('Session ended'); Breath.setLive(false); }
+          if (m.type === 'session.ended') TS.toast('Session ended');
         });
       } catch (e) { TS.toast(e.message); }
     };
@@ -1452,7 +1352,6 @@ window.TS = {
         onProfile: (id) => location.href = `/profile.html?u=${id}&s=${session.id}`,
         onSnatch: t.added_by !== me.id ? snatch : null,
       })));
-      Breath.setLive(q.some((t) => t.status === 'playing'));
     }
     async function snatch(t) {
       const d = await TS.api('/snatch', { method: 'POST', body: { track_id: t.track_id, from_user_id: t.added_by, context: 'session', session_id: session.id } });
@@ -1472,18 +1371,19 @@ window.TS = {
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Contributor Profile</title>
-  <link rel="stylesheet" href="/css/breathing.css">
+  <!-- HERMES: existing TrackSnatcher stylesheet (current breathing background + colors). Use its real path. -->
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/social.css">
 </head>
-<body data-screen="profile">
+<body>
   <main class="wrap">
-    <section class="glass">
+    <section class="card">
       <div class="row"><img id="av" class="avatar" style="width:56px;height:56px" alt="">
         <div><h1 id="name"></h1><div class="dim" id="stats"></div></div></div>
       <div class="row" style="margin-top:12px;flex-wrap:wrap" id="links"></div>
     </section>
-    <section class="glass"><strong>Snatched Library</strong><div id="lib"></div></section>
+    <section class="card"><strong>Snatched Library</strong><div id="lib"></div></section>
   </main>
-  <script src="/js/breathing.js"></script>
   <script src="/js/api.js"></script>
   <script>
     const p = new URLSearchParams(location.search), uid = p.get('u'), sid = p.get('s');
@@ -1517,22 +1417,23 @@ window.TS = {
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Nearby Snatchers</title>
-  <link rel="stylesheet" href="/css/breathing.css">
+  <!-- HERMES: existing TrackSnatcher stylesheet (current breathing background + colors). Use its real path. -->
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/social.css">
 </head>
-<body data-screen="nearby">
+<body>
   <main class="wrap">
-    <section class="glass">
+    <section class="card">
       <h1>Nearby</h1>
       <p class="dim">See what people around you have snatched. Your exact location is never shared.</p>
       <div class="row" role="radiogroup" aria-label="Visibility">
-        <button class="ghost" data-vis="ghost">👻 Ghost</button>
-        <button class="ghost" data-vis="friends">Friends</button>
-        <button class="ghost" data-vis="public">Public</button>
+        <button data-vis="ghost">👻 Ghost</button>
+        <button data-vis="friends">Friends</button>
+        <button data-vis="public">Public</button>
       </div>
     </section>
-    <section class="glass"><div id="list" class="dim">Scanning…</div></section>
+    <section class="card"><div id="list" class="dim">Scanning…</div></section>
   </main>
-  <script src="/js/breathing.js"></script>
   <script src="/js/api.js"></script>
   <script>
     const list = document.getElementById('list');
@@ -1540,7 +1441,7 @@ window.TS = {
 
     async function setVis(v) {
       const me = await TS.api('/users/me', { method: 'PATCH', body: { visibility: v } });
-      document.querySelectorAll('[data-vis]').forEach((b) => b.className = b.dataset.vis === me.visibility ? '' : 'ghost');
+      document.querySelectorAll('[data-vis]').forEach((b) => b.classList.toggle('selected', b.dataset.vis === me.visibility));
       clearInterval(timer);
       if (v === 'ghost') { await TS.api('/presence', { method: 'DELETE' }); list.textContent = 'Ghost mode: you are invisible and not scanning.'; return; }
       tick(); timer = setInterval(tick, 60000);
@@ -1552,7 +1453,6 @@ window.TS = {
         await TS.api('/presence/beacon', { method: 'POST', body: { lat: coords.latitude, lon: coords.longitude } });
         const { users } = await TS.api('/presence/nearby');
         if (!users.length) { list.textContent = 'Nobody nearby yet.'; return; }
-        Breath.pulse();
         list.replaceChildren(...users.map((u) => {
           const el = document.createElement('div'); el.className = 'track';
           el.innerHTML = `<img class="avatar" src="${TS.esc(u.avatar_url || '')}" alt="">
@@ -1590,4 +1490,4 @@ Browsers can't advertise over BLE, so this part lives in the native Android clie
 - [ ] Grok DJ returns a fair order; with `GROK_ENABLED=false` it falls back to round-robin and nothing breaks.
 - [ ] Ghost mode → absent from `/nearby` and `/resolve`, and beacons are ignored.
 - [ ] No API response ever contains lat/lon or a geohash.
-- [ ] All six screens use `breathing.css` with the **existing screens' palette**, speed up while a track plays, pulse on add/snatch, and stay still under reduced motion.
+- [ ] New screens keep the current breathing background and colors, unchanged.
